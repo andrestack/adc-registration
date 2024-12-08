@@ -1,36 +1,31 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
-## Getting Started
+## What is this
 
-First, run the development server:
+Registration form for participants of [ADC](https://aldeia-djembe-camp.com) a Drum & Dance workshop week in Portugal
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## What problem does it solve: Registrations and Payment Instructions
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+The organisation team has been handling all payment instructions, collection and confirmation via email, causing unnecessary extra of work. They have never tought of a payment solution due to low key demand and high cost of payment gateways.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+This form will handle the whole registration process and handle payment instructions at the same time: user fills out the details, gets the sum of the costs and payment instructions and (hopefully) makes the bank transfer immediately via their own banking app.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+There is a high level of trust between participants and the organisation so good will and honesty is expected. At the same time, theycan continue avoiding fees attached to a payment gateway solutions. The festival is still releatively small
 
-## Learn More
+## Tech-stack
 
-To learn more about Next.js, take a look at the following resources:
+__v0__ for prototyping
+__NextJs__ app server for development
+__MongoDB__ for CRUD management
+__React-Hook-Form__ for for handling
+__Cloudflare / Vercel__ deployment
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Approach
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+The prototype will be enhanced with React Hook form for stable and effective form handling and zod for verification. This removes the need for too many state variables while keeping the form itself highly scalable.
 
-## Deploy on Vercel
+The client side application will be handling solely POST requests to the DB while an admin dashboard (next phase) will later work with that data as seen fit (mostly for revenue estimates, average profit/loss per workshop, etc).
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Unresolved
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Organisation still need to request payment confitmation screenshot to fully confirm registration. The form itself only includes a check box of "good will" for this.
+
