@@ -12,7 +12,11 @@ const geistMono = localFont({
   variable: "--font-geist-mono",
   weight: "100 900",
 });
-
+const gardaEmpty = localFont({
+  src: "./fonts/GardaEmpty.woff",
+  variable: "--font-garda-empty",
+  weight: "100 900",
+});
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -27,7 +31,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} ${gardaEmpty.variable} antialiased`}
         style={{background: 'linear-gradient(to top, #c5d556, #ffffff)'}}
       >
         {children}

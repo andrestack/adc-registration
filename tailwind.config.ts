@@ -79,7 +79,7 @@ const config: Config = {
   			'accordion-up': 'accordion-up 0.2s ease-out'
   		},
 		fontFamily: {
-			'garda-empty': ['GardaEmpty', 'sans-serif'],
+			'garda-empty': ['var(--font-garda-empty)'],
 		}
 
   	}

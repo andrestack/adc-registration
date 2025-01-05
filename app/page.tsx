@@ -7,14 +7,14 @@ export default function Home() {
       className="container mx-auto py-6 min-h-screen"
       style={{ background: "linear-gradient(to top, #c5d556, #ffffff)" }}
     >
-      <div className="flex justify-start items-center mb-6">
+      <div className="flex justify-start place-items-center">
         <Image
-          src="/images/aldeia.jpg"
+          src="/images/ADC_logo_no_bg.png"
           alt="ADC Logo"
           width={100}
           height={100}
         />
-        <h1 className="text-3xl font-bold mb-6">ADC 2025</h1>
+        <span className="text-8xl font-bold font-garda-empty ml-4">2025</span>
       </div>
 
       <RegistrationForm />
