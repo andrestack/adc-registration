@@ -3,8 +3,10 @@
 @tailwind utilities;
 
 body {
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'GardaEmpty', Arial, Helvetica, sans-serif;
 }
+
+
 
 @layer utilities {
   .text-balance {

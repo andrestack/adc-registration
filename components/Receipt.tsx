@@ -85,10 +85,10 @@ export default function Receipt() {
             </li>
           )}
           {formData.children['5-10'] > 0 && (
-            <li>{formData.children['5-10']} children's tickets (5-10 years old)</li>
+            <li>{formData.children['5-10']} children&apos;s tickets (5-10 years old)</li>
           )}
           {formData.children['10-17'] > 0 && (
-            <li>{formData.children['10-17']} children's tickets (10-17 years old)</li>
+            <li>{formData.children['10-17']} children&apos;s tickets (10-17 years old)</li>
           )}
         </ul>
 
