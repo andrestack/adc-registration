@@ -78,10 +78,11 @@ const config: Config = {
   			'accordion-down': 'accordion-down 0.2s ease-out',
   			'accordion-up': 'accordion-up 0.2s ease-out'
   		},
-		fontFamily: {
-			'garda-empty': ['var(--font-garda-empty)'],
-		}
-
+  		fontFamily: {
+  			'garda-empty': [
+  				'var(--font-garda-empty)'
+  			]
+  		}
   	}
   },
   plugins: [import("tailwindcss-animate")],

@@ -1,7 +1,5 @@
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
-import { Checkbox } from '@/components/ui/checkbox'
-import { Label } from '@/components/ui/label'
 import {
   Dialog,
   DialogContent,
@@ -14,34 +12,14 @@ import { Loader2, Download, Check } from 'lucide-react'
 interface ReceiptModalProps {
   isOpen: boolean
   onClose: () => void
-  formData: {
-    fullName: string
-    email: string
-    workshops: string[]
-    accommodation: {
-      type: string
-      nights: number
-    }
-  }
+  formData: any
   total: number
-  workshops: {
-    id: string
-    name: string
-    price: number
-  }[]
-  accommodationOptions: {
-    value: string
-    label: string
-    price: number
-  }[]
-  foodOptions: {
-    value: string
-    label: string
-    price: number
-  }[]
+  workshops: any[]
+  accommodationOptions: any[]
+  foodOptions: any[]
   accommodationTotal: () => number
   onDownloadReceipt: () => void
-  onSubmit: (total: number) => Promise<void>
+  onSubmit: () => Promise<void>
 }
 
 export default function ReceiptModal({
@@ -56,14 +34,13 @@ export default function ReceiptModal({
   onDownloadReceipt,
   onSubmit,
 }: ReceiptModalProps) {
-  const [paymentMade, setPaymentMade] = useState(false)
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'loading' | 'done'>('idle')
 
   const handleSubmit = async () => {
     setSubmitStatus('loading')
-    await onSubmit(total)
+    await onSubmit()
     setSubmitStatus('done')
-    setTimeout(() => setSubmitStatus('idle'), 2000)
+    setTimeout(() => setSubmitStatus('idle'), 2000) // Reset after 2 seconds
   }
 
   return (
@@ -121,30 +98,16 @@ export default function ReceiptModal({
           </div>
         </div>
         <DialogFooter className="sm:justify-start">
-          <div className="w-full space-y-4">
-            <div className="flex items-center space-x-2">
-              <Checkbox
-                id="paymentMade"
-                checked={paymentMade}
-                onCheckedChange={(checked: boolean) => setPaymentMade(checked)}
-              />
-              <Label htmlFor="paymentMade">Payment Made</Label>
-            </div>
-            <div className="flex justify-between gap-4">
-              <Button variant="outline" onClick={onDownloadReceipt} className="flex-1">
-                <Download className="mr-2 h-4 w-4" />
-                Download Receipt
-              </Button>
-              <Button
-                onClick={handleSubmit}
-                disabled={!paymentMade || submitStatus !== 'idle'}
-                className="flex-1"
-              >
-                {submitStatus === 'loading' && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                {submitStatus === 'done' && <Check className="mr-2 h-4 w-4" />}
-                {submitStatus === 'idle' ? 'Submit' : submitStatus === 'loading' ? 'Submitting...' : 'Done'}
-              </Button>
-            </div>
+          <div className="w-full flex justify-between">
+            <Button onClick={handleSubmit} disabled={submitStatus !== 'idle'}>
+              {submitStatus === 'loading' && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              {submitStatus === 'done' && <Check className="mr-2 h-4 w-4" />}
+              {submitStatus === 'idle' ? 'Submit' : submitStatus === 'loading' ? 'Submitting...' : 'Done'}
+            </Button>
+            <Button variant="outline" onClick={onDownloadReceipt}>
+              <Download className="mr-2 h-4 w-4" />
+              Download Receipt
+            </Button>
           </div>
         </DialogFooter>
       </DialogContent>
