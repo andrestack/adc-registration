@@ -1,46 +1,64 @@
-import { useState } from 'react'
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
-import { Label } from '@/components/ui/label'
-import { Input } from '@/components/ui/input'
+import { useFormContext } from "react-hook-form";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import {
+  RegistrationFormData,
+  accommodationOptions,
+} from "@/schemas/registrationSchema";
 
-export default function AccommodationSelection({ updateFormData }: { updateFormData: (section: string, data: any) => void }) {
-  const [accommodationType, setAccommodationType] = useState<string>('')
-  const [nights, setNights] = useState<number>(0)
+export function AccommodationSelection() {
+  const {
+    register,
+    formState: { errors },
+    watch,
+  } = useFormContext<RegistrationFormData>();
 
-  const handleAccommodationChange = (value: string) => {
-    setAccommodationType(value)
-    updateFormData('accommodation', { type: value, nights })
-  }
-
-  const handleNightsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const nightsValue = parseInt(e.target.value)
-    setNights(nightsValue)
-    updateFormData('accommodation', { type: accommodationType, nights: nightsValue })
-  }
+  const accommodationType = watch("accommodation.type");
 
   return (
     <div className="space-y-4">
-      <RadioGroup onValueChange={handleAccommodationChange}>
-        <div className="flex items-center space-x-2">
-          <RadioGroupItem value="tent" id="tent" />
-          <Label htmlFor="tent">Tent (€15 per person, per night)</Label>
-        </div>
-        <div className="flex items-center space-x-2">
-          <RadioGroupItem value="bungalow" id="bungalow" />
-          <Label htmlFor="bungalow">Bungalow (€40 per room, per night) - 14 rooms available</Label>
-        </div>
+      <Label className="text-lg font-bold">Accommodation</Label>
+      <RadioGroup
+        {...register("accommodation.type")}
+        className="space-y-2"
+        value={accommodationType}
+      >
+        {accommodationOptions.map((option) => (
+          <div key={option.value} className="flex items-center space-x-2 p-2">
+            <RadioGroupItem value={option.value} id={`accommodation-${option.value}`} />
+            <Label htmlFor={`accommodation-${option.value}`}>
+              {option.label} - €{option.price} per night
+              {option.value !== "tent" && (
+                <span className="ml-2 text-sm text-muted-foreground">
+                  {option.available} available
+                </span>
+              )}
+            </Label>
+          </div>
+        ))}
       </RadioGroup>
-      <div>
+      {errors.accommodation?.type && (
+        <p className="text-red-500 text-sm mt-1">
+          {errors.accommodation.type.message}
+        </p>
+      )}
+      <div className="mt-2">
         <Label htmlFor="nights">Number of nights</Label>
         <Input
           id="nights"
           type="number"
           min="0"
-          value={nights}
-          onChange={handleNightsChange}
+          {...register("accommodation.nights", { valueAsNumber: true })}
+          className={errors.accommodation?.nights ? "border-red-500" : ""}
         />
+        {errors.accommodation?.nights && (
+          <p className="text-red-500 text-sm mt-1">
+            {errors.accommodation.nights.message}
+          </p>
+        )}
       </div>
     </div>
-  )
+  );
 }
 
