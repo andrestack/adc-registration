@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { RegistrationFormData } from "@/schemas/registrationSchema";
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";
 
+
 export function ChildrenTickets() {
   const {
     register,

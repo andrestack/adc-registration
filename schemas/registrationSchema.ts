@@ -1,19 +1,19 @@
 import * as z from "zod";
 
-const workshopSchema = z.object({
-  id: z.string(),
-  name: z.string(),
-  price: z.number(),
-  levels: z
-    .array(
-      z.object({
-        id: z.string(),
-        name: z.string(),
-        price: z.number(),
-      })
-    )
-    .optional(),
-});
+// const workshopSchema = z.object({
+//   id: z.string(),
+//   name: z.string(),
+//   price: z.number(),
+//   levels: z
+//     .array(
+//       z.object({
+//         id: z.string(),
+//         name: z.string(),
+//         price: z.number(),
+//       })
+//     )
+//     .optional(),
+// });
 
 export const registrationSchema = z.object({
   fullName: z.string().min(1, "Full name is required"),
@@ -74,16 +74,16 @@ export const workshops = [
 ] as const;
 
 export const accommodationOptions = [
-  { value: "tent", label: "Tent", price: 15 },
+  { value: "tent", label: "Tenda", price: 15 },
   {
     value: "family-room",
-    label: "Family Room (fits 4)",
+    label: "Quarto Família / Family Room (4 ppl)",
     price: 40,
     available: 6,
   },
   {
     value: "single-room",
-    label: "Single Room (fits 2)",
+    label: "Single (2ppl)",
     price: 40,
     available: 6,
   },

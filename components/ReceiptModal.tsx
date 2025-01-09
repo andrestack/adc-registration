@@ -14,11 +14,31 @@ import { Loader2, Download, Check } from 'lucide-react'
 interface ReceiptModalProps {
   isOpen: boolean
   onClose: () => void
-  formData: any
+  formData: {
+    fullName: string
+    email: string
+    workshops: string[]
+    accommodation: {
+      type: string
+      nights: number
+    }
+  }
   total: number
-  workshops: any[]
-  accommodationOptions: any[]
-  foodOptions: any[]
+  workshops: {
+    id: string
+    name: string
+    price: number
+  }[]
+  accommodationOptions: {
+    value: string
+    label: string
+    price: number
+  }[]
+  foodOptions: {
+    value: string
+    label: string
+    price: number
+  }[]
   accommodationTotal: () => number
   onDownloadReceipt: () => void
   onSubmit: () => Promise<void>

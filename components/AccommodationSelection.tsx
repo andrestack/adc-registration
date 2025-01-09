@@ -6,8 +6,13 @@ import {
   RegistrationFormData,
   accommodationOptions,
 } from "@/schemas/registrationSchema";
-import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";
-import { useEffect, useState } from "react";
+import {
+  Accordion,
+  AccordionItem,
+  AccordionTrigger,
+  AccordionContent,
+} from "@/components/ui/accordion";
+// import { useEffect, useState } from "react";
 
 export function AccommodationSelection() {
   const {
@@ -19,22 +24,24 @@ export function AccommodationSelection() {
 
   const accommodationType = watch("accommodation.type");
 
-  const [roomAvailability, setRoomAvailability] = useState({
-    'family-room': 6,
-    'single-room': 6,
-  });
+  // const [roomAvailability, setRoomAvailability] = useState({
+  //   'family-room': 6,
+  //   'single-room': 6,
+  // });
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setRoomAvailability({
-        'family-room': Math.max(0, Math.floor(Math.random() * 7)),
-        'single-room': Math.max(0, Math.floor(Math.random() * 7)),
-      });
-    }, 5000);
-    return () => clearTimeout(timer);
-  }, []);
+  // useEffect(() => {
+  //   const timer = setTimeout(() => {
+  //     setRoomAvailability({
+  //       'family-room': Math.max(0, Math.floor(Math.random() * 7)),
+  //       'single-room': Math.max(0, Math.floor(Math.random() * 7)),
+  //     });
+  //   }, 5000);
+  //   return () => clearTimeout(timer);
+  // }, []);
 
-  const handleAccommodationChange = (value: string) => {
+  type AccommodationType = "tent" | "family-room" | "single-room";
+
+  const handleAccommodationChange = (value: AccommodationType) => {
     setValue("accommodation.type", value, { shouldValidate: true });
   };
 
@@ -48,7 +55,10 @@ export function AccommodationSelection() {
       >
         {accommodationOptions.map((option) => (
           <div key={option.value} className="flex items-center space-x-2 p-2">
-            <RadioGroupItem value={option.value} id={`accommodation-${option.value}`} />
+            <RadioGroupItem
+              value={option.value}
+              id={`accommodation-${option.value}`}
+            />
             <Label htmlFor={`accommodation-${option.value}`}>
               {option.label} - €{option.price} per night
             </Label>
@@ -57,7 +67,10 @@ export function AccommodationSelection() {
       </RadioGroup>
       {errors.accommodation?.type && (
         <p className="text-red-500 text-sm mt-1">
-          {errors.accommodation.type.message}
+          {typeof errors.accommodation.type === "object" &&
+          "message" in errors.accommodation.type
+            ? errors.accommodation.type.message
+            : "An error occurred."}
         </p>
       )}
       <div className="mt-2">
@@ -91,4 +104,3 @@ export function AccommodationSelection() {
     </>
   );
 }
-

@@ -26,34 +26,34 @@ import { Label } from "@/components/ui/label";
 export default function RegistrationForm() {
   const [total, setTotal] = useState(0);
   const [ibanCopied, setIbanCopied] = useState(false);
-  const [roomAvailability, setRoomAvailability] = useState({
-    "family-room": 6,
-    "single-room": 6,
-  });
+  // const [roomAvailability, setRoomAvailability] = useState({
+  //   "family-room": 6,
+  //   "single-room": 6,
+  // });
   const [isReceiptModalOpen, setIsReceiptModalOpen] = useState(false);
   const [submitStatus, setSubmitStatus] = useState("idle");
 
   const {
     watch,
     handleSubmit,
-    formState: { errors },
+    
     setValue,
   } = useFormContext<RegistrationFormData>();
   const formData = watch();
 
   useEffect(() => {
     calculateTotal();
-  }, [formData]);
+  }, );
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setRoomAvailability({
-        "family-room": Math.max(0, Math.floor(Math.random() * 7)),
-        "single-room": Math.max(0, Math.floor(Math.random() * 7)),
-      });
-    }, 5000);
-    return () => clearTimeout(timer);
-  }, []);
+  // useEffect(() => {
+  //   const timer = setTimeout(() => {
+  //     setRoomAvailability({
+  //       "family-room": Math.max(0, Math.floor(Math.random() * 7)),
+  //       "single-room": Math.max(0, Math.floor(Math.random() * 7)),
+  //     });
+  //   }, 5000);
+  //   return () => clearTimeout(timer);
+  // }, []);
 
   const calculateTotal = () => {
     let total = 0;
