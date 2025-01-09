@@ -1,14 +1,12 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useFormContext } from 'react-hook-form'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Label } from '@/components/ui/label'
-import { Input } from '@/components/ui/input'
 import { Checkbox } from '@/components/ui/checkbox'
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
-import { Copy, Check, Loader2 } from 'lucide-react'
+import { Copy, Check, Download, Loader2 } from 'lucide-react'
 import {
   Tooltip,
   TooltipContent,
@@ -16,37 +14,17 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip"
 import { downloadReceipt } from '@/utils/downloadReceipt'
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
+import { Accordion } from '@/components/ui/accordion'
 import FloatingTotal from './FloatingTotal'
 import ReceiptModal from './ReceiptModal'
-
-const workshops = [
-  { id: 'djembe', name: 'Djembe (10h - Advanced or Intermediate)', price: 150 },
-  { id: 'dance', name: 'Dance (12h)', price: 130 },
-  { id: 'balafon', name: 'Balafon (5h)', price: 60 },
-]
-
-const accommodationOptions = [
-  { value: 'tent', label: 'Tent', price: 15 },
-  { value: 'family-room', label: 'Family Room (fits 4)', price: 80, available: 6 },
-  { value: 'single-room', label: 'Single Room (fits 2)', price: 60, available: 6 },
-]
-
-const foodOptions = [
-  { value: 'full', label: 'Full catering', price: 30 },
-  { value: 'single', label: 'Single meal', price: 15 },
-]
+import { PersonalInfo } from './PersonalInfo'
+import { WorkshopSelection } from './WorkshopSelection'
+import { AccommodationSelection } from './AccommodationSelection'
+import { FoodSelection } from './FoodSelection'
+import { ChildrenTickets } from './ChildrenTickets'
+import { RegistrationFormData, workshops, accommodationOptions, foodOptions } from '@/schemas/registrationSchema'
 
 export default function RegistrationForm() {
-  const [formData, setFormData] = useState({
-    fullName: '',
-    email: '',
-    workshops: [],
-    accommodation: { type: '', nights: 0 },
-    food: { type: '', days: 0 },
-    children: { 'under-5': 0, '5-10': 0, '10-17': 0 },
-    paymentMade: false,
-  })
   const [total, setTotal] = useState(0)
   const [ibanCopied, setIbanCopied] = useState(false)
   const [roomAvailability, setRoomAvailability] = useState({
@@ -54,7 +32,10 @@ export default function RegistrationForm() {
     'single-room': 6,
   })
   const [isReceiptModalOpen, setIsReceiptModalOpen] = useState(false)
-  const [submitStatus, setSubmitStatus] = useState<'idle' | 'loading' | 'done'>('idle')
+  const [submitStatus, setSubmitStatus] = useState('idle')
+
+  const { watch, handleSubmit, formState: { errors }, setValue } = useFormContext<RegistrationFormData>()
+  const formData = watch()
 
   useEffect(() => {
     calculateTotal()
@@ -70,42 +51,18 @@ export default function RegistrationForm() {
     return () => clearTimeout(timer)
   }, [])
 
-  const handleInputChange = (e) => {
-    const { name, value, type, checked } = e.target
-    setFormData(prev => ({
-      ...prev,
-      [name]: type === 'checkbox' ? checked : value
-    }))
-  }
-
-  const handleWorkshopChange = (workshopId, checked) => {
-    setFormData(prev => ({
-      ...prev,
-      workshops: checked
-        ? [...prev.workshops, workshopId]
-        : prev.workshops.filter(id => id !== workshopId)
-    }))
-  }
-
-  const handleAccommodationChange = (type) => {
-    setFormData(prev => ({
-      ...prev,
-      accommodation: { ...prev.accommodation, type }
-    }))
-  }
-
-  const handleFoodChange = (type) => {
-    setFormData(prev => ({
-      ...prev,
-      food: { ...prev.food, type }
-    }))
-  }
-
   const calculateTotal = () => {
     let total = 0
-    formData.workshops.forEach(workshopId => {
-      const workshop = workshops.find(w => w.id === workshopId)
-      if (workshop) total += workshop.price
+    formData.workshops.forEach(workshopSelection => {
+      const workshop = workshops.find(w => w.id === workshopSelection.id)
+      if (workshop) {
+        if (workshop.levels) {
+          const level = workshop.levels.find(l => l.id === workshopSelection.level)
+          if (level) total += level.price
+        } else {
+          total += workshop.price
+        }
+      }
     })
     const selectedAccommodation = accommodationOptions.find(a => a.value === formData.accommodation.type)
     if (selectedAccommodation) total += selectedAccommodation.price * formData.accommodation.nights
@@ -117,7 +74,7 @@ export default function RegistrationForm() {
     setTotal(total)
   }
 
-  const copyToClipboard = (text) => {
+  const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text).then(() => {
       setIbanCopied(true)
       setTimeout(() => setIbanCopied(false), 2000)
@@ -126,13 +83,13 @@ export default function RegistrationForm() {
     })
   }
 
-  const handleSubmit = async () => {
-    setSubmitStatus('loading')
+  const onSubmit = async (data: RegistrationFormData) => {
+    setSubmitStatus("loading")
     // Simulating an API call
-    await new Promise(resolve => setTimeout(resolve, 2000))
-    console.log('Form submitted:', formData)
-    setSubmitStatus('done')
-    setTimeout(() => setSubmitStatus('idle'), 2000)
+    await new Promise((resolve) => setTimeout(resolve, 2000))
+    console.log("Form submitted:", data, "Total:", total)
+    setSubmitStatus("done")
+    setTimeout(() => setSubmitStatus("idle"), 2000)
   }
 
   const accommodationTotal = () => {
@@ -151,181 +108,23 @@ export default function RegistrationForm() {
           <CardTitle>Drum and Dance Workshop Registration</CardTitle>
         </CardHeader>
         <CardContent>
-          <form onSubmit={(e) => { e.preventDefault(); handleSubmit(); }} className="space-y-6">
-            <Accordion type="single" collapsible className="w-full">
-              <AccordionItem value="personal-info">
-                <AccordionTrigger>Personal Information</AccordionTrigger>
-                <AccordionContent>
-                  <div className="space-y-4">
-                    <div>
-                      <Label htmlFor="fullName" className="text-lg font-bold">Full Name</Label>
-                      <Input
-                        id="fullName"
-                        name="fullName"
-                        value={formData.fullName}
-                        onChange={handleInputChange}
-                        required
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="email" className="text-lg font-bold">Email</Label>
-                      <Input
-                        id="email"
-                        name="email"
-                        type="email"
-                        value={formData.email}
-                        onChange={handleInputChange}
-                        required
-                      />
-                    </div>
-                  </div>
-                </AccordionContent>
-              </AccordionItem>
-              <AccordionItem value="workshops">
-                <AccordionTrigger>Workshops</AccordionTrigger>
-                <AccordionContent>
-                  <div className="space-y-2">
-                    {workshops.map((workshop) => (
-                      <div key={workshop.id} className="flex items-center space-x-2 p-2">
-                        <Checkbox
-                          id={`workshop-${workshop.id}`}
-                          checked={formData.workshops.includes(workshop.id)}
-                          onCheckedChange={(checked) => handleWorkshopChange(workshop.id, checked)}
-                        />
-                        <Label htmlFor={`workshop-${workshop.id}`}>{workshop.name} - €{workshop.price}</Label>
-                      </div>
-                    ))}
-                  </div>
-                </AccordionContent>
-              </AccordionItem>
-              <AccordionItem value="accommodation">
-                <AccordionTrigger>Accommodation</AccordionTrigger>
-                <AccordionContent>
-                  <div className="space-y-4">
-                    <RadioGroup
-                      value={formData.accommodation.type}
-                      onValueChange={handleAccommodationChange}
-                      className="space-y-2"
-                    >
-                      {accommodationOptions.map((option) => (
-                        <div key={option.value} className="flex items-center space-x-2 p-2">
-                          <RadioGroupItem value={option.value} id={`accommodation-${option.value}`} />
-                          <Label htmlFor={`accommodation-${option.value}`}>
-                            {option.label} - €{option.price} per night
-                            {option.value !== 'tent' && (
-                              <span className="ml-2 text-sm text-muted-foreground">
-                                {roomAvailability[option.value]} available
-                              </span>
-                            )}
-                          </Label>
-                        </div>
-                      ))}
-                    </RadioGroup>
-                    <div>
-                      <Label htmlFor="nights">Number of nights</Label>
-                      <Input
-                        id="nights"
-                        name="nights"
-                        type="number"
-                        min="0"
-                        value={formData.accommodation.nights}
-                        onChange={(e) => setFormData(prev => ({ ...prev, accommodation: { ...prev.accommodation, nights: parseInt(e.target.value) } }))}
-                      />
-                    </div>
-                  </div>
-                </AccordionContent>
-              </AccordionItem>
-              <AccordionItem value="food">
-                <AccordionTrigger>Food</AccordionTrigger>
-                <AccordionContent>
-                  <div className="space-y-4">
-                    <Select
-                      name="food"
-                      value={formData.food.type}
-                      onValueChange={handleFoodChange}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select food option" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {foodOptions.map((option) => (
-                          <SelectItem key={option.value} value={option.value}>
-                            {option.label} (€{option.price} per day)
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <div>
-                      <Label htmlFor="days">Number of days</Label>
-                      <Input
-                        id="days"
-                        name="days"
-                        type="number"
-                        min="0"
-                        value={formData.food.days}
-                        onChange={(e) => setFormData(prev => ({ ...prev, food: { ...prev.food, days: parseInt(e.target.value) } }))}
-                      />
-                    </div>
-                  </div>
-                </AccordionContent>
-              </AccordionItem>
-              <AccordionItem value="children-tickets">
-                <AccordionTrigger>Children Tickets</AccordionTrigger>
-                <AccordionContent>
-                  <div className="flex items-center space-y-2">
-                    <div className="flex-1 space-y-2 items-center">
-                      <p>Under 5 (free)</p>
-                      <p>5-10 years old (€50 each)</p>
-                      <p>10-17 years old (€80 each)</p>
-                    </div>
-                    <div className="w-24 space-y-2">
-                      <Input
-                        id="children-under-5"
-                        name="children.under-5"
-                        type="number"
-                        min="0"
-                        value={formData.children['under-5'] || 0}
-                        onChange={(e) => setFormData(prev => ({ ...prev, children: { ...prev.children, 'under-5': parseInt(e.target.value) } }))}
-                      />
-                      <Input
-                        id="children-5-10"
-                        name="children.5-10"
-                        type="number"
-                        min="0"
-                        value={formData.children['5-10']}
-                        onChange={(e) => setFormData(prev => ({ ...prev, children: { ...prev.children, '5-10': parseInt(e.target.value) } }))}
-                      />
-                      <Input
-                        id="children-10-17"
-                        name="children.10-17"
-                        type="number"
-                        min="0"
-                        value={formData.children['10-17']}
-                        onChange={(e) => setFormData(prev => ({ ...prev, children: { ...prev.children, '10-17': parseInt(e.target.value) } }))}
-                      />
-                    </div>
-                  </div>
-                </AccordionContent>
-              </AccordionItem>
-            </Accordion>
-            <div className="flex items-center space-x-2">
-              <Checkbox
-                id="paymentMade"
-                name="paymentMade"
-                checked={formData.paymentMade}
-                onCheckedChange={(checked) => setFormData(prev => ({ ...prev, paymentMade: checked }))}
-              />
-              <Label htmlFor="paymentMade">Payment Made</Label>
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+            <div className="md:hidden">
+              <Accordion type="single" collapsible className="w-full">
+                <PersonalInfo />
+                <WorkshopSelection />
+                <AccommodationSelection />
+                <FoodSelection />
+                <ChildrenTickets />
+              </Accordion>
             </div>
-            <Button
-              type="submit"
-              disabled={!formData.paymentMade || submitStatus !== 'idle'}
-              className="w-full md:w-auto"
-            >
-              {submitStatus === 'loading' && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              {submitStatus === 'done' && <Check className="mr-2 h-4 w-4" />}
-              {submitStatus === 'idle' ? 'Submit Registration' : submitStatus === 'loading' ? 'Submitting...' : 'Done'}
-            </Button>
+            <div className="hidden md:block space-y-6">
+              <PersonalInfo />
+              <WorkshopSelection />
+              <AccommodationSelection />
+              <FoodSelection />
+              <ChildrenTickets />
+            </div>
           </form>
         </CardContent>
       </Card>
@@ -341,9 +140,25 @@ export default function RegistrationForm() {
             <div>
               <strong>Workshops:</strong>
               <ul>
-                {formData.workshops.map(workshopId => {
-                  const workshop = workshops.find(w => w.id === workshopId)
-                  return workshop ? <li key={workshop.id}>{workshop.name} - €{workshop.price}</li> : null
+                {formData.workshops.map(workshopSelection => {
+                  const workshop = workshops.find(w => w.id === workshopSelection.id)
+                  if (workshop) {
+                    if (workshop.levels) {
+                      const level = workshop.levels.find(l => l.id === workshopSelection.level)
+                      return level ? (
+                        <li key={`${workshop.id}-${level.id}`}>
+                          {workshop.name} ({level.name}) - €{level.price}
+                        </li>
+                      ) : null
+                    } else {
+                      return (
+                        <li key={workshop.id}>
+                          {workshop.name} - €{workshop.price}
+                        </li>
+                      )
+                    }
+                  }
+                  return null
                 })}
               </ul>
             </div>
@@ -399,13 +214,37 @@ export default function RegistrationForm() {
               </p>
             </div>
           </div>
-          <div className="mt-4">
-            <Button onClick={handleDownloadReceipt}>Download Receipt</Button>
+          <div className="flex items-center space-x-2 my-4">
+            <Checkbox
+              id="paymentMade"
+              checked={formData.paymentMade}
+              onCheckedChange={(checked) => {
+                if (typeof checked === 'boolean') {
+                  setValue('paymentMade', checked)
+                }
+              }}
+            />
+            <Label htmlFor="paymentMade">I have read the instructions and made the payment</Label>
+          </div>
+          <div className="mt-4 flex gap-4">
+            <Button variant="outline" onClick={handleDownloadReceipt} className="flex-1">
+              <Download className="mr-2 h-4 w-4" />
+              Download Receipt
+            </Button>
+            <Button
+              onClick={handleSubmit(onSubmit)}
+              disabled={!formData.paymentMade || submitStatus !== 'idle'}
+              className="flex-1"
+            >
+              {submitStatus === 'loading' && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              {submitStatus === 'done' && <Check className="mr-2 h-4 w-4" />}
+              {submitStatus === 'idle' ? 'Submit' : submitStatus === 'loading' ? 'Submitting...' : 'Done'}
+            </Button>
           </div>
         </CardContent>
       </Card>
 
-      <FloatingTotal total={total} onViewReceipt={() => setIsReceiptModalOpen(true)} />
+      <FloatingTotal total={total} onContinue={() => setIsReceiptModalOpen(true)} />
       <ReceiptModal
         isOpen={isReceiptModalOpen}
         onClose={() => setIsReceiptModalOpen(false)}
@@ -416,7 +255,7 @@ export default function RegistrationForm() {
         foodOptions={foodOptions}
         accommodationTotal={accommodationTotal}
         onDownloadReceipt={handleDownloadReceipt}
-        onSubmit={handleSubmit}
+        onSubmit={handleSubmit(onSubmit)}
       />
     </div>
   )

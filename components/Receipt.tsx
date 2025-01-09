@@ -3,16 +3,21 @@
 import { useState } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Copy, Check } from 'lucide-react'
+import { Copy, Check, Download, Loader2 } from 'lucide-react'
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
+import { Checkbox } from '@/components/ui/checkbox'
+import { Label } from '@/components/ui/label'
+
 
 export default function Receipt() {
   const [ibanCopied, setIbanCopied] = useState(false)
+  const [paymentMade, setPaymentMade] = useState(false)
+  const [submitStatus, setSubmitStatus] = useState<'idle' | 'loading' | 'done'>('idle')
 
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text).then(() => {
@@ -22,6 +27,21 @@ export default function Receipt() {
       console.error('Could not copy text: ', err)
     })
   }
+
+  const handleSubmit = async () => {
+    setSubmitStatus('loading')
+    // Simulating an API call
+    await new Promise(resolve => setTimeout(resolve, 2000))
+    setSubmitStatus('done')
+    console.log('Form submitted:', formData)
+    setTimeout(() => setSubmitStatus('idle'), 2000)
+  }
+
+  const onDownloadReceipt = () => {
+    // Implement download logic here
+    console.log("Download Receipt Clicked");
+  }
+
 
   // This would be updated in real-time based on the form data
   const formData = {
@@ -122,6 +142,31 @@ export default function Receipt() {
           <p className="mt-4">
             The remaining amount of €{total - 100} is to be paid in cash at the venue.
           </p>
+        </div>
+        <div className="mt-6 space-y-4">
+          <div className="flex items-center space-x-2">
+            <Checkbox
+              id="paymentMade"
+              checked={paymentMade}
+              onCheckedChange={(checked: boolean) => setPaymentMade(checked)}
+            />
+            <Label htmlFor="paymentMade">Payment Made</Label>
+          </div>
+          <div className="flex gap-4">
+            <Button variant="outline" onClick={onDownloadReceipt} className="flex-1">
+              <Download className="mr-2 h-4 w-4" />
+              Download Receipt
+            </Button>
+            <Button
+              onClick={handleSubmit}
+              disabled={!paymentMade || submitStatus !== 'idle'}
+              className="flex-1"
+            >
+              {submitStatus === 'loading' && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              {submitStatus === 'done' && <Check className="mr-2 h-4 w-4" />}
+              {submitStatus === 'idle' ? 'Submit' : submitStatus === 'loading' ? 'Submitting...' : 'Done'}
+            </Button>
+          </div>
         </div>
       </CardContent>
     </Card>

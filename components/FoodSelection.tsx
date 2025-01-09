@@ -1,46 +1,73 @@
-import { useState } from 'react'
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
-import { Label } from '@/components/ui/label'
-import { Input } from '@/components/ui/input'
+import { useFormContext } from "react-hook-form";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { RegistrationFormData, foodOptions } from "@/schemas/registrationSchema";
+import { AccordionItem, AccordionTrigger, AccordionContent, Accordion } from "@/components/ui/accordion";
 
-export default function FoodSelection({ updateFormData }: { updateFormData: (section: string, data: any) => void }) {
-  const [foodType, setFoodType] = useState<string>('')
-  const [days, setDays] = useState<number>(0)
+export function FoodSelection() {
+  const {
+    register,
+    formState: { errors },
+    watch,
+  } = useFormContext<RegistrationFormData>();
 
-  const handleFoodChange = (value: string) => {
-    setFoodType(value)
-    updateFormData('food', { type: value, days })
-  }
+  const foodType = watch("food.type");
 
-  const handleDaysChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const daysValue = parseInt(e.target.value)
-    setDays(daysValue)
-    updateFormData('food', { type: foodType, days: daysValue })
-  }
-
-  return (
+  const content = (
     <div className="space-y-4">
-      <RadioGroup onValueChange={handleFoodChange}>
-        <div className="flex items-center space-x-2">
-          <RadioGroupItem value="full" id="full" />
-          <Label htmlFor="full">Full catering (€30 per day)</Label>
-        </div>
-        <div className="flex items-center space-x-2">
-          <RadioGroupItem value="single" id="single" />
-          <Label htmlFor="single">Single meal (€15 per day)</Label>
-        </div>
-      </RadioGroup>
-      <div>
+      <Label className="text-lg font-bold">Food</Label>
+      <Select
+        {...register("food.type")}
+        value={foodType}
+      >
+        <SelectTrigger>
+          <SelectValue placeholder="Select food option" />
+        </SelectTrigger>
+        <SelectContent>
+          {foodOptions.map((option) => (
+            <SelectItem key={option.value} value={option.value}>
+              {option.label} (€{option.price} per day)
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+      {errors.food?.type && (
+        <p className="text-red-500 text-sm mt-1">{errors.food.type.message}</p>
+      )}
+      <div className="mt-2">
         <Label htmlFor="days">Number of days</Label>
         <Input
           id="days"
           type="number"
-          min="0"
-          value={days}
-          onChange={handleDaysChange}
+          min="1"
+          max="5"
+          {...register("food.days", { valueAsNumber: true })}
+          className={errors.food?.days ? "border-red-500" : ""}
         />
+        {errors.food?.days && (
+          <p className="text-red-500 text-sm mt-1">{errors.food.days.message}</p>
+        )}
       </div>
     </div>
-  )
+  );
+
+  return (
+    <>
+      <div className="hidden md:block">{content}</div>
+      <Accordion type="single" collapsible className="md:hidden">
+        <AccordionItem value="food">
+          <AccordionTrigger>Food</AccordionTrigger>
+          <AccordionContent>{content}</AccordionContent>
+        </AccordionItem>
+      </Accordion>
+    </>
+  );
 }
 

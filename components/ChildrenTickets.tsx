@@ -2,6 +2,7 @@ import { useFormContext } from "react-hook-form";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { RegistrationFormData } from "@/schemas/registrationSchema";
+import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";
 
 export function ChildrenTickets() {
   const {
@@ -9,7 +10,7 @@ export function ChildrenTickets() {
     formState: { errors },
   } = useFormContext<RegistrationFormData>();
 
-  return (
+  const content = (
     <div>
       <Label className="text-lg font-bold">Children Tickets</Label>
       <div className="flex items-center space-y-2 mt-2">
@@ -47,6 +48,18 @@ export function ChildrenTickets() {
         </p>
       )}
     </div>
+  );
+
+  return (
+    <>
+      <div className="hidden md:block">{content}</div>
+      <Accordion type="single" collapsible className="md:hidden">
+        <AccordionItem value="children-tickets">
+          <AccordionTrigger>Children Tickets</AccordionTrigger>
+          <AccordionContent>{content}</AccordionContent>
+        </AccordionItem>
+      </Accordion>
+    </>
   );
 }
 

@@ -1,58 +1,88 @@
-import { useState } from 'react'
-import { Checkbox } from '@/components/ui/checkbox'
-import { Label } from '@/components/ui/label'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { useFormContext } from "react-hook-form";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { RegistrationFormData, workshops } from "@/schemas/registrationSchema";
+import { AccordionItem, AccordionTrigger, AccordionContent, Accordion } from "@/components/ui/accordion";
 
-const workshops = [
-  { name: 'Djembe', duration: '10h', price: 150, levels: ['Advanced', 'Intermediate'] },
-  { name: 'Dance', duration: '12h', price: 130 },
-  { name: 'Balafon', duration: '5h', price: 60 },
-]
+export function WorkshopSelection() {
+  const {
+    formState: { errors },
+    watch,
+    setValue,
+  } = useFormContext<RegistrationFormData>();
 
-export default function WorkshopSelection({ updateFormData }: { updateFormData: (section: string, data: any) => void }) {
-  const [selectedWorkshops, setSelectedWorkshops] = useState<string[]>([])
-  const [djembeLevel, setDjembeLevel] = useState<string>('')
+  const selectedWorkshops = watch("workshops");
 
-  const handleWorkshopChange = (workshopName: string, checked: boolean) => {
-    const updatedWorkshops = checked
-      ? [...selectedWorkshops, workshopName]
-      : selectedWorkshops.filter(w => w !== workshopName)
-    setSelectedWorkshops(updatedWorkshops)
-    updateFormData('workshops', updatedWorkshops)
-  }
+  const handleWorkshopChange = (workshopId: string, checked: boolean, level?: string) => {
+    let updatedWorkshops = [...selectedWorkshops];
+    if (checked) {
+      if (level) {
+        updatedWorkshops = updatedWorkshops.filter(w => w.id !== workshopId);
+        updatedWorkshops.push({ id: workshopId, level });
+      } else if (!updatedWorkshops.some(w => w.id === workshopId)) {
+        updatedWorkshops.push({ id: workshopId });
+      }
+    } else {
+      updatedWorkshops = updatedWorkshops.filter(w => w.id !== workshopId);
+    }
+    setValue("workshops", updatedWorkshops, { shouldValidate: true });
+  };
 
-  const handleDjembeLevelChange = (level: string) => {
-    setDjembeLevel(level)
-    updateFormData('djembeLevel', level)
-  }
+  const content = (
+    <div>
+      <Label className="text-lg font-bold">Workshops</Label>
+      <div className="space-y-4 mt-2">
+        {workshops.map((workshop) => (
+          <div key={workshop.id} className="space-y-2">
+            {workshop.levels ? (
+              <div>
+                <Label>{workshop.name}</Label>
+                <RadioGroup
+                  onValueChange={(value) => handleWorkshopChange(workshop.id, true, value)}
+                  value={selectedWorkshops.find(w => w.id === workshop.id)?.level || ""}
+                >
+                  {workshop.levels.map((level) => (
+                    <div key={level.id} className="flex items-center space-x-2">
+                      <RadioGroupItem value={level.id} id={`workshop-${workshop.id}-${level.id}`} />
+                      <Label htmlFor={`workshop-${workshop.id}-${level.id}`}>
+                        {level.name} - €{level.price}
+                      </Label>
+                    </div>
+                  ))}
+                </RadioGroup>
+              </div>
+            ) : (
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id={`workshop-${workshop.id}`}
+                  checked={selectedWorkshops.some(w => w.id === workshop.id)}
+                  onCheckedChange={(checked) => handleWorkshopChange(workshop.id, checked as boolean)}
+                />
+                <Label htmlFor={`workshop-${workshop.id}`}>
+                  {workshop.name} - €{workshop.price}
+                </Label>
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+      {errors.workshops && (
+        <p className="text-red-500 text-sm mt-1">{errors.workshops.message}</p>
+      )}
+    </div>
+  );
 
   return (
-    <div className="space-y-4">
-      {workshops.map((workshop) => (
-        <div key={workshop.name} className="flex items-center space-x-2">
-          <Checkbox
-            id={workshop.name}
-            checked={selectedWorkshops.includes(workshop.name)}
-            onCheckedChange={(checked) => handleWorkshopChange(workshop.name, checked as boolean)}
-          />
-          <Label htmlFor={workshop.name}>
-            {workshop.name} ({workshop.duration} - €{workshop.price})
-          </Label>
-          {workshop.name === 'Djembe' && selectedWorkshops.includes('Djembe') && (
-            <Select onValueChange={handleDjembeLevelChange}>
-              <SelectTrigger className="w-[180px]">
-                <SelectValue placeholder="Select level" />
-              </SelectTrigger>
-              <SelectContent>
-                {workshop.levels?.map((level) => (
-                  <SelectItem key={level} value={level}>{level}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          )}
-        </div>
-      ))}
-    </div>
-  )
+    <>
+      <div className="hidden md:block">{content}</div>
+      <Accordion type="single" collapsible className="md:hidden">
+        <AccordionItem value="workshops">
+          <AccordionTrigger>Workshops</AccordionTrigger>
+          <AccordionContent>{content}</AccordionContent>
+        </AccordionItem>
+      </Accordion>
+    </>
+  );
 }
 
