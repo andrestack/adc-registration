@@ -108,7 +108,7 @@ export default function ReceiptModal({
                 checked={paymentMade}
                 onCheckedChange={(checked: boolean) => setPaymentMade(checked)}
               />
-              <Label htmlFor="paymentMade">Payment Made</Label>
+              <Label htmlFor="paymentMade">Li as instruções e efectuei pagamento</Label>
             </div>
             <div className="flex justify-between gap-4">
               <Button variant="outline" onClick={onDownloadReceipt} className="flex-1">

@@ -8,8 +8,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { RegistrationFormData, foodOptions } from "@/schemas/registrationSchema";
-import { AccordionItem, AccordionTrigger, AccordionContent, Accordion } from "@/components/ui/accordion";
+import {
+  RegistrationFormData,
+  foodOptions,
+} from "@/schemas/registrationSchema";
+import {
+  AccordionItem,
+  AccordionTrigger,
+  AccordionContent,
+  Accordion,
+} from "@/components/ui/accordion";
 
 export function FoodSelection() {
   const {
@@ -23,10 +31,7 @@ export function FoodSelection() {
   const content = (
     <div className="space-y-4">
       <Label className="text-lg font-bold">Food</Label>
-      <Select
-        {...register("food.type")}
-        value={foodType}
-      >
+      <Select {...register("food.type", { required: false })} value={foodType}>
         <SelectTrigger>
           <SelectValue placeholder="Select food option" />
         </SelectTrigger>
@@ -46,13 +51,14 @@ export function FoodSelection() {
         <Input
           id="days"
           type="number"
-          min="1"
           max="5"
-          {...register("food.days", { valueAsNumber: true })}
+          {...register("food.days", { valueAsNumber: true, required: false })}
           className={errors.food?.days ? "border-red-500" : ""}
         />
         {errors.food?.days && (
-          <p className="text-red-500 text-sm mt-1">{errors.food.days.message}</p>
+          <p className="text-red-500 text-sm mt-1">
+            {errors.food.days.message}
+          </p>
         )}
       </div>
     </div>
@@ -70,4 +76,3 @@ export function FoodSelection() {
     </>
   );
 }
-
