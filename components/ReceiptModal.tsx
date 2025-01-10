@@ -51,7 +51,7 @@ export default function ReceiptModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[425px] h-[calc(100vh-2rem)] sm:h-auto my-4 mx-4 overflow-y-auto">
+      <DialogContent className="sm:max-w-[425px] h-[calc(100vh-2rem)] sm:h-auto overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Registration Receipt</DialogTitle>
         </DialogHeader>

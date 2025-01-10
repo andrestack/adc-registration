@@ -48,7 +48,7 @@ export function PersonalInfo() {
       <div className="hidden md:block">{content}</div>
       <Accordion type="single" collapsible className="md:hidden">
         <AccordionItem value="personal-info">
-          <AccordionTrigger>Personal Information</AccordionTrigger>
+          <AccordionTrigger className="text-md font-bold">Nome & Email</AccordionTrigger>
           <AccordionContent>{content}</AccordionContent>
         </AccordionItem>
       </Accordion>

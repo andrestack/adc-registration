@@ -12,9 +12,11 @@ import {
   AccordionTrigger,
   AccordionContent,
 } from "@/components/ui/accordion";
-// import { useEffect, useState } from "react";
+import { useMediaQuery } from "@/hooks/use-media-query";
 
 export function AccommodationSelection() {
+  const isMobile = useMediaQuery("(max-width: 768px)");
+
   const {
     register,
     formState: { errors },
@@ -47,7 +49,9 @@ export function AccommodationSelection() {
 
   const content = (
     <div className="space-y-4">
-      <Label className="text-lg font-bold">Alojamento / Accommodation</Label>
+      {!isMobile && (
+        <Label className="text-lg font-bold">Alojamento / Accommodation</Label>
+      )}
       <RadioGroup
         value={accommodationType}
         onValueChange={handleAccommodationChange}
@@ -97,7 +101,7 @@ export function AccommodationSelection() {
       <div className="hidden md:block">{content}</div>
       <Accordion type="single" collapsible className="md:hidden">
         <AccordionItem value="accommodation">
-          <AccordionTrigger>Accommodation</AccordionTrigger>
+          <AccordionTrigger className="text-md font-bold">Alojamento / Accommodation</AccordionTrigger>
           <AccordionContent>{content}</AccordionContent>
         </AccordionItem>
       </Accordion>

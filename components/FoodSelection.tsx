@@ -18,8 +18,11 @@ import {
   AccordionContent,
   Accordion,
 } from "@/components/ui/accordion";
+import { useMediaQuery } from "@/hooks/use-media-query";
 
 export function FoodSelection() {
+  const isMobile = useMediaQuery("(max-width: 768px)");
+
   const {
     register,
     formState: { errors },
@@ -30,7 +33,9 @@ export function FoodSelection() {
 
   const content = (
     <div className="space-y-4">
-      <Label className="text-lg font-bold">Comida / Food</Label>
+      {!isMobile && (
+        <Label className="text-lg font-bold">Comida / Food</Label>
+      )}
       <Select {...register("food.type")} value={foodType}>
         <SelectTrigger>
           <SelectValue placeholder="Select food option" />
@@ -76,7 +81,7 @@ export function FoodSelection() {
       <div className="hidden md:block">{content}</div>
       <Accordion type="single" collapsible className="md:hidden">
         <AccordionItem value="food">
-          <AccordionTrigger>Food</AccordionTrigger>
+          <AccordionTrigger className="text-md font-bold">Comida / Food</AccordionTrigger>
           <AccordionContent>{content}</AccordionContent>
         </AccordionItem>
       </Accordion>

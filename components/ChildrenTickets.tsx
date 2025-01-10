@@ -9,8 +9,11 @@ import {
   AccordionContent,
 } from "@/components/ui/accordion";
 import { FieldErrors } from "react-hook-form";
+import { useMediaQuery } from "@/hooks/use-media-query";
 
 export function ChildrenTickets() {
+  const isMobile = useMediaQuery("(max-width: 768px)");
+
   const {
     register,
     formState: { errors },
@@ -18,9 +21,11 @@ export function ChildrenTickets() {
 
   const content = (
     <div>
-      <Label className="text-lg font-bold">Crianças / Children</Label>
+      {!isMobile && (
+        <Label className="text-lg font-bold">Crianças / Children</Label>
+      )}
       <div className="flex items-center space-y-2 mt-2">
-        <div className="flex-1 space-y-2 items-center">
+        <div className="flex-1 space-y-6 items-center">
           <p>0-5 anos (free)</p>
           <p>5-10 anos (€50)</p>
           <p>10-17 anos (€80)</p>
@@ -61,7 +66,7 @@ export function ChildrenTickets() {
       <div className="hidden md:block">{content}</div>
       <Accordion type="single" collapsible className="md:hidden">
         <AccordionItem value="children-tickets">
-          <AccordionTrigger>Children Tickets</AccordionTrigger>
+          <AccordionTrigger className="text-md font-bold">Crianças / Children</AccordionTrigger>
           <AccordionContent>{content}</AccordionContent>
         </AccordionItem>
       </Accordion>

@@ -3,7 +3,7 @@ import Image from 'next/image'
 export default function Home() {
   return (
     <main className="container mx-auto py-6 min-h-screen" style={{ background: 'linear-gradient(to top, #c5d556, #ffffff)' }}>
-      <div className="flex justify-start place-items-center">
+      <div className="flex justify-center items-center">
         <Image
           src="/images/ADC_logo_no_bg.png"
           alt="ADC Logo"
