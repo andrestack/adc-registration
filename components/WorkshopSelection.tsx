@@ -2,7 +2,7 @@ import { useFormContext } from "react-hook-form";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { RegistrationFormData, workshops } from "@/schemas/registrationSchema";
+import { RegistrationFormData, workshops, Workshop } from "@/schemas/registrationSchema";
 import { AccordionItem, AccordionTrigger, AccordionContent, Accordion } from "@/components/ui/accordion";
 
 export function WorkshopSelection() {
@@ -33,7 +33,7 @@ export function WorkshopSelection() {
     <div>
       <Label className="text-lg font-bold">Workshops</Label>
       <div className="space-y-4 mt-2">
-        {workshops.map((workshop) => (
+        {workshops.map((workshop: Workshop) => (
           <div key={workshop.id} className="space-y-2">
             {workshop.levels ? (
               <div>
@@ -85,4 +85,3 @@ export function WorkshopSelection() {
     </>
   );
 }
-

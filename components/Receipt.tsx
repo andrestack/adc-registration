@@ -1,6 +1,5 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-
 import {
   Tooltip,
   TooltipContent,
@@ -13,6 +12,7 @@ import {
   workshops,
   accommodationOptions,
   foodOptions,
+  Workshop,
 } from "@/schemas/registrationSchema";
 
 interface ReceiptProps {
@@ -36,12 +36,12 @@ export function Receipt({
   return (
     <Card className="flex-1">
       <CardHeader>
-        <CardTitle>Registration Receipt</CardTitle>
+        <CardTitle>Recibo / Receipt</CardTitle>
       </CardHeader>
       <CardContent>
         <div id="registration-receipt" className="space-y-4">
           <p>
-            <strong>Name:</strong> {formData.fullName}
+            <strong>Nome Completo:</strong> {formData.fullName}
           </p>
           <p>
             <strong>Email:</strong> {formData.email}
@@ -51,7 +51,7 @@ export function Receipt({
             <ul>
               {formData.workshops.map((workshopSelection) => {
                 const workshop = workshops.find(
-                  (w) => w.id === workshopSelection.id
+                  (w: Workshop) => w.id === workshopSelection.id
                 );
                 if (workshop) {
                   if (workshop.levels) {
@@ -63,7 +63,7 @@ export function Receipt({
                         {workshop.name} ({level.name}) - €{level.price}
                       </li>
                     ) : null;
-                  } else {
+                  } else if (workshop.price) {
                     return (
                       <li key={workshop.id}>
                         {workshop.name} - €{workshop.price}
@@ -76,7 +76,7 @@ export function Receipt({
             </ul>
           </div>
           <p>
-            <strong>Accommodation:</strong>{" "}
+            <strong>Alojamento:</strong>{" "}
             {
               accommodationOptions.find(
                 (a) => a.value === formData.accommodation.type
@@ -89,14 +89,14 @@ export function Receipt({
             ({formData.accommodation.nights} nights)
           </p>
           <p>
-            <strong>Food:</strong>{" "}
+            <strong>Comida:</strong>{" "}
             {foodOptions.find((f) => f.value === formData.food.type)?.label} - €
             {(foodOptions.find((f) => f.value === formData.food.type)?.price ||
               0) * formData.food.days}{" "}
             ({formData.food.days} days)
           </p>
           <p>
-            <strong>Children Tickets:</strong>
+            <strong>Crianças / Children Tickets:</strong>
           </p>
           <ul>
             <li>
@@ -115,8 +115,9 @@ export function Receipt({
           <p className="text-xl font-bold">Total: €{total}</p>
 
           <div className="mt-6 p-4 bg-gray-100 rounded">
-            <p className="font-semibold">Payment Instructions:</p>
-            <p>Please transfer the following amount to confirm your booking:</p>
+            <p className="font-semibold">Instruções / Instructions:</p>
+            <p>Por favor transfira o seguinte valor para confirmar a sua inscrição:</p>
+            <p className="italic">Please transfer the following amount to confirm your booking:</p>
             <p className="font-bold">
               €
               {100 +
