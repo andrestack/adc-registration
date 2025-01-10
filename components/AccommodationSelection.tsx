@@ -47,7 +47,7 @@ export function AccommodationSelection() {
 
   const content = (
     <div className="space-y-4">
-      <Label className="text-lg font-bold">Accommodation</Label>
+      <Label className="text-lg font-bold">Alojamento / Accommodation</Label>
       <RadioGroup
         value={accommodationType}
         onValueChange={handleAccommodationChange}
@@ -74,7 +74,7 @@ export function AccommodationSelection() {
         </p>
       )}
       <div className="mt-2">
-        <Label htmlFor="nights">Number of nights</Label>
+        <Label htmlFor="nights">Número de noites / Number of nights</Label>
         <Input
           id="nights"
           type="number"

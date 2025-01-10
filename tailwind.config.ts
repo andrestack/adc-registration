@@ -10,6 +10,7 @@ const config: Config = {
   theme: {
   	extend: {
   		colors: {
+			"adc-green": "#c5d556",
   			background: 'hsl(var(--background))',
   			foreground: 'hsl(var(--foreground))',
   			card: {
@@ -85,6 +86,9 @@ const config: Config = {
   		}
   	}
   },
-  plugins: [import("tailwindcss-animate")],
+  
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  plugins: [require("tailwindcss-animate")],
 };
 export default config;
+

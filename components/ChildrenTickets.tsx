@@ -2,8 +2,13 @@ import { useFormContext } from "react-hook-form";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { RegistrationFormData } from "@/schemas/registrationSchema";
-import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";
-
+import {
+  Accordion,
+  AccordionItem,
+  AccordionTrigger,
+  AccordionContent,
+} from "@/components/ui/accordion";
+import { FieldErrors } from "react-hook-form";
 
 export function ChildrenTickets() {
   const {
@@ -13,12 +18,12 @@ export function ChildrenTickets() {
 
   const content = (
     <div>
-      <Label className="text-lg font-bold">Children Tickets</Label>
+      <Label className="text-lg font-bold">Crianças / Children</Label>
       <div className="flex items-center space-y-2 mt-2">
         <div className="flex-1 space-y-2 items-center">
-          <p>Under 5 (free)</p>
-          <p>5-10 years old (€50 each)</p>
-          <p>10-17 years old (€80 each)</p>
+          <p>0-5 anos (free)</p>
+          <p>5-10 anos (€50)</p>
+          <p>10-17 anos (€80)</p>
         </div>
         <div className="w-24 space-y-2">
           <Input
@@ -43,8 +48,8 @@ export function ChildrenTickets() {
       </div>
       {errors.children && (
         <p className="text-red-500 text-sm mt-1">
-          {Object.values(errors.children)
-            .map((error) => error?.message)
+          {Object.values(errors.children as FieldErrors)
+            .map((error) => error?.message as string)
             .join(", ")}
         </p>
       )}
@@ -63,4 +68,3 @@ export function ChildrenTickets() {
     </>
   );
 }
-

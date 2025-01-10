@@ -30,8 +30,8 @@ export function FoodSelection() {
 
   const content = (
     <div className="space-y-4">
-      <Label className="text-lg font-bold">Food</Label>
-      <Select {...register("food.type", { required: false })} value={foodType}>
+      <Label className="text-lg font-bold">Comida / Food</Label>
+      <Select {...register("food.type")} value={foodType}>
         <SelectTrigger>
           <SelectValue placeholder="Select food option" />
         </SelectTrigger>
@@ -44,20 +44,27 @@ export function FoodSelection() {
         </SelectContent>
       </Select>
       {errors.food?.type && (
-        <p className="text-red-500 text-sm mt-1">{errors.food.type.message}</p>
+        <p className="text-red-500 text-sm mt-1">
+          {typeof errors.food.type === "string"
+            ? errors.food.type
+            : errors.food.type.message || "Invalid food type"}
+        </p>
       )}
       <div className="mt-2">
-        <Label htmlFor="days">Number of days</Label>
+        <Label htmlFor="days">Número de dias / Number of days</Label>
         <Input
           id="days"
           type="number"
+          min="1"
           max="5"
-          {...register("food.days", { valueAsNumber: true, required: false })}
+          {...register("food.days", { valueAsNumber: true })}
           className={errors.food?.days ? "border-red-500" : ""}
         />
         {errors.food?.days && (
           <p className="text-red-500 text-sm mt-1">
-            {errors.food.days.message}
+            {typeof errors.food.days === "string"
+              ? errors.food.days
+              : errors.food.days.message || "Invalid number of days"}
           </p>
         )}
       </div>

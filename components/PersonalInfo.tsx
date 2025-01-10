@@ -15,7 +15,7 @@ export function PersonalInfo() {
     <div className="space-y-4">
       <div>
         <Label htmlFor="fullName" className="text-lg font-bold">
-          Full Name
+          Nome Completo / Full Name
         </Label>
         <Input
           id="fullName"
