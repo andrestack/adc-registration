@@ -13,7 +13,7 @@ const geistMono = localFont({
   weight: "100 900",
 });
 const gardaEmpty = localFont({
-  src: "./fonts/GardaEmpty.woff",
+  src: "./fonts/Gardaempty.woff",
   variable: "--font-garda-empty",
   weight: "100 900",
 });
