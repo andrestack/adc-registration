@@ -3,16 +3,12 @@ import * as z from "zod";
 // const workshopSchema = z.object({
 //   id: z.string(),
 //   name: z.string(),
-//   price: z.number(),
-//   levels: z
-//     .array(
-//       z.object({
-//         id: z.string(),
-//         name: z.string(),
-//         price: z.number(),
-//       })
-//     )
-//     .optional(),
+//   price: z.number().optional(),
+//   levels: z.array(z.object({
+//     id: z.string(),
+//     name: z.string(),
+//     price: z.number(),
+//   })).optional(),
 // });
 
 export const registrationSchema = z.object({
@@ -60,7 +56,14 @@ export const registrationSchema = z.object({
 
 export type RegistrationFormData = z.infer<typeof registrationSchema>;
 
-export const workshops = [
+export type Workshop = {
+  id: string;
+  name: string;
+  price?: number;
+  levels?: Array<{ id: string; name: string; price: number }>;
+};
+
+export const workshops: Workshop[] = [
   {
     id: "djembe",
     name: "Djembe (10h)",
@@ -71,7 +74,7 @@ export const workshops = [
   },
   { id: "dance", name: "Dance (12h)", price: 130 },
   { id: "balafon", name: "Balafon (5h)", price: 60 },
-] as const;
+];
 
 export const accommodationOptions = [
   { value: "tent", label: "Tenda", price: 15 },
