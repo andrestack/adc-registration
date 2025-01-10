@@ -1,21 +1,19 @@
-
-import { useMediaQuery as useMediaQueryHook } from "@uidotdev/usehooks";
+import { useState, useEffect } from "react";
 
 export function useMediaQuery(query) {
-  return useMediaQueryHook(query);
-}
+    const [matches, setMatches] = useState(false);
 
-export function useResponsive() {
-  const isSmallDevice = useMediaQueryHook("only screen and (max-width : 768px)");
-  const isMediumDevice = useMediaQueryHook(
-    "only screen and (min-width : 769px) and (max-width : 992px)"
-  );
-  const isLargeDevice = useMediaQueryHook(
-    "only screen and (min-width : 993px) and (max-width : 1200px)"
-  );
-  const isExtraLargeDevice = useMediaQueryHook(
-    "only screen and (min-width : 1201px)"
-  );
+    useEffect(() => {
+        if (typeof window === "undefined") return;
 
-  return { isSmallDevice, isMediumDevice, isLargeDevice, isExtraLargeDevice };
+        const media = window.matchMedia(query);
+        const listener = () => setMatches(media.matches);
+
+        listener(); // Set initial value
+        media.addEventListener("change", listener);
+
+        return () => media.removeEventListener("change", listener);
+    }, [query]);
+
+    return matches;
 }
