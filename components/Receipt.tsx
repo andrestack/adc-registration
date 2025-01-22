@@ -126,9 +126,9 @@ export function Receipt({
                   : 0)}
             </p>
             <p className="text-sm">
-              (€100 registration fee{" "}
+              (€100 taxa de inscrição / registration fee{" "}
               {formData.accommodation.type.includes("room") &&
-                `+ €${accommodationTotal()} for accommodation`}
+                `+ €${accommodationTotal()} para o alojamento`}
               )
             </p>
             <div className="mt-2 flex items-center">
@@ -155,20 +155,20 @@ export function Receipt({
               </TooltipProvider>
             </div>
             <p>
-              Bank: Example Bank
+              Banco: Example Bank
               <br />
               BIC: EXAMPLEXXX
               <br />
-              Reference: Your Name - Drum and Dance Workshop
+              Referencia / Reference: Nome + ADC2025
             </p>
             <p className="mt-4">
-              The remaining amount of €
+              Os restantes / The remaining amount of €
               {total -
                 100 -
                 (formData.accommodation.type.includes("room")
                   ? accommodationTotal()
                   : 0)}{" "}
-              is to be paid in cash at the venue.
+              devem ser pagos em dinheiro no local / to be paid in cash at the venue.
             </p>
           </div>
         </div>

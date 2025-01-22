@@ -137,20 +137,20 @@ export default function ReceiptModal({
             <p>
               IBAN: DE89 3704 0044 0532 0130 00
               <br />
-              Bank: Example Bank
+              Banco: Example Bank
               <br />
               BIC: EXAMPLEXXX
               <br />
-              Reference: Your Name - Drum and Dance Workshop
+              Referencia / Reference: Nome + ADC2025
             </p>
             <p className="mt-4">
-              The remaining amount of €
+              Os restantes / The remaining amount of €
               {total -
                 100 -
                 (formData.accommodation.type.includes("room")
                   ? accommodationTotal()
                   : 0)}{" "}
-              is to be paid in cash at the venue.
+              devem ser pagos em dinheiro no local / to be paid in cash at the venue.
             </p>
           </div>
         </div>

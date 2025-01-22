@@ -45,6 +45,10 @@ export function AccommodationSelection() {
 
   const handleAccommodationChange = (value: AccommodationType) => {
     setValue("accommodation.type", value, { shouldValidate: true });
+    // Set nights to 5 automatically for room bookings
+    if (value === "family-room" || value === "single-room") {
+      setValue("accommodation.nights", 5, { shouldValidate: true });
+    }
   };
 
   const content = (
@@ -65,6 +69,9 @@ export function AccommodationSelection() {
             />
             <Label htmlFor={`accommodation-${option.value}`}>
               {option.label} - €{option.price} per night
+              {(option.value === "family-room" ||
+                option.value === "single-room") &&
+                " (5 nights only)"}
             </Label>
           </div>
         ))}
@@ -84,9 +91,19 @@ export function AccommodationSelection() {
           type="number"
           min="1"
           max="5"
+          disabled={
+            accommodationType === "family-room" ||
+            accommodationType === "single-room"
+          }
           {...register("accommodation.nights", { valueAsNumber: true })}
           className={errors.accommodation?.nights ? "border-red-500" : ""}
         />
+        {(accommodationType === "family-room" ||
+          accommodationType === "single-room") && (
+          <p className="text-sm text-muted-foreground mt-1">
+            Reservas em bungalow só para 5 noites / Bungalow bookings are for 5 nights only
+          </p>
+        )}
         {errors.accommodation?.nights && (
           <p className="text-red-500 text-sm mt-1">
             {errors.accommodation.nights.message}
@@ -101,7 +118,9 @@ export function AccommodationSelection() {
       <div className="hidden md:block">{content}</div>
       <Accordion type="single" collapsible className="md:hidden">
         <AccordionItem value="accommodation">
-          <AccordionTrigger className="text-md font-bold">Alojamento / Accommodation</AccordionTrigger>
+          <AccordionTrigger className="text-md font-bold">
+            Alojamento / Accommodation
+          </AccordionTrigger>
           <AccordionContent>{content}</AccordionContent>
         </AccordionItem>
       </Accordion>
