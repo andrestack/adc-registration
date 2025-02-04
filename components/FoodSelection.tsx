@@ -1,6 +1,7 @@
 import { useFormContext } from "react-hook-form";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import {
   Select,
   SelectContent,
@@ -11,6 +12,7 @@ import {
 import {
   RegistrationFormData,
   foodOptions,
+  dietaryOptions,
 } from "@/schemas/registrationSchema";
 import {
   AccordionItem,
@@ -27,15 +29,42 @@ export function FoodSelection() {
     register,
     formState: { errors },
     watch,
+    setValue,
   } = useFormContext<RegistrationFormData>();
 
   const foodType = watch("food.type");
-
+  const dietary = watch("food.dietary");
   const content = (
     <div className="space-y-4">
-      {!isMobile && (
-        <Label className="text-lg font-bold">Comida / Food</Label>
-      )}
+      {!isMobile && <Label className="text-lg font-bold">Comida / Food</Label>}
+
+      <div className="space-y-2">
+        <Label>Dietary Preference / Preferência Alimentar</Label>
+        <RadioGroup
+          value={dietary || ""}
+          onValueChange={(value) => {
+            setValue("food.dietary", value, { shouldValidate: true });
+          }}
+          className="flex flex-row space-x-4"
+        >
+          {dietaryOptions.map((option) => (
+            <div key={option.value} className="flex items-center space-x-2">
+              <RadioGroupItem
+                value={option.value}
+                id={`dietary-${option.value}`}
+              />
+              <Label htmlFor={`dietary-${option.value}`}>{option.label}</Label>
+            </div>
+          ))}
+        </RadioGroup>
+        {errors.food?.dietary && (
+          <p className="text-red-500 text-sm">
+            {errors.food.dietary.message ||
+              "Please select a dietary preference"}
+          </p>
+        )}
+      </div>
+
       <Select {...register("food.type")} value={foodType}>
         <SelectTrigger>
           <SelectValue placeholder="Select food option" />
@@ -55,6 +84,7 @@ export function FoodSelection() {
             : errors.food.type.message || "Invalid food type"}
         </p>
       )}
+
       <div className="mt-2">
         <Label htmlFor="days">Número de dias / Number of days</Label>
         <Input
@@ -81,7 +111,9 @@ export function FoodSelection() {
       <div className="hidden md:block">{content}</div>
       <Accordion type="single" collapsible className="md:hidden">
         <AccordionItem value="food">
-          <AccordionTrigger className="text-md font-bold">Comida / Food</AccordionTrigger>
+          <AccordionTrigger className="text-md font-bold">
+            Comida / Food
+          </AccordionTrigger>
           <AccordionContent>{content}</AccordionContent>
         </AccordionItem>
       </Accordion>

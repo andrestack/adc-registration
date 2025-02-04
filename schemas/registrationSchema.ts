@@ -40,12 +40,14 @@ export const registrationSchema = z.object({
   }),
   food: z.object({
     type: z.enum(["full", "single", "none"]),
+    dietary: z.enum(["regular", "vegetarian", "vegan"]),
     days: z
       .number()
       .int()
       .min(0, "Number of days must be at least 1")
       .max(5, "Maximum number of days is 5"),
-  }),
+
+    }),
   children: z.object({
     "under-5": z.number().int().min(0),
     "5-10": z.number().int().min(0),
@@ -77,7 +79,7 @@ export const workshops: Workshop[] = [
 ];
 
 export const accommodationOptions = [
-  { value: "tent", label: "Tenda", price: 15 },
+  { value: "tent", label: "Tenda", price: 10 },
   {
     value: "family-room",
     label: "Quarto Família / Family Room (4 ppl)",
@@ -93,6 +95,13 @@ export const accommodationOptions = [
 ] as const;
 
 export const foodOptions = [
-  { value: "full", label: "3x Refeições/Meals", price: 30 },
+  { value: "full", label: "3x Refeições/Meals", price: 35 },
   { value: "single", label: "1x Refeição/Meal", price: 15 },
+  { value: "none", label: "No meals", price: 0 },
+] as const;
+
+export const dietaryOptions = [
+  { value: "regular", label: "Regular" },
+  { value: "vegetarian", label: "Vegetarian" },
+  { value: "vegan", label: "Vegan" },
 ] as const;
