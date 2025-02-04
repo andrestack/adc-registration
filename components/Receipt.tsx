@@ -159,7 +159,7 @@ export function Receipt({
               <br />
               BIC: EXAMPLEXXX
               <br />
-              Referencia / Reference: Nome + ADC2025
+              Referencia / Reference: {formData.fullName} + ADC2025
             </p>
             <p className="mt-4">
               Os restantes / The remaining amount of €

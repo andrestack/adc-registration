@@ -54,6 +54,7 @@ export const registrationSchema = z.object({
     "10-17": z.number().int().min(0),
   }),
   paymentMade: z.boolean(),
+  total: z.number().int().min(0),
 });
 
 export type RegistrationFormData = z.infer<typeof registrationSchema>;
