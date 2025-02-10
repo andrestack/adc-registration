@@ -140,7 +140,7 @@ export function Receipt({
               )
             </p>
             <div className="mt-2 flex items-center">
-              <p>IBAN: *** **** **** {iban.slice(-4)}</p>
+              <p>IBAN: {iban}</p>
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>
