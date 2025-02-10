@@ -86,16 +86,36 @@ export default function RegistrationForm() {
 
   const onSubmit = async (data: RegistrationFormData) => {
     setSubmitStatus("loading");
-    // Simulating an API call
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-    console.log("Form submitted:", data, "Total:", total);
-    setSubmitStatus("done");
-    // Show thank you modal
-    setIsThankYouModalOpen(true);
-    setTimeout(() => {
+    try {
+      const response = await fetch("/api/registration", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.message || "Registration failed");
+      }
+
+      // If successful
+      setSubmitStatus("done");
+      setIsThankYouModalOpen(true);
+
+      // Reset form after 2 seconds
+      setTimeout(() => {
+        setSubmitStatus("idle");
+        reset();
+      }, 2000);
+    } catch (error) {
+      console.error("Submission error:", error);
       setSubmitStatus("idle");
-      reset();
-    }, 2000);
+      // You might want to show an error toast here
+      alert("Failed to submit registration. Please try again.");
+    }
   };
 
   const accommodationTotal = () => {
@@ -182,7 +202,9 @@ export default function RegistrationForm() {
                   {submitStatus === "loading" && (
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   )}
-                  {submitStatus === "done" && <Check className="mr-2 h-4 w-4" />}
+                  {submitStatus === "done" && (
+                    <Check className="mr-2 h-4 w-4" />
+                  )}
                   {submitStatus === "idle"
                     ? "Submit"
                     : submitStatus === "loading"
@@ -209,7 +231,7 @@ export default function RegistrationForm() {
         />
       </div>
 
-      <ThankYouModal 
+      <ThankYouModal
         isOpen={isThankYouModalOpen}
         onClose={() => setIsThankYouModalOpen(false)}
       />
