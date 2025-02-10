@@ -33,9 +33,7 @@ export function FoodSelection() {
 
   const content = (
     <div className="space-y-4">
-      {!isMobile && (
-        <Label className="text-lg font-bold">Comida / Food</Label>
-      )}
+      {!isMobile && <Label className="text-lg font-bold">Comida / Food</Label>}
       <Select {...register("food.type")} value={foodType}>
         <SelectTrigger>
           <SelectValue placeholder="Select food option" />
@@ -81,7 +79,9 @@ export function FoodSelection() {
       <div className="hidden md:block">{content}</div>
       <Accordion type="single" collapsible className="md:hidden">
         <AccordionItem value="food">
-          <AccordionTrigger className="text-md font-bold">Comida / Food</AccordionTrigger>
+          <AccordionTrigger className="text-md font-bold">
+            Comida / Food
+          </AccordionTrigger>
           <AccordionContent>{content}</AccordionContent>
         </AccordionItem>
       </Accordion>

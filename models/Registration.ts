@@ -76,7 +76,7 @@ const RegistrationSchema = new Schema(
       type: [WorkshopSchema],
       required: true,
       validate: {
-        validator: function (workshops: any[]) {
+        validator: function (workshops: typeof WorkshopSchema[]) {
           return workshops.length >= 1;
         },
         message: "Please select at least one workshop",

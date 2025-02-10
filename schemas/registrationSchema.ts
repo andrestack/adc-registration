@@ -77,7 +77,7 @@ export const workshops: Workshop[] = [
 ];
 
 export const accommodationOptions = [
-  { value: "tent", label: "Tenda", price: 15 },
+  { value: "tent", label: "Tenda", price: 10 },
   {
     value: "family-room",
     label: "Quarto Família / Family Room (4 ppl)",
@@ -93,6 +93,6 @@ export const accommodationOptions = [
 ] as const;
 
 export const foodOptions = [
-  { value: "full", label: "3x Refeições/Meals", price: 30 },
+  { value: "full", label: "3x Refeições/Meals", price: 35 },
   { value: "single", label: "1x Refeição/Meal", price: 15 },
 ] as const;

@@ -42,13 +42,23 @@ export async function POST(request: Request) {
 
     // Handle other errors
     console.error("Registration error:", error);
-    return NextResponse.json(
-      {
-        success: false,
-        message: "Registration failed",
-        error: error.message,
-      },
-      { status: 500 }
-    );
+    if (error instanceof Error) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Registration failed",
+          error: error.message,
+        },
+        { status: 500 }
+      );
+    } else {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "An unknown error occurred",
+        },
+        { status: 500 }
+      );
+    }
   }
 }
