@@ -33,6 +33,9 @@ export function Receipt({
   copyToClipboard,
   accommodationTotal,
 }: ReceiptProps) {
+  
+  const iban = process.env.NEXT_PUBLIC_IBAN || "";
+  
   return (
     <Card className="flex-1">
       <CardHeader>
@@ -116,8 +119,13 @@ export function Receipt({
 
           <div className="mt-6 p-4 bg-gray-100 rounded">
             <p className="font-semibold">Instruções / Instructions:</p>
-            <p>Por favor transfira o seguinte valor para confirmar a sua inscrição:</p>
-            <p className="italic">Please transfer the following amount to confirm your booking:</p>
+            <p>
+              Por favor transfira o seguinte valor para confirmar a sua
+              inscrição:
+            </p>
+            <p className="italic">
+              Please transfer the following amount to confirm your booking:
+            </p>
             <p className="font-bold">
               €
               {100 +
@@ -132,14 +140,14 @@ export function Receipt({
               )
             </p>
             <div className="mt-2 flex items-center">
-              <p className="mr-2">IBAN: DE89 3704 0044 0532 0130 00</p>
+              <p>IBAN: **** **** **** {iban.slice(-4)}</p>
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <Button
                       variant="outline"
                       size="icon"
-                      onClick={() => copyToClipboard("DE89370400440532013000")}
+                      onClick={() => copyToClipboard(iban)}
                     >
                       {ibanCopied ? (
                         <Check className="h-4 w-4" />
@@ -155,11 +163,13 @@ export function Receipt({
               </TooltipProvider>
             </div>
             <p>
-              Banco: Example Bank
+              Nome: Carlos Silva
               <br />
-              BIC: EXAMPLEXXX
+              Banco: N26
               <br />
-              Referencia / Reference: Nome + ADC2025
+              BIC: NTSBDEB1XXX
+              <br />
+              Referencia / Reference: {formData.fullName} + ADC2025
             </p>
             <p className="mt-4">
               Os restantes / The remaining amount of €
@@ -168,7 +178,8 @@ export function Receipt({
                 (formData.accommodation.type.includes("room")
                   ? accommodationTotal()
                   : 0)}{" "}
-              devem ser pagos em dinheiro no local / to be paid in cash at the venue.
+              devem ser pagos em dinheiro no local / to be paid in cash at the
+              venue.
             </p>
           </div>
         </div>
