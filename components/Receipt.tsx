@@ -1,3 +1,5 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -14,7 +16,7 @@ import {
   foodOptions,
   Workshop,
 } from "@/schemas/registrationSchema";
-
+import { useState, useEffect } from "react";
 interface ReceiptProps {
   formData: RegistrationFormData;
   total: number;
@@ -33,9 +35,18 @@ export function Receipt({
   copyToClipboard,
   accommodationTotal,
 }: ReceiptProps) {
-  
-  const iban = process.env.NEXT_PUBLIC_IBAN || "";
-  
+  const [iban, setIban] = useState("");
+
+  useEffect(() => {
+    const fetchIban = async () => {
+      const response = await fetch("/api/get-iban"); // Your API route
+      const data = await response.json();
+      setIban(data.iban);
+    };
+
+    fetchIban();
+  }, []);
+
   return (
     <Card className="flex-1">
       <CardHeader>
