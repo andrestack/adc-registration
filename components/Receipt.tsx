@@ -174,7 +174,7 @@ export function Receipt({
               </TooltipProvider>
             </div>
             <p>
-              Nome: Carlos Silva
+              Nome: Carlos André Silva
               <br />
               Banco: N26
               <br />
