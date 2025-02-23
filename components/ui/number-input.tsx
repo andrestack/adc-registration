@@ -12,7 +12,7 @@ interface NumberInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
 
 const NumberInput = forwardRef<HTMLInputElement, NumberInputProps>(
   (
-    { onValueChange, className, min = 0, max = 100, step = 1, value, ...props },
+    { onValueChange, min = 0, max = 100, step = 1, value, ...props },
     ref
   ) => {
     const handleIncrement = () => {

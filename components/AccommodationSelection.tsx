@@ -77,7 +77,9 @@ export function AccommodationSelection() {
       </RadioGroup>
       {errors.accommodation?.type && (
         <p className="text-red-500 text-sm mt-1">
-          {errors.accommodation.type.message}
+          {typeof errors.accommodation.type === "string"
+            ? errors.accommodation.type
+            : errors.accommodation.type.message || "Invalid accommodation type"}
         </p>
       )}
 
@@ -103,7 +105,10 @@ export function AccommodationSelection() {
         )}
         {errors.accommodation?.nights && (
           <p className="text-red-500 text-sm mt-1">
-            {errors.accommodation.nights.message}
+            {typeof errors.accommodation.nights === "string"
+              ? errors.accommodation.nights
+              : errors.accommodation.nights.message ||
+                "Invalid number of nights"}
           </p>
         )}
       </div>

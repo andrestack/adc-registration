@@ -3,7 +3,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogDescription,
+ 
 } from "@/components/ui/dialog";
 import Image from "next/image";
 import Link from "next/link";
