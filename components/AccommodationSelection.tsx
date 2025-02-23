@@ -113,7 +113,9 @@ export function AccommodationSelection() {
   return isMobile ? (
     <Accordion type="single" collapsible>
       <AccordionItem value="accommodation">
-        <AccordionTrigger>Alojamento / Accommodation</AccordionTrigger>
+        <AccordionTrigger className="text-md font-bold">
+          Alojamento / Accommodation
+        </AccordionTrigger>
         <AccordionContent>{content}</AccordionContent>
       </AccordionItem>
     </Accordion>

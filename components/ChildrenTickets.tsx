@@ -71,7 +71,9 @@ export function ChildrenTickets() {
   return isMobile ? (
     <Accordion type="single" collapsible>
       <AccordionItem value="children">
-        <AccordionTrigger>Crianças / Children</AccordionTrigger>
+        <AccordionTrigger className="text-md font-bold">
+          Crianças / Children
+        </AccordionTrigger>
         <AccordionContent>{content}</AccordionContent>
       </AccordionItem>
     </Accordion>

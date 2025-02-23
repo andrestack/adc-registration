@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useFormContext } from "react-hook-form";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -36,26 +36,13 @@ export default function RegistrationForm() {
     useFormContext<RegistrationFormData>();
   const formData = watch();
 
-  useEffect(() => {
-    const newTotal = calculateTotal();
-    if (newTotal !== total) {
-      setTotal(newTotal);
-      setValue("total", newTotal);
-    }
-  }, [
-    formData.workshops,
-    formData.accommodation.type,
-    formData.accommodation.nights,
-    formData.food.type,
-    formData.food.days,
-    formData.children["under-5"],
-    formData.children["5-10"],
-    formData.children["10-17"],
-    setValue,
-    total,
-  ]);
+  const children = {
+    under5: formData.children["under-5"],
+    age5to10: formData.children["5-10"],
+    age10to17: formData.children["10-17"],
+  };
 
-  const calculateTotal = () => {
+  const calculateTotal = useCallback(() => {
     let calculatedTotal = 0;
     formData.workshops.forEach((workshopSelection) => {
       const workshop = workshops.find(
@@ -83,11 +70,40 @@ export default function RegistrationForm() {
     );
     if (selectedFood)
       calculatedTotal += selectedFood.price * formData.food.days;
-    calculatedTotal += formData.children["5-10"] * 50;
-    calculatedTotal += formData.children["10-17"] * 80;
-    calculatedTotal += formData.children["under-5"] * 0;
+    calculatedTotal += children.age5to10 * 50;
+    calculatedTotal += children.age10to17 * 80;
+    calculatedTotal += children.under5 * 0;
     return calculatedTotal;
-  };
+  }, [
+    formData.workshops,
+    formData.accommodation.type,
+    formData.accommodation.nights,
+    formData.food.type,
+    formData.food.days,
+    children.under5,
+    children.age5to10,
+    children.age10to17,
+  ]);
+
+  useEffect(() => {
+    const newTotal = calculateTotal();
+    if (newTotal !== total) {
+      setTotal(newTotal);
+      setValue("total", newTotal);
+    }
+  }, [
+    formData.workshops,
+    formData.accommodation.type,
+    formData.accommodation.nights,
+    formData.food.type,
+    formData.food.days,
+    children.under5,
+    children.age5to10,
+    children.age10to17,
+    setValue,
+    total,
+    calculateTotal,
+  ]);
 
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text).then(
@@ -104,10 +120,11 @@ export default function RegistrationForm() {
   const onSubmit = async (data: RegistrationFormData) => {
     setSubmitStatus("loading");
     try {
-      // Include total in the submission data
+      // Include total and paymentMade in the submission data
       const submissionData = {
         ...data,
         total: total,
+        paymentMade: formData.paymentMade,
       };
 
       const response = await fetch("/api/registration", {

@@ -30,6 +30,7 @@ export function FoodSelection() {
     formState: { errors },
   } = useFormContext<RegistrationFormData>();
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const foodType = watch("food.type");
   const days = watch("food.days");
 
@@ -84,7 +85,9 @@ export function FoodSelection() {
   return isMobile ? (
     <Accordion type="single" collapsible>
       <AccordionItem value="food">
-        <AccordionTrigger>Comida / Food</AccordionTrigger>
+        <AccordionTrigger className="text-md font-bold">
+          Comida / Food
+        </AccordionTrigger>
         <AccordionContent>{content}</AccordionContent>
       </AccordionItem>
     </Accordion>
