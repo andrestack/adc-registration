@@ -229,7 +229,7 @@ export default function RegistrationForm() {
                   className="w-full"
                 >
                   <Download className="mr-2 h-4 w-4" />
-                  Download Receipt
+                  Download Recibo
                 </Button>
               </div>
 
