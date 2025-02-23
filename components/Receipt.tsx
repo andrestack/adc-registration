@@ -17,6 +17,7 @@ import {
   Workshop,
 } from "@/schemas/registrationSchema";
 import { useState, useEffect } from "react";
+
 interface ReceiptProps {
   formData: RegistrationFormData;
   total: number;

@@ -1,12 +1,12 @@
 import { useFormContext } from "react-hook-form";
 import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
+import { NumberInput } from "@/components/ui/number-input";
 import { RegistrationFormData } from "@/schemas/registrationSchema";
 import {
-  Accordion,
   AccordionItem,
   AccordionTrigger,
   AccordionContent,
+  Accordion,
 } from "@/components/ui/accordion";
 import { FieldErrors } from "react-hook-form";
 import { useMediaQuery } from "@/hooks/use-media-query";
@@ -15,39 +15,46 @@ export function ChildrenTickets() {
   const isMobile = useMediaQuery("(max-width: 768px)");
 
   const {
-    register,
+    watch,
+    setValue,
     formState: { errors },
   } = useFormContext<RegistrationFormData>();
+
+  const under5 = watch("children.under-5");
+  const age5to10 = watch("children.5-10");
+  const age10to17 = watch("children.10-17");
 
   const content = (
     <div>
       {!isMobile && (
         <Label className="text-lg font-bold">Crianças / Children</Label>
       )}
-      <div className="flex items-center space-y-2 mt-2">
-        <div className="flex-1 space-y-6 items-center">
-          <p>0-5 anos (free)</p>
-          <p>5-10 anos (€50)</p>
-          <p>10-17 anos (€80)</p>
+      <div className="space-y-4 mt-4">
+        <div className="flex items-center justify-between">
+          <Label>0-5 anos (free)</Label>
+          <NumberInput
+            value={under5}
+            onValueChange={(value) => setValue("children.under-5", value)}
+            min={0}
+            max={10}
+          />
         </div>
-        <div className="w-24 space-y-2">
-          <Input
-            id="children-under-5"
-            type="number"
-            min="0"
-            {...register("children.under-5", { valueAsNumber: true })}
+        <div className="flex items-center justify-between">
+          <Label>5-10 anos (€50)</Label>
+          <NumberInput
+            value={age5to10}
+            onValueChange={(value) => setValue("children.5-10", value)}
+            min={0}
+            max={10}
           />
-          <Input
-            id="children-5-10"
-            type="number"
-            min="0"
-            {...register("children.5-10", { valueAsNumber: true })}
-          />
-          <Input
-            id="children-10-17"
-            type="number"
-            min="0"
-            {...register("children.10-17", { valueAsNumber: true })}
+        </div>
+        <div className="flex items-center justify-between">
+          <Label>10-17 anos (€80)</Label>
+          <NumberInput
+            value={age10to17}
+            onValueChange={(value) => setValue("children.10-17", value)}
+            min={0}
+            max={10}
           />
         </div>
       </div>
@@ -61,15 +68,14 @@ export function ChildrenTickets() {
     </div>
   );
 
-  return (
-    <>
-      <div className="hidden md:block">{content}</div>
-      <Accordion type="single" collapsible className="md:hidden">
-        <AccordionItem value="children-tickets">
-          <AccordionTrigger className="text-md font-bold">Crianças / Children</AccordionTrigger>
-          <AccordionContent>{content}</AccordionContent>
-        </AccordionItem>
-      </Accordion>
-    </>
+  return isMobile ? (
+    <Accordion type="single" collapsible>
+      <AccordionItem value="children">
+        <AccordionTrigger>Crianças / Children</AccordionTrigger>
+        <AccordionContent>{content}</AccordionContent>
+      </AccordionItem>
+    </Accordion>
+  ) : (
+    content
   );
 }

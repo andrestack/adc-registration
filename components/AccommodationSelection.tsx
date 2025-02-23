@@ -1,7 +1,7 @@
 import { useFormContext } from "react-hook-form";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
+import { NumberInput } from "@/components/ui/number-input";
 import {
   RegistrationFormData,
   accommodationOptions,
@@ -18,13 +18,13 @@ export function AccommodationSelection() {
   const isMobile = useMediaQuery("(max-width: 768px)");
 
   const {
-    register,
     formState: { errors },
     watch,
     setValue,
   } = useFormContext<RegistrationFormData>();
 
   const accommodationType = watch("accommodation.type");
+  const nights = watch("accommodation.nights");
 
   // const [roomAvailability, setRoomAvailability] = useState({
   //   'family-room': 6,
@@ -41,13 +41,13 @@ export function AccommodationSelection() {
   //   return () => clearTimeout(timer);
   // }, []);
 
-  type AccommodationType = "tent" | "family-room" | "single-room";
-
-  const handleAccommodationChange = (value: AccommodationType) => {
-    setValue("accommodation.type", value, { shouldValidate: true });
+  const handleAccommodationChange = (
+    value: "tent" | "family-room" | "single-room"
+  ) => {
+    setValue("accommodation.type", value);
     // Set nights to 5 automatically for room bookings
     if (value === "family-room" || value === "single-room") {
-      setValue("accommodation.nights", 5, { shouldValidate: true });
+      setValue("accommodation.nights", 5);
     }
   };
 
@@ -59,49 +59,46 @@ export function AccommodationSelection() {
       <RadioGroup
         value={accommodationType}
         onValueChange={handleAccommodationChange}
-        className="space-y-2"
       >
         {accommodationOptions.map((option) => (
-          <div key={option.value} className="flex items-center space-x-2 p-2">
-            <RadioGroupItem
-              value={option.value}
-              id={`accommodation-${option.value}`}
-            />
-            <Label htmlFor={`accommodation-${option.value}`}>
-              {option.label} - €{option.price} per night
+          <div key={option.value} className="flex items-center space-x-2">
+            <RadioGroupItem value={option.value} id={option.value} />
+            <Label htmlFor={option.value}>
+              {option.label} (€{option.price} per night)
               {(option.value === "family-room" ||
-                option.value === "single-room") &&
-                " (5 nights only)"}
+                option.value === "single-room") && (
+                <span className="text-sm text-muted-foreground ml-1">
+                  (5 nights only)
+                </span>
+              )}
             </Label>
           </div>
         ))}
       </RadioGroup>
       {errors.accommodation?.type && (
         <p className="text-red-500 text-sm mt-1">
-          {typeof errors.accommodation.type === "object" &&
-          "message" in errors.accommodation.type
-            ? errors.accommodation.type.message
-            : "An error occurred."}
+          {errors.accommodation.type.message}
         </p>
       )}
-      <div className="mt-2">
+
+      <div className="mt-4">
         <Label htmlFor="nights">Número de noites / Number of nights</Label>
-        <Input
+        <NumberInput
           id="nights"
-          type="number"
-          min="1"
-          max="5"
+          min={1}
+          max={5}
+          value={nights}
+          onValueChange={(value) => setValue("accommodation.nights", value)}
           disabled={
             accommodationType === "family-room" ||
             accommodationType === "single-room"
           }
-          {...register("accommodation.nights", { valueAsNumber: true })}
-          className={errors.accommodation?.nights ? "border-red-500" : ""}
         />
         {(accommodationType === "family-room" ||
           accommodationType === "single-room") && (
           <p className="text-sm text-muted-foreground mt-1">
-            Reservas em bungalow só para 5 noites / Bungalow bookings are for 5 nights only
+            Reservas em bungalow só para 5 noites / Bungalow bookings are for 5
+            nights only
           </p>
         )}
         {errors.accommodation?.nights && (
@@ -113,17 +110,14 @@ export function AccommodationSelection() {
     </div>
   );
 
-  return (
-    <>
-      <div className="hidden md:block">{content}</div>
-      <Accordion type="single" collapsible className="md:hidden">
-        <AccordionItem value="accommodation">
-          <AccordionTrigger className="text-md font-bold">
-            Alojamento / Accommodation
-          </AccordionTrigger>
-          <AccordionContent>{content}</AccordionContent>
-        </AccordionItem>
-      </Accordion>
-    </>
+  return isMobile ? (
+    <Accordion type="single" collapsible>
+      <AccordionItem value="accommodation">
+        <AccordionTrigger>Alojamento / Accommodation</AccordionTrigger>
+        <AccordionContent>{content}</AccordionContent>
+      </AccordionItem>
+    </Accordion>
+  ) : (
+    content
   );
 }

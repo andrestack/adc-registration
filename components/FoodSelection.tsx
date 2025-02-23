@@ -1,6 +1,6 @@
-import { useFormContext } from "react-hook-form";
+import { useFormContext, Controller } from "react-hook-form";
 import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
+import { NumberInput } from "@/components/ui/number-input";
 import {
   Select,
   SelectContent,
@@ -24,28 +24,36 @@ export function FoodSelection() {
   const isMobile = useMediaQuery("(max-width: 768px)");
 
   const {
-    register,
-    formState: { errors },
+    control,
     watch,
+    setValue,
+    formState: { errors },
   } = useFormContext<RegistrationFormData>();
 
   const foodType = watch("food.type");
+  const days = watch("food.days");
 
   const content = (
     <div className="space-y-4">
       {!isMobile && <Label className="text-lg font-bold">Comida / Food</Label>}
-      <Select {...register("food.type")} value={foodType}>
-        <SelectTrigger>
-          <SelectValue placeholder="Select food option" />
-        </SelectTrigger>
-        <SelectContent>
-          {foodOptions.map((option) => (
-            <SelectItem key={option.value} value={option.value}>
-              {option.label} (€{option.price} per day)
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
+      <Controller
+        name="food.type"
+        control={control}
+        render={({ field }) => (
+          <Select onValueChange={field.onChange} defaultValue={field.value}>
+            <SelectTrigger>
+              <SelectValue placeholder="Select food option" />
+            </SelectTrigger>
+            <SelectContent>
+              {foodOptions.map((option) => (
+                <SelectItem key={option.value} value={option.value}>
+                  {option.label} (€{option.price} per day)
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        )}
+      />
       {errors.food?.type && (
         <p className="text-red-500 text-sm mt-1">
           {typeof errors.food.type === "string"
@@ -55,13 +63,12 @@ export function FoodSelection() {
       )}
       <div className="mt-2">
         <Label htmlFor="days">Número de dias / Number of days</Label>
-        <Input
+        <NumberInput
           id="days"
-          type="number"
-          min="1"
-          max="5"
-          {...register("food.days", { valueAsNumber: true })}
-          className={errors.food?.days ? "border-red-500" : ""}
+          min={1}
+          max={5}
+          value={days}
+          onValueChange={(value) => setValue("food.days", value)}
         />
         {errors.food?.days && (
           <p className="text-red-500 text-sm mt-1">
@@ -74,17 +81,14 @@ export function FoodSelection() {
     </div>
   );
 
-  return (
-    <>
-      <div className="hidden md:block">{content}</div>
-      <Accordion type="single" collapsible className="md:hidden">
-        <AccordionItem value="food">
-          <AccordionTrigger className="text-md font-bold">
-            Comida / Food
-          </AccordionTrigger>
-          <AccordionContent>{content}</AccordionContent>
-        </AccordionItem>
-      </Accordion>
-    </>
+  return isMobile ? (
+    <Accordion type="single" collapsible>
+      <AccordionItem value="food">
+        <AccordionTrigger>Comida / Food</AccordionTrigger>
+        <AccordionContent>{content}</AccordionContent>
+      </AccordionItem>
+    </Accordion>
+  ) : (
+    content
   );
 }

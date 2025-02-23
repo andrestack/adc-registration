@@ -76,7 +76,7 @@ const RegistrationSchema = new Schema(
       type: [WorkshopSchema],
       required: true,
       validate: {
-        validator: function (workshops: typeof WorkshopSchema[]) {
+        validator: function (workshops: (typeof WorkshopSchema)[]) {
           return workshops.length >= 1;
         },
         message: "Please select at least one workshop",
@@ -102,6 +102,11 @@ const RegistrationSchema = new Schema(
     createdAt: {
       type: Date,
       default: Date.now,
+    },
+    total: {
+      type: Number,
+      required: true,
+      min: 0,
     },
   },
   {
