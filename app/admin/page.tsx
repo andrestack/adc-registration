@@ -1,11 +1,8 @@
-import { Metadata } from "next";
+"use client";
+
+import React from "react";
 import { DataTable } from "./components/data-table";
 import { columns } from "./components/columns";
-
-export const metadata: Metadata = {
-  title: "Admin Dashboard - ADC Registration",
-  description: "View and manage ADC workshop registrations",
-};
 
 async function getRegistrations() {
   // Determine the base URL based on the environment
@@ -26,19 +23,33 @@ async function getRegistrations() {
   return data.data;
 }
 
-export default async function AdminPage() {
-  const registrations = await getRegistrations();
+export default function AdminPage() {
+  const [registrations, setRegistrations] = React.useState([]);
+
+  React.useEffect(() => {
+    getRegistrations()
+      .then((data) => {
+        setRegistrations(data);
+      })
+      .catch((error) => {
+        console.error("Failed to fetch registrations:", error);
+      });
+  }, []);
 
   return (
-    <div className="container mx-auto py-10">
+    <div className="py-10">
       <div className="flex flex-col gap-4">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Registrations</h1>
+          <h2 className="text-2xl font-semibold tracking-tight">
+            Inscrições
+          </h2>
           <p className="text-muted-foreground">
-            View and manage workshop registrations
+            Manage and track workshop registrations and payments
           </p>
         </div>
-        <DataTable columns={columns} data={registrations} />
+        <div className="rounded-lg border shadow p-4">
+          <DataTable columns={columns} data={registrations} />
+        </div>
       </div>
     </div>
   );
