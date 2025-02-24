@@ -112,3 +112,28 @@ export async function POST(request: Request) {
     }
   }
 }
+
+export async function GET() {
+  try {
+    await dbConnect();
+
+    const registrations = await Registration.find({})
+      .sort({ createdAt: -1 }) // Sort by newest first
+      .lean(); // Convert to plain JavaScript objects
+
+    return NextResponse.json({
+      success: true,
+      data: registrations,
+    });
+  } catch (error) {
+    console.error("Error fetching registrations:", error);
+    return NextResponse.json(
+      {
+        success: false,
+        message: "Failed to fetch registrations",
+        error: error instanceof Error ? error.message : "Unknown error",
+      },
+      { status: 500 }
+    );
+  }
+}
