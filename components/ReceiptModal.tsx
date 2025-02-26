@@ -87,7 +87,10 @@ export default function ReceiptModal({
   const initialPayment = useMemo(() => {
     return (
       100 +
-      (formData.accommodation.type.includes("room") ? accommodationTotal() : 0)
+      (formData.accommodation.type.includes("room") ||
+      formData.accommodation.type === "bungalow"
+        ? accommodationTotal()
+        : 0)
     );
   }, [formData.accommodation.type, accommodationTotal]);
 
@@ -176,7 +179,8 @@ export default function ReceiptModal({
             <div className="font-bold">€{initialPayment}</div>
             <div className="text-sm">
               (€100 registration fee{" "}
-              {formData.accommodation.type.includes("room") &&
+              {(formData.accommodation.type.includes("room") ||
+                formData.accommodation.type === "bungalow") &&
                 `+ €${accommodationTotal()} for accommodation`}
               )
             </div>

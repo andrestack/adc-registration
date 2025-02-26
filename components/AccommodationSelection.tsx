@@ -42,11 +42,15 @@ export function AccommodationSelection() {
   // }, []);
 
   const handleAccommodationChange = (
-    value: "tent" | "family-room" | "single-room"
+    value: "tent" | "family-room" | "single-room" | "bungalow"
   ) => {
     setValue("accommodation.type", value);
-    // Set nights to 5 automatically for room bookings
-    if (value === "family-room" || value === "single-room") {
+    // Set nights to 5 automatically for room and bungalow bookings
+    if (
+      value === "family-room" ||
+      value === "single-room" ||
+      value === "bungalow"
+    ) {
       setValue("accommodation.nights", 5);
     }
   };
@@ -66,7 +70,8 @@ export function AccommodationSelection() {
             <Label htmlFor={option.value}>
               {option.label} (€{option.price} per night)
               {(option.value === "family-room" ||
-                option.value === "single-room") && (
+                option.value === "single-room" ||
+                option.value === "bungalow") && (
                 <span className="text-sm text-muted-foreground ml-1">
                   (5 nights only)
                 </span>
@@ -93,11 +98,13 @@ export function AccommodationSelection() {
           onValueChange={(value) => setValue("accommodation.nights", value)}
           disabled={
             accommodationType === "family-room" ||
-            accommodationType === "single-room"
+            accommodationType === "single-room" ||
+            accommodationType === "bungalow"
           }
         />
         {(accommodationType === "family-room" ||
-          accommodationType === "single-room") && (
+          accommodationType === "single-room" ||
+          accommodationType === "bungalow") && (
           <p className="text-sm text-muted-foreground mt-1">
             Reservas em bungalow só para 5 noites / Bungalow bookings are for 5
             nights only

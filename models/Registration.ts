@@ -10,7 +10,7 @@ const WorkshopSchema = new Schema({
 const AccommodationSchema = new Schema({
   type: {
     type: String,
-    enum: ["tent", "family-room", "single-room"],
+    enum: ["tent", "family-room", "single-room", "bungalow"],
     required: true,
   },
   nights: {
@@ -18,6 +18,16 @@ const AccommodationSchema = new Schema({
     required: true,
     min: 1,
     max: 5,
+    validate: {
+      validator: function (nights: number) {
+        const accommodation = this as { type: string };
+        if (accommodation.type === "bungalow") {
+          return nights === 5;
+        }
+        return true;
+      },
+      message: "Bungalows must be booked for exactly 5 nights",
+    },
   },
 });
 

@@ -30,14 +30,23 @@ export const registrationSchema = z.object({
       })
     )
     .min(1, "Please select at least one workshop"),
-  accommodation: z.object({
-    type: z.enum(["tent", "family-room", "single-room"]),
-    nights: z
-      .number()
-      .int()
-      .min(1, "Number of nights must be at least 1")
-      .max(5, "Maximum number of nights is 5"),
-  }),
+  accommodation: z
+    .object({
+      type: z.enum(["tent", "family-room", "single-room", "bungalow"]),
+      nights: z.number().int().min(1).max(5),
+    })
+    .refine(
+      (data) => {
+        if (data.type === "bungalow") {
+          return data.nights === 5;
+        }
+        return true;
+      },
+      {
+        message: "Bungalows must be booked for exactly 5 nights",
+        path: ["nights"], // This will show the error on the nights field
+      }
+    ),
   food: z.object({
     type: z.enum(["full", "single", "none"]),
     days: z
@@ -87,9 +96,16 @@ export const accommodationOptions = [
   },
   {
     value: "single-room",
-    label: "Single (2ppl)",
+    label: "Single (2 ppl)",
     price: 40,
     available: 6,
+  },
+  {
+    value: "bungalow",
+    label: "Bungalow (6 ppl)",
+    price: 80,
+    available: 6,
+    fixedNights: 5,
   },
 ] as const;
 

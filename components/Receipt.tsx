@@ -141,13 +141,15 @@ export function Receipt({
             <p className="font-bold">
               €
               {100 +
-                (formData.accommodation.type.includes("room")
+                (formData.accommodation.type.includes("room") ||
+                formData.accommodation.type === "bungalow"
                   ? accommodationTotal()
                   : 0)}
             </p>
             <p className="text-sm">
               (€100 taxa de inscrição / registration fee{" "}
-              {formData.accommodation.type.includes("room") &&
+              {(formData.accommodation.type.includes("room") ||
+                formData.accommodation.type === "bungalow") &&
                 `+ €${accommodationTotal()} para o alojamento`}
               )
             </p>
@@ -184,13 +186,14 @@ export function Receipt({
               Referencia / Reference: {formData.fullName} + ADC2025
             </p>
             <p className="mt-4">
-              Os restantes / The remaining amount of €
+              Os restantes €
               {total -
                 100 -
-                (formData.accommodation.type.includes("room")
+                (formData.accommodation.type.includes("room") ||
+                formData.accommodation.type === "bungalow"
                   ? accommodationTotal()
-                  : 0)}{" "}
-              devem ser pagos em dinheiro no local / to be paid in cash at the
+                  : 0)}
+              {""} devem ser pagos em dinheiro no local / to be paid in cash at the
               venue.
             </p>
           </div>
