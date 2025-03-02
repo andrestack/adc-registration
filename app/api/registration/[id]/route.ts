@@ -42,3 +42,36 @@ export async function PATCH(
     );
   }
 }
+
+export async function DELETE(
+  request: Request,
+  { params }: { params: { id: string } }
+) {
+  try {
+    await dbConnect();
+
+    const registration = await Registration.findByIdAndDelete(params.id);
+
+    if (!registration) {
+      return NextResponse.json(
+        { success: false, message: "Registration not found" },
+        { status: 404 }
+      );
+    }
+
+    return NextResponse.json({
+      success: true,
+      message: "Registration deleted successfully",
+    });
+  } catch (error) {
+    console.error("Error deleting registration:", error);
+    return NextResponse.json(
+      {
+        success: false,
+        message: "Failed to delete registration",
+        error: error instanceof Error ? error.message : "Unknown error",
+      },
+      { status: 500 }
+    );
+  }
+}

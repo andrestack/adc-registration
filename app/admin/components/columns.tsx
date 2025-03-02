@@ -34,6 +34,23 @@ async function updatePaymentStatus(id: string, status: boolean) {
   }
 }
 
+async function deleteRegistration(id: string) {
+  try {
+    const response = await fetch(`/api/registration/${id}`, {
+      method: "DELETE",
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to delete registration");
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error("Error deleting registration:", error);
+    throw error;
+  }
+}
+
 export type Registration = {
   _id: string;
   fullName: string;
@@ -169,6 +186,27 @@ export const columns: ColumnDef<Registration>[] = [
                 }}
               >
                 Mark as {row.original.paymentMade ? "Unpaid" : "Paid"}
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                className="text-red-600"
+                onClick={async () => {
+                  if (
+                    confirm(
+                      "Are you sure you want to delete this registration?"
+                    )
+                  ) {
+                    try {
+                      await deleteRegistration(row.original._id);
+                      // Refresh the page to show updated data
+                      window.location.reload();
+                    } catch (error) {
+                      console.error("Failed to delete registration:", error);
+                      alert("Failed to delete registration. Please try again.");
+                    }
+                  }
+                }}
+              >
+                Delete Registration
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
