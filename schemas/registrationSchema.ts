@@ -98,7 +98,7 @@ export const accommodationOptions = [
     value: "single-room",
     label: "Single (2 ppl)",
     price: 40,
-    available: 6,
+    available: 5,
   },
   {
     value: "bungalow",

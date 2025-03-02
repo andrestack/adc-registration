@@ -43,7 +43,7 @@ export type Registration = {
     level?: string;
   }>;
   accommodation: {
-    type: "tent" | "family-room" | "single-room";
+    type: "tent" | "family-room" | "single-room" | "bungalow";
     nights: number;
   };
   food: {
@@ -114,7 +114,15 @@ export const columns: ColumnDef<Registration>[] = [
     accessorKey: "total",
     header: "To be paid",
     cell: ({ row }) => {
-      return <span>€{row.original.total}</span>;
+      const initialPayment =
+        100 +
+        (row.original.accommodation.type.includes("room") ||
+        row.original.accommodation.type === "bungalow"
+          ? row.original.accommodation.nights *
+            (row.original.accommodation.type === "bungalow" ? 80 : 40)
+          : 0);
+      const remainingPayment = row.original.total - initialPayment;
+      return <span>€{remainingPayment}</span>;
     },
   },
   {
