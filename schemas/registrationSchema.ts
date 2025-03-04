@@ -92,19 +92,19 @@ export const accommodationOptions = [
     value: "family-room",
     label: "Quarto Família / Family Room (4 ppl)",
     price: 40,
-    available: 6,
+    available: 5,
   },
   {
     value: "single-room",
     label: "Single (2 ppl)",
     price: 40,
-    available: 5,
+    available: 4,
   },
   {
     value: "bungalow",
     label: "Bungalow (6 ppl)",
     price: 80,
-    available: 6,
+    available: 4,
     fixedNights: 5,
   },
 ] as const;
