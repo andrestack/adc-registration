@@ -87,7 +87,7 @@ export const workshops: Workshop[] = [
 ];
 
 export const accommodationOptions = [
-  { value: "tent", label: "Tenda", price: 10 },
+  { value: "tent", label: "Tenda - por pessoa/per person", price: 10 },
   {
     value: "family-room",
     label: "Quarto Família / Family Room (4 ppl)",
