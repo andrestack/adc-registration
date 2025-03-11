@@ -109,6 +109,11 @@ const RegistrationSchema = new Schema(
       required: true,
       default: false,
     },
+    initialPayment: {
+      type: Number,
+      required: false,
+      default: 0,
+    },
     createdAt: {
       type: Date,
       default: Date.now,

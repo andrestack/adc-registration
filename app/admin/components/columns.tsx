@@ -10,8 +10,10 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { formatDate } from "@/lib/utils";
-import { MoreHorizontal } from "lucide-react";
-//import { useState } from "react";
+import { MoreHorizontal, Check, X, MoreVertical } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { useState } from "react";
+import { Checkbox } from "@/components/ui/checkbox";
 
 async function updatePaymentStatus(id: string, status: boolean) {
   try {
@@ -51,6 +53,27 @@ async function deleteRegistration(id: string) {
   }
 }
 
+async function updateInitialPayment(id: string, amount: number) {
+  try {
+    const response = await fetch(`/api/registration/${id}`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ initialPayment: amount }),
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to update initial payment");
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error("Error updating initial payment:", error);
+    throw error;
+  }
+}
+
 export type Registration = {
   _id: string;
   fullName: string;
@@ -76,6 +99,76 @@ export type Registration = {
   total: number;
   createdAt: string;
 };
+
+interface EditablePaymentProps {
+  id: string;
+  initialPayment: number;
+  defaultAmount: number;
+}
+
+function EditablePayment({
+  id,
+  initialPayment,
+  defaultAmount,
+}: EditablePaymentProps) {
+  const [isEditing, setIsEditing] = useState(false);
+  const [amount, setAmount] = useState(initialPayment || defaultAmount);
+
+  if (isEditing) {
+    return (
+      <div className="flex items-center gap-2">
+        <Input
+          type="number"
+          value={amount}
+          onChange={(e) => setAmount(Number(e.target.value))}
+          className="w-24"
+          min={0}
+        />
+        <Button
+          variant="ghost"
+          size="icon"
+          className="h-8 w-8 hover:bg-green-100"
+          onClick={async () => {
+            try {
+              await updateInitialPayment(id, amount);
+              setIsEditing(false);
+              window.location.reload();
+            } catch {
+              alert("Failed to update initial payment. Please try again.");
+            }
+          }}
+        >
+          <Check className="h-4 w-4 text-green-600" />
+        </Button>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="h-8 w-8 hover:bg-red-100"
+          onClick={() => {
+            setAmount(initialPayment || defaultAmount);
+            setIsEditing(false);
+          }}
+        >
+          <X className="h-4 w-4 text-red-600" />
+        </Button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex items-center gap-2">
+      <span>€{initialPayment || defaultAmount}</span>
+      <Button
+        variant="ghost"
+        size="icon"
+        className="h-8 w-8 hover:bg-gray-100"
+        onClick={() => setIsEditing(true)}
+      >
+        <MoreVertical className="h-4 w-4" />
+      </Button>
+    </div>
+  );
+}
 
 export const columns: ColumnDef<Registration>[] = [
   {
@@ -128,29 +221,17 @@ export const columns: ColumnDef<Registration>[] = [
     },
   },
   {
-    accessorKey: "total",
-    header: "To be paid at venue",
+    accessorKey: "totalAmount",
+    header: "Total",
     cell: ({ row }) => {
-      // Calculate initial payment (deposit + accommodation if applicable)
-      const initialPayment =
-        100 +
-        (row.original.accommodation.type.includes("room") ||
-        row.original.accommodation.type === "bungalow"
-          ? row.original.accommodation.nights *
-            (row.original.accommodation.type === "bungalow" ? 80 : 40)
-          : 0);
-
-      // Always show the remaining amount to be paid at venue
-      const remainingPayment = row.original.total - initialPayment;
-      return <span>€{remainingPayment}</span>;
+      return <span>€{row.original.total}</span>;
     },
   },
   {
-    accessorKey: "paid",
+    accessorKey: "initialPayment",
     header: "Initial Payment",
     cell: ({ row }) => {
-      // Calculate initial payment (deposit + accommodation if applicable)
-      const initialPayment =
+      const defaultInitialPayment =
         100 +
         (row.original.accommodation.type.includes("room") ||
         row.original.accommodation.type === "bungalow"
@@ -158,71 +239,85 @@ export const columns: ColumnDef<Registration>[] = [
             (row.original.accommodation.type === "bungalow" ? 80 : 40)
           : 0);
 
-      // If payment is made, show the initial payment amount
-      // If not made, show €0
-      return <span>€{row.original.paymentMade ? initialPayment : 0}</span>;
+      return (
+        <EditablePayment
+          id={row.original._id}
+          initialPayment={row.original.initialPayment}
+          defaultAmount={defaultInitialPayment}
+        />
+      );
+    },
+  },
+  {
+    accessorKey: "remainingPayment",
+    header: "To be paid at venue",
+    cell: ({ row }) => {
+      const initialPayment =
+        row.original.initialPayment ||
+        100 +
+          (row.original.accommodation.type.includes("room") ||
+          row.original.accommodation.type === "bungalow"
+            ? row.original.accommodation.nights *
+              (row.original.accommodation.type === "bungalow" ? 80 : 40)
+            : 0);
+      return <span>€{row.original.total - initialPayment}</span>;
     },
   },
   {
     accessorKey: "paymentMade",
-    header: "Payment Status",
+    header: "Paid at venue",
     cell: ({ row }) => {
       return (
-        <div className="flex items-center gap-2">
-          <Badge variant={row.original.paymentMade ? "success" : "destructive"}>
-            {row.original.paymentMade
-              ? "Initial Payment Made"
-              : "Payment Pending"}
-          </Badge>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="h-8 w-8 p-0">
-                <span className="sr-only">Open menu</span>
-                <MoreHorizontal className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem
-                onClick={async () => {
+        <div className="flex items-center justify-center">
+          <Checkbox
+            checked={row.original.paymentMade}
+            onCheckedChange={async (checked) => {
+              try {
+                await updatePaymentStatus(row.original._id, checked as boolean);
+                window.location.reload();
+              } catch (error) {
+                console.error("Failed to update payment status:", error);
+                alert("Failed to update payment status. Please try again.");
+              }
+            }}
+          />
+        </div>
+      );
+    },
+  },
+  {
+    accessorKey: "actions",
+    header: "",
+    cell: ({ row }) => {
+      return (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" className="h-8 w-8 p-0">
+              <span className="sr-only">Open menu</span>
+              <MoreHorizontal className="h-4 w-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem
+              className="text-red-600"
+              onClick={async () => {
+                if (
+                  confirm("Are you sure you want to delete this registration?")
+                ) {
                   try {
-                    await updatePaymentStatus(
-                      row.original._id,
-                      !row.original.paymentMade
-                    );
-                    // Refresh the page to show updated data
+                    await deleteRegistration(row.original._id);
                     window.location.reload();
                   } catch (error) {
-                    console.error("Failed to update payment status:", error);
-                    alert("Failed to update payment status. Please try again.");
+                    console.error("Failed to delete registration:", error);
+                    alert("Failed to delete registration. Please try again.");
                   }
-                }}
-              >
-                Mark as {row.original.paymentMade ? "Unpaid" : "Paid"}
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                className="text-red-600"
-                onClick={async () => {
-                  if (
-                    confirm(
-                      "Are you sure you want to delete this registration?"
-                    )
-                  ) {
-                    try {
-                      await deleteRegistration(row.original._id);
-                      // Refresh the page to show updated data
-                      window.location.reload();
-                    } catch (error) {
-                      console.error("Failed to delete registration:", error);
-                      alert("Failed to delete registration. Please try again.");
-                    }
-                  }
-                }}
-              >
-                Delete Registration
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
+                }
+              }}
+            >
+              Delete Registration
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       );
     },
   },

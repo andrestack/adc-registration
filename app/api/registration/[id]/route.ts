@@ -10,11 +10,18 @@ export async function PATCH(
     await dbConnect();
 
     const body = await request.json();
-    const { paymentMade } = body;
+    const { paymentMade, initialPayment } = body;
+
+    // Create update object based on provided fields
+    const updateData: { paymentMade?: boolean; initialPayment?: number } = {};
+    if (typeof paymentMade !== "undefined")
+      updateData.paymentMade = paymentMade;
+    if (typeof initialPayment !== "undefined")
+      updateData.initialPayment = initialPayment;
 
     const registration = await Registration.findByIdAndUpdate(
       params.id,
-      { paymentMade },
+      updateData,
       { new: true }
     );
 
@@ -27,15 +34,15 @@ export async function PATCH(
 
     return NextResponse.json({
       success: true,
-      message: "Payment status updated successfully",
+      message: "Registration updated successfully",
       data: registration,
     });
   } catch (error) {
-    console.error("Error updating payment status:", error);
+    console.error("Error updating registration:", error);
     return NextResponse.json(
       {
         success: false,
-        message: "Failed to update payment status",
+        message: "Failed to update registration",
         error: error instanceof Error ? error.message : "Unknown error",
       },
       { status: 500 }
