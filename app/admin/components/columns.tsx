@@ -96,6 +96,7 @@ export type Registration = {
     "10-17": number;
   };
   paymentMade: boolean;
+  initialPayment?: number;
   total: number;
   createdAt: string;
 };
@@ -242,7 +243,7 @@ export const columns: ColumnDef<Registration>[] = [
       return (
         <EditablePayment
           id={row.original._id}
-          initialPayment={row.original.initialPayment}
+          initialPayment={row.original.initialPayment || 0}
           defaultAmount={defaultInitialPayment}
         />
       );
@@ -260,7 +261,7 @@ export const columns: ColumnDef<Registration>[] = [
             ? row.original.accommodation.nights *
               (row.original.accommodation.type === "bungalow" ? 80 : 40)
             : 0);
-      return <span>€{row.original.total - initialPayment}</span>;
+      return <span>€{Math.max(0, row.original.total - initialPayment)}</span>;
     },
   },
   {
