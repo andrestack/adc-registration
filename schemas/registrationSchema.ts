@@ -98,13 +98,13 @@ export const accommodationOptions = [
     value: "single-room",
     label: "Single (2 ppl)",
     price: 40,
-    available: 4,
+    available: 3,
   },
   {
     value: "bungalow",
     label: "Bungalow (6 ppl)",
     price: 80,
-    available: 4,
+    available: 3,
     fixedNights: 5,
   },
 ] as const;
