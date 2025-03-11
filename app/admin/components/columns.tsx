@@ -129,8 +129,9 @@ export const columns: ColumnDef<Registration>[] = [
   },
   {
     accessorKey: "total",
-    header: "To be paid",
+    header: "To be paid at venue",
     cell: ({ row }) => {
+      // Calculate initial payment (deposit + accommodation if applicable)
       const initialPayment =
         100 +
         (row.original.accommodation.type.includes("room") ||
@@ -138,19 +139,28 @@ export const columns: ColumnDef<Registration>[] = [
           ? row.original.accommodation.nights *
             (row.original.accommodation.type === "bungalow" ? 80 : 40)
           : 0);
+
+      // Always show the remaining amount to be paid at venue
       const remainingPayment = row.original.total - initialPayment;
       return <span>€{remainingPayment}</span>;
     },
   },
   {
     accessorKey: "paid",
-    header: "Paid",
+    header: "Initial Payment",
     cell: ({ row }) => {
-      return row.original.paymentMade ? (
-        <span>€{row.original.total}</span>
-      ) : (
-        <span>€0</span>
-      );
+      // Calculate initial payment (deposit + accommodation if applicable)
+      const initialPayment =
+        100 +
+        (row.original.accommodation.type.includes("room") ||
+        row.original.accommodation.type === "bungalow"
+          ? row.original.accommodation.nights *
+            (row.original.accommodation.type === "bungalow" ? 80 : 40)
+          : 0);
+
+      // If payment is made, show the initial payment amount
+      // If not made, show €0
+      return <span>€{row.original.paymentMade ? initialPayment : 0}</span>;
     },
   },
   {
@@ -160,7 +170,9 @@ export const columns: ColumnDef<Registration>[] = [
       return (
         <div className="flex items-center gap-2">
           <Badge variant={row.original.paymentMade ? "success" : "destructive"}>
-            {row.original.paymentMade ? "Paid" : "Pending"}
+            {row.original.paymentMade
+              ? "Initial Payment Made"
+              : "Payment Pending"}
           </Badge>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>

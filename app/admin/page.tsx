@@ -44,7 +44,7 @@ export default function AdminPage() {
             Inscrições
           </h2>
           <p className="text-muted-foreground">
-            Manage and track workshop registrations and payments
+            Inscrições e pagamentos para o ADC 2025
           </p>
         </div>
         <div className="rounded-lg border shadow p-4">
