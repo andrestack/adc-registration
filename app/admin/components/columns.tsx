@@ -83,7 +83,12 @@ export type Registration = {
     level?: string;
   }>;
   accommodation: {
-    type: "tent" | "family-room" | "single-room" | "bungalow";
+    type:
+      | "tent"
+      | "family-room"
+      | "single-room"
+      | "bungalow"
+      | "already-booked";
     nights: number;
   };
   food: {
@@ -234,8 +239,9 @@ export const columns: ColumnDef<Registration>[] = [
     cell: ({ row }) => {
       const defaultInitialPayment =
         100 +
+        (row.original.accommodation.type !== "already-booked" &&
         (row.original.accommodation.type.includes("room") ||
-        row.original.accommodation.type === "bungalow"
+          row.original.accommodation.type === "bungalow")
           ? row.original.accommodation.nights *
             (row.original.accommodation.type === "bungalow" ? 80 : 40)
           : 0);
@@ -253,14 +259,17 @@ export const columns: ColumnDef<Registration>[] = [
     accessorKey: "remainingPayment",
     header: "To be paid at venue",
     cell: ({ row }) => {
-      const initialPayment =
-        row.original.initialPayment ||
+      const defaultInitialPayment =
         100 +
-          (row.original.accommodation.type.includes("room") ||
-          row.original.accommodation.type === "bungalow"
-            ? row.original.accommodation.nights *
-              (row.original.accommodation.type === "bungalow" ? 80 : 40)
-            : 0);
+        (row.original.accommodation.type !== "already-booked" &&
+        (row.original.accommodation.type.includes("room") ||
+          row.original.accommodation.type === "bungalow")
+          ? row.original.accommodation.nights *
+            (row.original.accommodation.type === "bungalow" ? 80 : 40)
+          : 0);
+
+      const initialPayment =
+        row.original.initialPayment || defaultInitialPayment;
       return <span>€{Math.max(0, row.original.total - initialPayment)}</span>;
     },
   },
