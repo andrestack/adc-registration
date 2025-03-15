@@ -87,8 +87,9 @@ export default function ReceiptModal({
   const initialPayment = useMemo(() => {
     return (
       100 +
+      (formData.accommodation.type !== "already-booked" &&
       (formData.accommodation.type.includes("room") ||
-      formData.accommodation.type === "bungalow"
+        formData.accommodation.type === "bungalow")
         ? accommodationTotal()
         : 0)
     );

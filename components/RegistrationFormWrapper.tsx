@@ -15,7 +15,7 @@ export default function RegistrationFormWrapper() {
       fullName: "",
       email: "",
       workshops: [],
-      accommodation: { type: "tent", nights: 0 },
+      accommodation: { type: "tent", nights: 1 },
       food: { type: "full", days: 0 },
       children: { "under-5": 0, "5-10": 0, "10-17": 0 },
       paymentMade: false,

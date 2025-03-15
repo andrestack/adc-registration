@@ -42,7 +42,12 @@ export function AccommodationSelection() {
   // }, []);
 
   const handleAccommodationChange = (
-    value: "tent" | "family-room" | "single-room" | "bungalow"
+    value:
+      | "tent"
+      | "family-room"
+      | "single-room"
+      | "bungalow"
+      | "already-booked"
   ) => {
     setValue("accommodation.type", value);
     // Set nights to 5 automatically for room and bungalow bookings
@@ -52,6 +57,8 @@ export function AccommodationSelection() {
       value === "bungalow"
     ) {
       setValue("accommodation.nights", 5);
+    } else if (value === "already-booked") {
+      setValue("accommodation.nights", 1); // Set minimum nights for already booked
     }
   };
 

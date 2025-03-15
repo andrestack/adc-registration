@@ -10,7 +10,7 @@ const WorkshopSchema = new Schema({
 const AccommodationSchema = new Schema({
   type: {
     type: String,
-    enum: ["tent", "family-room", "single-room", "bungalow"],
+    enum: ["tent", "family-room", "single-room", "bungalow", "already-booked"],
     required: true,
   },
   nights: {
