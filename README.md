@@ -13,11 +13,11 @@ There is a high level of trust between participants and the organisation so good
 
 ## Tech-stack
 
-__v0__ for prototyping
-__NextJs__ app server for development
-__MongoDB__ for CRUD management
-__React-Hook-Form__ for for handling
-__Cloudflare / Vercel__ deployment
+- __v0__ for prototyping
+- __NextJs__ app server for development
+- __MongoDB__ for CRUD management
+- __React-Hook-Form__ for form handling
+- __Cloudflare / Vercel__ deployment
 
 ## Approach
 
