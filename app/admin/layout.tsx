@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import Image from "next/image";
-
+import Link from "next/link";
 const geistSans = localFont({
   src: "../fonts/GeistVF.woff",
   variable: "--font-geist-sans",
@@ -30,12 +30,14 @@ export default function AdminLayout({
     >
       <div className="border-b">
         <div className="container mx-auto flex h-fit items-center px-4">
-          <Image
-            src={"/images/ADC_logo_no_bg.png"}
-            alt="ADC Logo"
-            width={50}
-            height={50}
-          />
+          <Link href="/admin">
+            <Image
+              src={"/images/ADC_logo_no_bg.png"}
+              alt="ADC Logo"
+              width={50}
+              height={50}
+            />
+          </Link>
           <h1 className="text-2xl font-medium font-garda-empty"> Admin</h1>
         </div>
       </div>

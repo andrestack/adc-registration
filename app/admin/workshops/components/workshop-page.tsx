@@ -10,6 +10,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Spinner } from "@/components/ui/spinner";
+
 
 interface Participant {
   fullName: string;
@@ -51,6 +53,8 @@ export function WorkshopPage({ title, workshopId, level }: WorkshopPageProps) {
         // Filter participants based on workshop and level
         const filteredParticipants = data.data.filter(
           (participant: Participant) =>
+           // .some method tests whether at least one element in an array passes a given test. For each participant, it looks through their workshops array,
+          // and returns true if the ID matches the workshopID we are looking for AND there is no level  specified OR the workshop's level matched the specified file
             participant.workshops.some(
               (workshop) =>
                 workshop.id === workshopId &&
@@ -78,7 +82,7 @@ export function WorkshopPage({ title, workshopId, level }: WorkshopPageProps) {
         <CardContent>
           {isLoading ? (
             <div className="flex justify-center items-center h-32">
-              <p>Loading participants...</p>
+              <Spinner />
             </div>
           ) : (
             <Table>
