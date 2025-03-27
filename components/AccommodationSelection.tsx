@@ -73,8 +73,17 @@ export function AccommodationSelection() {
       >
         {accommodationOptions.map((option) => (
           <div key={option.value} className="flex items-center space-x-2">
-            <RadioGroupItem value={option.value} id={option.value} />
-            <Label htmlFor={option.value}>
+            <RadioGroupItem
+              value={option.value}
+              id={option.value}
+              disabled={option.disabled}
+            />
+            <Label
+              htmlFor={option.value}
+              className={
+                option.disabled ? "text-muted-foreground line-through" : ""
+              }
+            >
               {option.label} (€{option.price} per night)
               {(option.value === "family-room" ||
                 option.value === "single-room" ||
