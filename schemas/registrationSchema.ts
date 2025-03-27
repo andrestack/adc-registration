@@ -93,11 +93,18 @@ export const workshops: Workshop[] = [
 ];
 
 export const accommodationOptions = [
-  { value: "tent", label: "Tenda/Van - por pessoa/per person", price: 10 },
+  {
+    value: "tent",
+    label: "Tenda/Van - por pessoa/per person",
+    price: 10,
+    disabled: false,
+    available: 100,
+  },
   {
     value: "family-room",
     label: "Quarto Família / Family Room (4 ppl) - ONLY 1 AVAILABLE",
     price: 40,
+    disabled: false,
     available: 1,
   },
   {
@@ -119,8 +126,20 @@ export const accommodationOptions = [
     value: "already-booked",
     label: "Já tenho alojamento / I have already booked accommodation",
     price: 0,
+    disabled: false,
+    available: 100,
   },
 ] as const;
+
+// Add a type for accommodation options
+export type AccommodationOption = {
+  value: "tent" | "family-room" | "single-room" | "bungalow" | "already-booked";
+  label: string;
+  price: number;
+  disabled: boolean;
+  available: number;
+  fixedNights?: number;
+};
 
 export const foodOptions = [
   { value: "full", label: "3x Refeições/Meals", price: 35 },
