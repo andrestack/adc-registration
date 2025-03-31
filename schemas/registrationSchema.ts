@@ -102,10 +102,10 @@ export const accommodationOptions = [
   },
   {
     value: "family-room",
-    label: "Quarto Família / Family Room (4 ppl) - ONLY 1 AVAILABLE",
+    label: "Quarto Família / Family Room (4 ppl) - ESGOTADO",
     price: 40,
-    disabled: false,
-    available: 1,
+    disabled: true,
+    available: 0,
   },
   {
     value: "single-room",
