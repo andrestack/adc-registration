@@ -4,6 +4,7 @@ import React from "react";
 import { DataTable } from "./components/data-table";
 import { columns } from "./components/columns";
 import { StatsCards } from "./components/stats-cards";
+
 async function getRegistrations() {
   const baseUrl =
     process.env.NODE_ENV === "development"
@@ -37,6 +38,7 @@ export default function AdminPage() {
   }, []);
 
   return (
+    <>  
     <div className="py-10">
       <div className="flex flex-col gap-4">
         <div>
@@ -55,5 +57,6 @@ export default function AdminPage() {
         </div>
       </div>
     </div>
+    </>
   );
 }

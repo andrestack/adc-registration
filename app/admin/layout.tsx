@@ -25,6 +25,7 @@ export default function AdminLayout({
   children: React.ReactNode;
 }) {
   return (
+    <main>
     <div
       className={`${geistSans.variable} ${gardaEmpty.variable} min-h-screen bg-white`}
     >
@@ -41,7 +42,8 @@ export default function AdminLayout({
           <h1 className="text-2xl font-medium font-garda-empty"> Admin</h1>
         </div>
       </div>
-      <div className="container mx-auto px-4">{children}</div>
-    </div>
+        <div className="container mx-auto px-4">{children}</div>
+      </div>
+    </main>
   );
 }
