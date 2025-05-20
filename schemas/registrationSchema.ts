@@ -86,6 +86,7 @@ export const workshops: Workshop[] = [
     levels: [
       { id: "intermediate", name: "Intermediate", price: 150 },
       { id: "advanced", name: "Advanced", price: 150 },
+      { id: "beginner", name: "Beginner", price: 150 },
     ],
   },
   { id: "dance", name: "Dance (12h)", price: 130 },
