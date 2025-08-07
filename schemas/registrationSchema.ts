@@ -82,7 +82,7 @@ export type Workshop = {
 export const workshops: Workshop[] = [
   {
     id: "djembe",
-    name: "Djembe (10h)",
+    name: "Djembe (9h)",
     levels: [
       { id: "intermediate", name: "Intermediate", price: 150 },
       { id: "advanced", name: "Advanced", price: 150 },
@@ -90,7 +90,8 @@ export const workshops: Workshop[] = [
     ],
   },
   { id: "dance", name: "Dance (12h)", price: 130 },
-  { id: "balafon", name: "Balafon (5h)", price: 60 },
+  { id: "balafon", name: "Balafon (4,5h)", price: 60 },
+  { id: "kora", name: "Kora (4,5h)", price: 60 },
 ];
 
 export const accommodationOptions = [
