@@ -1,13 +1,6 @@
 "use client";
 
-import {
-  Home,
-  Users,
-  Hotel,
-  UserCheck,
-  BarChart3,
-  Settings,
-} from "lucide-react";
+import { Home, Users, Hotel, UserCheck, Settings } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 
