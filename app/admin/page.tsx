@@ -38,25 +38,21 @@ export default function AdminPage() {
   }, []);
 
   return (
-    <>  
-    <div className="py-10">
-      <div className="flex flex-col gap-4">
-        <div>
-          <h2 className="text-2xl font-semibold font-garda-empty tracking-tight">
-            Inscrições
-          </h2>
-          <p className="text-muted-foreground">
-            Inscrições e pagamentos para o ADC 2025
-          </p>
-        </div>
+    <div className="flex flex-col gap-4">
+      <div>
+        <h2 className="text-2xl font-semibold font-garda-empty tracking-tight">
+          Inscrições
+        </h2>
+        <p className="text-muted-foreground">
+          Inscrições e pagamentos para o ADC 2025
+        </p>
+      </div>
 
-        <StatsCards data={registrations} />
+      <StatsCards data={registrations} />
 
-        <div className="rounded-lg border shadow p-4">
-          <DataTable columns={columns} data={registrations} />
-        </div>
+      <div className="rounded-lg border shadow p-4">
+        <DataTable columns={columns} data={registrations} />
       </div>
     </div>
-    </>
   );
 }

@@ -75,7 +75,7 @@ export default function AdminAccommodationPage() {
   }, []);
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="space-y-6">
       <div>
         <h2 className="text-2xl font-semibold tracking-tight">
           Accommodation Management

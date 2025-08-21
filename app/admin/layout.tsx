@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
-import Image from "next/image";
-import Link from "next/link";
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { AppSidebar } from "@/components/app-sidebar";
+
 const geistSans = localFont({
   src: "../fonts/GeistVF.woff",
   variable: "--font-geist-sans",
@@ -25,25 +26,23 @@ export default function AdminLayout({
   children: React.ReactNode;
 }) {
   return (
-    <main>
     <div
-      className={`${geistSans.variable} ${gardaEmpty.variable} min-h-screen bg-white`}
+      className={`${geistSans.variable} ${gardaEmpty.variable} min-h-screen bg-background`}
     >
-      <div className="border-b">
-        <div className="container mx-auto flex h-fit items-center px-4">
-          <Link href="/admin">
-            <Image
-              src={"/images/ADC_logo_no_bg.png"}
-              alt="ADC Logo"
-              width={50}
-              height={50}
-            />
-          </Link>
-          <h1 className="text-2xl font-medium font-garda-empty"> Admin</h1>
-        </div>
-      </div>
-        <div className="container mx-auto px-4">{children}</div>
-      </div>
-    </main>
+      <SidebarProvider>
+        <AppSidebar />
+        <main className="flex-1">
+          <div className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+            <div className="container flex h-14 items-center px-4">
+              <SidebarTrigger />
+              <h1 className="ml-4 text-lg font-medium font-garda-empty">
+                Admin Dashboard
+              </h1>
+            </div>
+          </div>
+          <div className="container mx-auto px-4 py-6">{children}</div>
+        </main>
+      </SidebarProvider>
+    </div>
   );
 }
