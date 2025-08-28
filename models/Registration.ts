@@ -85,12 +85,6 @@ const RegistrationSchema = new Schema(
     workshops: {
       type: [WorkshopSchema],
       required: true,
-      validate: {
-        validator: function (workshops: (typeof WorkshopSchema)[]) {
-          return workshops.length >= 1;
-        },
-        message: "Please select at least one workshop",
-      },
     },
     accommodation: {
       type: AccommodationSchema,

@@ -22,14 +22,12 @@ export const registrationSchema = z.object({
     )
     .min(5, "Email must be at least 5 characters long")
     .max(255, "Email must not exceed 255 characters"),
-  workshops: z
-    .array(
-      z.object({
-        id: z.string(),
-        level: z.string().optional(),
-      })
-    )
-    .min(1, "Please select at least one workshop"),
+  workshops: z.array(
+    z.object({
+      id: z.string(),
+      level: z.string().optional(),
+    })
+  ),
   accommodation: z
     .object({
       type: z.enum([
