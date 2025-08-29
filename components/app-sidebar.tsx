@@ -1,6 +1,13 @@
 "use client";
 
-import { Home, Users, Hotel, UserCheck, Settings } from "lucide-react";
+import {
+  Home,
+  Users,
+  Hotel,
+  UserCheck,
+  Settings,
+  DollarSign,
+} from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 
@@ -33,6 +40,11 @@ const items = [
     title: "Accommodation",
     url: "/admin/accommodation",
     icon: Hotel,
+  },
+  {
+    title: "Income & Expenses",
+    url: "/admin/income-expenses",
+    icon: DollarSign,
   },
 ];
 
