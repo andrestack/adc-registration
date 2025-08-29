@@ -35,6 +35,9 @@ async function dbConnect() {
   if (!cached.promise) {
     const opts = {
       bufferCommands: false,
+      tls: true,
+      tlsInsecure: false,
+      family: 4, // Force IPv4
     };
 
     cached.promise = mongoose.connect(MONGODB_URI, opts).then((mongoose) => {
