@@ -3,6 +3,7 @@
 import { IncomeExpensesStatsCards } from "./components/income-expenses-stats-cards";
 import { ExpenseBreakdownTable } from "./components/expense-breakdown-table";
 import { ExpenseCategoryBadges } from "./components/expense-category-badges";
+import { ExpenseIncomeForm } from "./components/expense-income-form";
 import { ExpenseData } from "./types/expense.types";
 import { useEffect, useState } from "react";
 
@@ -29,6 +30,25 @@ export default function AdminIncomeExpensesPage() {
   const [participants, setParticipants] = useState<Participant[]>([]);
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [isLoading, setIsLoading] = useState(true);
+  const [expenses, setExpenses] = useState<ExpenseData[]>([
+    {
+      name: "Artist Fees",
+      amount: 12000,
+      description: "Payment to performing artists",
+    },
+    {
+      name: "Travels",
+      amount: 3500,
+      description: "Transportation and accommodation",
+    },
+    {
+      name: "Team",
+      amount: 8000,
+      description: "Staff and support team compensation",
+    },
+    { name: "Supermarket", amount: 4200, description: "Food and supplies" },
+    { name: "Bar", amount: 1800, description: "Beverages and bar supplies" },
+  ]);
 
   useEffect(() => {
     const fetchRegistrations = async () => {
@@ -66,26 +86,22 @@ export default function AdminIncomeExpensesPage() {
     fetchRegistrations();
   }, []);
 
-  // Mock expense data - these would eventually come from your database
-  const expenses: ExpenseData[] = [
-    {
-      name: "Artist Fees",
-      amount: 12000,
-      description: "Payment to performing artists",
-    },
-    {
-      name: "Travels",
-      amount: 3500,
-      description: "Transportation and accommodation",
-    },
-    {
-      name: "Team",
-      amount: 8000,
-      description: "Staff and support team compensation",
-    },
-    { name: "Supermarket", amount: 4200, description: "Food and supplies" },
-    { name: "Bar", amount: 1800, description: "Beverages and bar supplies" },
-  ];
+  const handleFormSubmit = (
+    data: ExpenseData & { type: "income" | "expense" }
+  ) => {
+    console.log("Form submitted:", data);
+
+    // Add the new expense/income to the list
+    const newExpense: ExpenseData = {
+      id: data.id,
+      name: data.name,
+      amount: data.amount,
+      description: data.description,
+      dateCreated: data.dateCreated,
+    };
+
+    setExpenses((prev) => [...prev, newExpense]);
+  };
 
   return (
     <div className="space-y-6">
@@ -102,7 +118,15 @@ export default function AdminIncomeExpensesPage() {
 
       <ExpenseCategoryBadges expenses={expenses} />
 
-      <ExpenseBreakdownTable expenses={expenses} />
+      {/* Split layout: Form on left, Table on right */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="order-2 lg:order-1">
+          <ExpenseIncomeForm onSubmit={handleFormSubmit} />
+        </div>
+        <div className="order-1 lg:order-2">
+          <ExpenseBreakdownTable expenses={expenses} />
+        </div>
+      </div>
     </div>
   );
 }

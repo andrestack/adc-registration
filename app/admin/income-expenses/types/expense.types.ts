@@ -28,6 +28,11 @@ export interface ExpenseFormData {
   category?: string;
 }
 
+// For income and expense form submissions
+export interface IncomeExpenseFormData extends ExpenseFormData {
+  type: "income" | "expense";
+}
+
 // For API responses
 export interface ExpenseAPIResponse {
   success: boolean;
