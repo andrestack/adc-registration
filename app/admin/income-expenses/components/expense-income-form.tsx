@@ -27,9 +27,13 @@ import { useToast } from "@/hooks/use-toast";
 
 interface ExpenseIncomeFormProps {
   onSubmit: (data: ExpenseData & { type: "income" | "expense" }) => void;
+  onSuccess?: () => void;
 }
 
-export function ExpenseIncomeForm({ onSubmit }: ExpenseIncomeFormProps) {
+export function ExpenseIncomeForm({
+  onSubmit,
+  onSuccess,
+}: ExpenseIncomeFormProps) {
   const { toast } = useToast();
   const [type, setType] = useState<"income" | "expense">("expense");
   const [category, setCategory] = useState<string>("");
@@ -70,13 +74,37 @@ export function ExpenseIncomeForm({ onSubmit }: ExpenseIncomeFormProps) {
         return;
       }
 
+      // Submit to API
+      const response = await fetch("/api/income-expense", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: category,
+          amount: parsedAmount,
+          description: description.trim() || undefined,
+          type,
+        }),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.message || "Failed to submit data");
+      }
+
+      // Create data for local state update
       const submitData = {
         ...(formData as ExpenseData),
         type,
-        id: `${type}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-        dateCreated: new Date().toISOString(),
+        id:
+          result.data._id ||
+          `${type}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+        dateCreated: result.data.createdAt || new Date().toISOString(),
       };
 
+      // Update local state
       onSubmit(submitData);
 
       // Reset form
@@ -84,11 +112,14 @@ export function ExpenseIncomeForm({ onSubmit }: ExpenseIncomeFormProps) {
       setDescription("");
       setAmount("");
 
+      // Call success callback if provided
+      onSuccess?.();
+
       toast({
         title: "Success",
-        description: `${
-          type === "income" ? "Income" : "Expense"
-        } added successfully`,
+        description:
+          result.message ||
+          `${type === "income" ? "Income" : "Expense"} added successfully`,
       });
     } catch (error) {
       console.error("Error submitting form:", error);
