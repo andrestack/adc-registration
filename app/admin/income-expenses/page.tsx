@@ -195,6 +195,14 @@ export default function AdminIncomeExpensesPage() {
     }
   };
 
+  const handleExpenseUpdate = (updatedExpense: ExpenseData) => {
+    setExpenses((prev) =>
+      prev.map((expense) =>
+        expense.id === updatedExpense.id ? updatedExpense : expense
+      )
+    );
+  };
+
   return (
     <div className="space-y-6">
       <div>
@@ -219,7 +227,10 @@ export default function AdminIncomeExpensesPage() {
           />
         </div>
         <div className="order-1 lg:order-2">
-          <ExpenseBreakdownTable expenses={expenses} />
+          <ExpenseBreakdownTable
+            expenses={expenses}
+            onExpenseUpdate={handleExpenseUpdate}
+          />
         </div>
       </div>
     </div>

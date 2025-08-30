@@ -2,6 +2,7 @@
 
 export interface ExpenseData {
   id?: string; // For future database ID
+  _id?: string; // MongoDB ID
   name: string;
   amount: number;
   description?: string;
