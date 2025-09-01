@@ -7,6 +7,7 @@ import {
   UserCheck,
   Settings,
   DollarSign,
+  UtensilsCrossed,
 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
@@ -40,6 +41,11 @@ const items = [
     title: "Accommodation",
     url: "/admin/accommodation",
     icon: Hotel,
+  },
+  {
+    title: "Food",
+    url: "/admin/food",
+    icon: UtensilsCrossed,
   },
   {
     title: "Income & Expenses",

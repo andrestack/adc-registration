@@ -7,6 +7,7 @@ import {
   findHighestExpense,
   sortExpensesByAmount,
   formatCurrency,
+  aggregateExpensesByCategory,
 } from "../utils/expense.utils";
 
 interface ExpenseCategoryBadgesProps {
@@ -16,18 +17,21 @@ interface ExpenseCategoryBadgesProps {
 export function ExpenseCategoryBadges({
   expenses,
 }: ExpenseCategoryBadgesProps) {
+  // Aggregate expenses by category name to avoid duplicates
+  const aggregatedExpenses = aggregateExpensesByCategory(expenses);
+
   // Find the biggest expense for highlighting
-  const biggestExpense = findHighestExpense(expenses);
+  const biggestExpense = findHighestExpense(aggregatedExpenses);
 
   return (
     <div className="flex flex-wrap gap-3">
-      {sortExpensesByAmount(expenses).map((expense) => {
+      {sortExpensesByAmount(aggregatedExpenses).map((expense) => {
         const isHighest =
           biggestExpense && expense.name === biggestExpense.name;
 
         return (
           <Badge
-            key={expense.id || expense.name}
+            key={expense.name}
             variant="outline"
             className={`
               ${getExpenseCategoryColor(expense.name)}

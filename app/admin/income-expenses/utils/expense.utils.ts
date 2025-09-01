@@ -96,3 +96,32 @@ export function parseExpenseAmount(value: string): number {
   const parsed = parseFloat(value);
   return isNaN(parsed) ? 0 : Math.max(0, parsed);
 }
+
+/**
+ * Aggregate expenses by category name, summing amounts
+ */
+export function aggregateExpensesByCategory(
+  expenses: ExpenseData[]
+): ExpenseData[] {
+  const aggregated = new Map<string, ExpenseData>();
+
+  expenses.forEach((expense) => {
+    const categoryName = expense.name;
+
+    if (aggregated.has(categoryName)) {
+      const existing = aggregated.get(categoryName)!;
+      aggregated.set(categoryName, {
+        ...existing,
+        amount: existing.amount + expense.amount,
+        // Keep the most recent description if available
+        description: expense.description || existing.description,
+        // Keep the most recent dateUpdated
+        dateUpdated: expense.dateUpdated || existing.dateUpdated,
+      });
+    } else {
+      aggregated.set(categoryName, { ...expense });
+    }
+  });
+
+  return Array.from(aggregated.values());
+}
