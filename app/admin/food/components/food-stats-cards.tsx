@@ -114,3 +114,4 @@ export function FoodStatsCards({ data }: FoodStatsCardsProps) {
     </div>
   );
 }
+
