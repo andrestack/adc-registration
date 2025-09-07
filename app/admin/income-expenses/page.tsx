@@ -31,6 +31,9 @@ export default function AdminIncomeExpensesPage() {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [isLoading, setIsLoading] = useState(true);
   const [expenses, setExpenses] = useState<ExpenseData[]>([]);
+  const [allIncomeExpenses, setAllIncomeExpenses] = useState<
+    (ExpenseData & { type?: string })[]
+  >([]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -69,10 +72,13 @@ export default function AdminIncomeExpensesPage() {
 
         if (incomeExpensesRes.ok) {
           const incomeExpensesData = await incomeExpensesRes.json();
-          const allIncomeExpenses = incomeExpensesData.data || [];
+          const allIncomeExpensesData = incomeExpensesData.data || [];
+
+          // Store all income and expenses for stats calculation
+          setAllIncomeExpenses(allIncomeExpensesData);
 
           // Filter only expenses for the expenses state
-          const expensesOnly = allIncomeExpenses.filter(
+          const expensesOnly = allIncomeExpensesData.filter(
             (item: ExpenseData & { type?: string }) => item.type !== "income"
           );
 
@@ -162,10 +168,13 @@ export default function AdminIncomeExpensesPage() {
 
       if (incomeExpensesRes.ok) {
         const incomeExpensesData = await incomeExpensesRes.json();
-        const allIncomeExpenses = incomeExpensesData.data || [];
+        const allIncomeExpensesData = incomeExpensesData.data || [];
+
+        // Store all income and expenses for stats calculation
+        setAllIncomeExpenses(allIncomeExpensesData);
 
         // Filter only expenses for the expenses state
-        const expensesOnly = allIncomeExpenses.filter(
+        const expensesOnly = allIncomeExpensesData.filter(
           (item: ExpenseData & { type?: string }) => item.type !== "income"
         );
 
@@ -181,7 +190,19 @@ export default function AdminIncomeExpensesPage() {
   ) => {
     console.log("Form submitted:", data);
 
-    // Add the new expense/income to the list (optimistic update)
+    // Add the new income/expense to the complete list
+    const newEntry = {
+      id: data.id,
+      name: data.name,
+      amount: data.amount,
+      description: data.description,
+      dateCreated: data.dateCreated,
+      type: data.type,
+    };
+
+    setAllIncomeExpenses((prev) => [...prev, newEntry]);
+
+    // Add the new expense to the expenses list (optimistic update)
     if (data.type === "expense") {
       const newExpense: ExpenseData = {
         id: data.id,
@@ -197,10 +218,21 @@ export default function AdminIncomeExpensesPage() {
 
   const handleExpenseUpdate = (updatedExpense: ExpenseData) => {
     setExpenses((prev) =>
-      prev.map((expense) =>
-        expense.id === updatedExpense.id ? updatedExpense : expense
-      )
+      prev.map((expense) => {
+        // Match by either id or _id to handle both MongoDB and temporary IDs
+        const expenseIdMatch =
+          (expense.id && expense.id === updatedExpense.id) ||
+          (expense._id && expense._id === updatedExpense._id) ||
+          (expense.id && expense.id === updatedExpense._id) ||
+          (expense._id && expense._id === updatedExpense.id);
+
+        return expenseIdMatch ? updatedExpense : expense;
+      })
     );
+
+    // Optionally refresh data from server to ensure consistency
+    // Uncomment the line below if you want to fetch fresh data after each edit
+    // refreshExpenses();
   };
 
   return (
@@ -214,7 +246,11 @@ export default function AdminIncomeExpensesPage() {
         </p>
       </div>
 
-      <IncomeExpensesStatsCards data={participants} expenses={expenses} />
+      <IncomeExpensesStatsCards
+        data={participants}
+        expenses={expenses}
+        allIncomeExpenses={allIncomeExpenses}
+      />
 
       <ExpenseCategoryBadges expenses={expenses} />
 

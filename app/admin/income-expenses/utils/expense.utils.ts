@@ -16,19 +16,32 @@ export function getExpenseCategoryColor(categoryName: string): string {
 
 /**
  * Calculate total expenses amount
+ * Filters out any income entries to ensure only expenses are calculated
  */
 export function calculateTotalExpenses(expenses: ExpenseData[]): number {
-  return expenses.reduce((sum, expense) => sum + (expense.amount || 0), 0);
+  // Filter out any income entries that might have slipped through
+  const expenseOnlyData = expenses.filter(
+    (item: ExpenseData & { type?: string }) => item.type !== "income"
+  );
+  return expenseOnlyData.reduce(
+    (sum, expense) => sum + (expense.amount || 0),
+    0
+  );
 }
 
 /**
  * Find the highest expense
+ * Filters out any income entries to ensure only expenses are considered
  */
 export function findHighestExpense(
   expenses: ExpenseData[]
 ): ExpenseData | null {
-  if (expenses.length === 0) return null;
-  return expenses.reduce((max, expense) =>
+  // Filter out any income entries that might have slipped through
+  const expenseOnlyData = expenses.filter(
+    (item: ExpenseData & { type?: string }) => item.type !== "income"
+  );
+  if (expenseOnlyData.length === 0) return null;
+  return expenseOnlyData.reduce((max, expense) =>
     expense.amount > max.amount ? expense : max
   );
 }
@@ -46,9 +59,14 @@ export function calculateExpensePercentage(
 
 /**
  * Sort expenses by amount (descending)
+ * Filters out any income entries to ensure only expenses are sorted
  */
 export function sortExpensesByAmount(expenses: ExpenseData[]): ExpenseData[] {
-  return [...expenses].sort((a, b) => (b.amount || 0) - (a.amount || 0));
+  // Filter out any income entries that might have slipped through
+  const expenseOnlyData = expenses.filter(
+    (item: ExpenseData & { type?: string }) => item.type !== "income"
+  );
+  return [...expenseOnlyData].sort((a, b) => (b.amount || 0) - (a.amount || 0));
 }
 
 /**
@@ -98,14 +116,33 @@ export function parseExpenseAmount(value: string): number {
 }
 
 /**
+ * Calculate total income amount from income entries
+ */
+export function calculateTotalIncome(
+  incomeExpenses: (ExpenseData & { type?: string })[]
+): number {
+  // Filter only income entries
+  const incomeOnlyData = incomeExpenses.filter(
+    (item) => item.type === "income"
+  );
+  return incomeOnlyData.reduce((sum, income) => sum + (income.amount || 0), 0);
+}
+
+/**
  * Aggregate expenses by category name, summing amounts
+ * Filters out any income entries to ensure only expenses are aggregated
  */
 export function aggregateExpensesByCategory(
   expenses: ExpenseData[]
 ): ExpenseData[] {
   const aggregated = new Map<string, ExpenseData>();
 
-  expenses.forEach((expense) => {
+  // Filter out any income entries that might have slipped through
+  const expenseOnlyData = expenses.filter(
+    (item: ExpenseData & { type?: string }) => item.type !== "income"
+  );
+
+  expenseOnlyData.forEach((expense) => {
     const categoryName = expense.name;
 
     if (aggregated.has(categoryName)) {

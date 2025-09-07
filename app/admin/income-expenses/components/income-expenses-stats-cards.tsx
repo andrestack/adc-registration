@@ -2,7 +2,11 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ExpenseData } from "../types/expense.types";
-import { calculateTotalExpenses, formatCurrency } from "../utils/expense.utils";
+import {
+  calculateTotalExpenses,
+  calculateTotalIncome,
+  formatCurrency,
+} from "../utils/expense.utils";
 
 interface Participant {
   _id?: string;
@@ -15,21 +19,29 @@ interface Participant {
 interface IncomeExpensesStatsCardsProps {
   data: Participant[];
   expenses: ExpenseData[];
+  allIncomeExpenses: (ExpenseData & { type?: string })[];
 }
 
 export function IncomeExpensesStatsCards({
   data,
   expenses,
+  allIncomeExpenses,
 }: IncomeExpensesStatsCardsProps) {
   if (!data) {
     return null;
   }
 
   // Calculate total revenue from all registrations (same as main admin stats)
-  const totalRevenue = data.reduce(
+  const totalRegistrationRevenue = data.reduce(
     (sum, participant) => sum + (participant.total || 0),
     0
   );
+
+  // Calculate additional income from income entries
+  const additionalIncome = calculateTotalIncome(allIncomeExpenses);
+
+  // Calculate total revenue (registrations + additional income)
+  const totalRevenue = totalRegistrationRevenue + additionalIncome;
 
   // Calculate total expenses and profit
   const totalExpenses = calculateTotalExpenses(expenses);
@@ -47,7 +59,11 @@ export function IncomeExpensesStatsCards({
             {formatCurrency(totalRevenue)}
           </div>
           <p className="text-xs text-muted-foreground">
-            From all registrations
+            {additionalIncome > 0
+              ? `Registrations (${formatCurrency(
+                  totalRegistrationRevenue
+                )}) + Additional Income (${formatCurrency(additionalIncome)})`
+              : "From all registrations"}
           </p>
         </CardContent>
       </Card>

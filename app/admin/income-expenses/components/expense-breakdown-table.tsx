@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -41,6 +41,11 @@ function EditableAmount({ expense, isHighest, onUpdate }: EditableAmountProps) {
   const { toast } = useToast();
   const [isEditing, setIsEditing] = useState(false);
   const [amount, setAmount] = useState(expense.amount);
+
+  // Sync local amount state when expense prop changes
+  useEffect(() => {
+    setAmount(expense.amount);
+  }, [expense.amount]);
 
   // Debug: Log expense data to see its structure
   console.log("EditableAmount - expense:", expense);
@@ -94,6 +99,9 @@ function EditableAmount({ expense, isHighest, onUpdate }: EditableAmountProps) {
       const updatedExpense: ExpenseData = {
         ...expense,
         amount: parsedAmount,
+        // Ensure both id fields are preserved for proper matching
+        id: expense.id || expense._id,
+        _id: expense._id || expense.id,
       };
 
       onUpdate?.(updatedExpense);
@@ -213,7 +221,7 @@ export function ExpenseBreakdownTable({
               );
 
               return (
-                <TableRow key={expense.id || expense.name}>
+                <TableRow key={expense.id || expense._id || expense.name}>
                   <TableCell>
                     <Badge
                       variant="outline"
