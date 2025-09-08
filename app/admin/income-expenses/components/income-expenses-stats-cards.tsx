@@ -7,6 +7,10 @@ import {
   calculateTotalIncome,
   formatCurrency,
 } from "../utils/expense.utils";
+import {
+  manualProfitCalculation,
+  validateCalculationConsistency,
+} from "../utils/verification.utils";
 
 interface Participant {
   _id?: string;
@@ -46,6 +50,28 @@ export function IncomeExpensesStatsCards({
   // Calculate total expenses and profit
   const totalExpenses = calculateTotalExpenses(expenses);
   const profit = totalRevenue - totalExpenses;
+
+  // Debug logging to verify calculations
+  console.log("=== PROFIT/LOSS CALCULATION DEBUG ===");
+  console.log("Registration Revenue:", totalRegistrationRevenue);
+  console.log("Additional Income from entries:", additionalIncome);
+  console.log("Total Revenue:", totalRevenue);
+  console.log("Total Expenses:", totalExpenses);
+  console.log("Calculated Profit:", profit);
+  console.log("All Income/Expense entries:", allIncomeExpenses);
+  console.log("Filtered expenses only:", expenses);
+  console.log("=====================================");
+
+  // Run manual verification to double-check calculations
+  const manualResult = manualProfitCalculation(data, allIncomeExpenses);
+
+  // Validate consistency between manual and component calculations
+  const calculationsMatch = validateCalculationConsistency(manualResult, {
+    totalRevenue,
+    totalExpenses,
+    profit,
+    additionalIncome,
+  });
 
   return (
     <div className="grid gap-4 md:grid-cols-3">
@@ -96,7 +122,9 @@ export function IncomeExpensesStatsCards({
           >
             {formatCurrency(profit)}
           </div>
-          <p className="text-xs text-muted-foreground">Revenue - Expenses</p>
+          <p className="text-xs text-muted-foreground">
+            Revenue - Expenses {calculationsMatch ? "✅" : "⚠️"}
+          </p>
         </CardContent>
       </Card>
     </div>

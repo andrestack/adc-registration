@@ -23,10 +23,19 @@ export function calculateTotalExpenses(expenses: ExpenseData[]): number {
   const expenseOnlyData = expenses.filter(
     (item: ExpenseData & { type?: string }) => item.type !== "income"
   );
-  return expenseOnlyData.reduce(
+  const total = expenseOnlyData.reduce(
     (sum, expense) => sum + (expense.amount || 0),
     0
   );
+
+  console.log("calculateTotalExpenses - Input data:", expenses);
+  console.log(
+    "calculateTotalExpenses - Filtered expense entries:",
+    expenseOnlyData
+  );
+  console.log("calculateTotalExpenses - Total expenses:", total);
+
+  return total;
 }
 
 /**
@@ -125,7 +134,19 @@ export function calculateTotalIncome(
   const incomeOnlyData = incomeExpenses.filter(
     (item) => item.type === "income"
   );
-  return incomeOnlyData.reduce((sum, income) => sum + (income.amount || 0), 0);
+  const total = incomeOnlyData.reduce(
+    (sum, income) => sum + (income.amount || 0),
+    0
+  );
+
+  console.log("calculateTotalIncome - Input data:", incomeExpenses);
+  console.log(
+    "calculateTotalIncome - Filtered income entries:",
+    incomeOnlyData
+  );
+  console.log("calculateTotalIncome - Total income:", total);
+
+  return total;
 }
 
 /**
