@@ -16,8 +16,8 @@ const gardaEmpty = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "Admin Dashboard - ADC 2025",
-  description: "Manage registrations for Aldeia Djembe Camp 2025",
+  title: "Admin Dashboard - ADC 2026",
+  description: "Manage registrations for Aldeia Djembe Camp 2026",
 };
 
 export default function AdminLayout({

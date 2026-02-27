@@ -4,11 +4,17 @@ import IncomeExpense from "@/models/IncomeExpense";
 import { IncomeExpenseFormData } from "@/app/admin/income-expenses/types/expense.types";
 
 // GET - Fetch all income and expenses
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
     await dbConnect();
 
-    const incomeExpenses = await IncomeExpense.find({})
+    // Get year from query params, default to all years
+    const { searchParams } = new URL(request.url);
+    const year = searchParams.get("year");
+
+    const query = year ? { year: parseInt(year) } : {};
+
+    const incomeExpenses = await IncomeExpense.find(query)
       .sort({ createdAt: -1 })
       .lean();
 
@@ -81,6 +87,7 @@ export async function POST(request: NextRequest) {
       description: description?.trim() || undefined,
       category: name.trim(), // Use name as category for now
       createdBy: "admin", // TODO: Replace with actual user when auth is implemented
+      year: body.year || 2026,
     });
 
     // Save to database

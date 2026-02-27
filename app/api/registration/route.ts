@@ -65,8 +65,14 @@ export async function POST(request: Request) {
     // Validate the data using Zod schema
     const validatedData = registrationSchema.parse(body);
 
+    // Add default year if not provided
+    const registrationData = {
+      ...validatedData,
+      year: validatedData.year || 2026,
+    };
+
     // Create a new registration
-    const registration = await Registration.create(validatedData);
+    const registration = await Registration.create(registrationData);
 
     // Return success response
     return NextResponse.json(
@@ -113,11 +119,17 @@ export async function POST(request: Request) {
   }
 }
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
     await dbConnect();
 
-    const registrations = await Registration.find({})
+    // Get year from query params, default to current year (2026)
+    const { searchParams } = new URL(request.url);
+    const year = searchParams.get("year");
+
+    const query = year ? { year: parseInt(year) } : {};
+
+    const registrations = await Registration.find(query)
       .sort({ createdAt: -1 }) // Sort by newest first
       .lean(); // Convert to plain JavaScript objects
 

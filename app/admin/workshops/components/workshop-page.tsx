@@ -40,7 +40,7 @@ export function WorkshopPage({ title, workshopId, level }: WorkshopPageProps) {
             ? "http://localhost:3000"
             : process.env.NEXT_PUBLIC_API_URL;
 
-        const res = await fetch(`${baseUrl}/api/registration`, {
+        const res = await fetch(`${baseUrl}/api/registration?year=2026`, {
           cache: "no-store",
         });
 

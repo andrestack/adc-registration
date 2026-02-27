@@ -7,10 +7,10 @@ export default function DancePage() {
     <div className="space-y-6">
       <div>
         <h2 className="text-2xl font-semibold tracking-tight">
-          Dance Workshop
+          Dance Workshop 2026
         </h2>
         <p className="text-muted-foreground">
-          List of participants registered for Dance workshop
+          List of participants registered for Dance workshop - ADC 2026
         </p>
       </div>
 

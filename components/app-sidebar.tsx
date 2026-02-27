@@ -8,6 +8,7 @@ import {
   Settings,
   DollarSign,
   UtensilsCrossed,
+  Archive,
 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
@@ -51,6 +52,15 @@ const items = [
     title: "Income & Expenses",
     url: "/admin/income-expenses",
     icon: DollarSign,
+  },
+];
+
+// Archive menu items
+const archiveItems = [
+  {
+    title: "ADC 2025",
+    url: "/admin/archive/2025",
+    icon: Archive,
   },
 ];
 
@@ -112,6 +122,23 @@ export function AppSidebar() {
           <SidebarGroupContent>
             <SidebarMenu>
               {workshopItems.map((item) => (
+                <SidebarMenuItem key={item.title}>
+                  <SidebarMenuButton asChild>
+                    <Link href={item.url}>
+                      <item.icon />
+                      <span>{item.title}</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+        <SidebarGroup>
+          <SidebarGroupLabel>Archive</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {archiveItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild>
                     <Link href={item.url}>

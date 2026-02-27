@@ -8,10 +8,10 @@ export default function DjembePage() {
     <div className="space-y-6">
       <div>
         <h2 className="text-2xl font-semibold tracking-tight">
-          Djembe Workshop
+          Djembe Workshop 2026
         </h2>
         <p className="text-muted-foreground">
-          List of participants registered for Djembe workshops
+          List of participants registered for Djembe workshops - ADC 2026
         </p>
       </div>
 

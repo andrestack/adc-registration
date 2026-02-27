@@ -52,6 +52,11 @@ const IncomeExpenseSchema = new Schema(
       trim: true,
       maxlength: [255, "Updated by field must be less than 255 characters"],
     },
+    year: {
+      type: Number,
+      required: true,
+      default: 2026,
+    },
   },
   {
     timestamps: true, // Automatically adds createdAt and updatedAt

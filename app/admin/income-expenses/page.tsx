@@ -44,8 +44,8 @@ export default function AdminIncomeExpensesPage() {
             ? "http://localhost:3000"
             : process.env.NEXT_PUBLIC_API_URL;
 
-        // Fetch registrations
-        const registrationsRes = await fetch(`${baseUrl}/api/registration`, {
+        // Fetch 2026 registrations
+        const registrationsRes = await fetch(`${baseUrl}/api/registration?year=2026`, {
           cache: "no-store",
         });
 
@@ -65,8 +65,8 @@ export default function AdminIncomeExpensesPage() {
 
         setParticipants(allRegistrations);
 
-        // Fetch income and expenses
-        const incomeExpensesRes = await fetch(`${baseUrl}/api/income-expense`, {
+        // Fetch 2026 income and expenses
+        const incomeExpensesRes = await fetch(`${baseUrl}/api/income-expense?year=2026`, {
           cache: "no-store",
         });
 
@@ -239,10 +239,10 @@ export default function AdminIncomeExpensesPage() {
     <div className="space-y-6">
       <div>
         <h2 className="text-2xl font-semibold tracking-tight">
-          Income & Expenses
+          Income & Expenses 2026
         </h2>
         <p className="text-muted-foreground">
-          Financial overview of registrations, revenue, and expenses.
+          Financial overview of registrations, revenue, and expenses for ADC 2026.
         </p>
       </div>
 

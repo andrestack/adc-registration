@@ -117,6 +117,11 @@ const RegistrationSchema = new Schema(
       required: true,
       min: 0,
     },
+    year: {
+      type: Number,
+      required: true,
+      default: 2026,
+    },
   },
   {
     collection: "Registrations",

@@ -66,6 +66,7 @@ export const registrationSchema = z.object({
   }),
   paymentMade: z.boolean(),
   total: z.number().min(0, "Total amount must be greater than or equal to 0"),
+  year: z.number().optional(),
 });
 
 export type RegistrationFormData = z.infer<typeof registrationSchema>;

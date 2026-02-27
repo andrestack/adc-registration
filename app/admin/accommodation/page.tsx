@@ -41,7 +41,7 @@ export default function AdminAccommodationPage() {
             ? "http://localhost:3000"
             : process.env.NEXT_PUBLIC_API_URL;
 
-        const res = await fetch(`${baseUrl}/api/registration`, {
+        const res = await fetch(`${baseUrl}/api/registration?year=2026`, {
           cache: "no-store",
         });
 
@@ -78,10 +78,10 @@ export default function AdminAccommodationPage() {
     <div className="space-y-6">
       <div>
         <h2 className="text-2xl font-semibold tracking-tight">
-          Accommodation Management
+          Accommodation Management 2026
         </h2>
         <p className="text-muted-foreground">
-          Overview of all on-site accommodation bookings.
+          Overview of all on-site accommodation bookings for ADC 2026.
         </p>
       </div>
 
