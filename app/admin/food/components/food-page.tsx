@@ -32,3 +32,4 @@ export function FoodPage({ title, participants, isLoading }: FoodPageProps) {
   );
 }
 
+

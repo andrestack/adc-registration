@@ -110,3 +110,4 @@ export const columns: ColumnDef<FoodParticipantData>[] = [
 // Export food pricing for use in other components
 export { FOOD_PRICES };
 
+
