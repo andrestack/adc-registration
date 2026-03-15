@@ -19,8 +19,8 @@ const gardaEmpty = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "Inscrição ADC 2025",
-  description: "Formulário de inscrição para o Aldeia Djembe Camp 2025",
+  title: "Inscrição ADC 2026",
+  description: "Formulário de inscrição para o Aldeia Djembe Camp 2026",
 };
 
 export default function RootLayout({
