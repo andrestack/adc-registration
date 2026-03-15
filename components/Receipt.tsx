@@ -8,7 +8,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { Copy, Check, Users } from "lucide-react";
+import { Copy, Check, Users, Eye, EyeOff } from "lucide-react";
 import {
   RegistrationFormData,
   workshops,
@@ -17,6 +17,7 @@ import {
   Workshop,
   AdditionalRegistrant,
 } from "@/schemas/registrationSchema";
+import { maskIban, formatIban } from "@/lib/iban-utils";
 import { useState, useEffect } from "react";
 
 interface ReceiptProps {
@@ -196,6 +197,7 @@ export function Receipt({
   copyToClipboard,
 }: ReceiptProps) {
   const [iban, setIban] = useState("");
+  const [showFullIban, setShowFullIban] = useState(false);
 
   useEffect(() => {
     const fetchIban = async () => {
@@ -210,6 +212,8 @@ export function Receipt({
   const additionalRegistrants = formData.additionalRegistrants || [];
   const totalPeople = 1 + additionalRegistrants.length;
   const isGroupBooking = totalPeople > 1;
+
+  const displayIban = showFullIban ? formatIban(iban) : maskIban(iban);
 
   return (
     <Card className="flex-1">
@@ -261,7 +265,27 @@ export function Receipt({
               </p>
             )}
             <div className="mt-4 flex items-center gap-2">
-              <p className="font-mono">IBAN: {iban}</p>
+              <p className="font-mono">IBAN: {displayIban}</p>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      onClick={() => setShowFullIban(!showFullIban)}
+                    >
+                      {showFullIban ? (
+                        <EyeOff className="h-4 w-4" />
+                      ) : (
+                        <Eye className="h-4 w-4" />
+                      )}
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>{showFullIban ? "Hide IBAN" : "Show IBAN"}</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>
@@ -283,6 +307,11 @@ export function Receipt({
                 </Tooltip>
               </TooltipProvider>
             </div>
+            <p className="text-xs text-muted-foreground mt-2">
+              Clique no ícone do olho para revelar o IBAN completo
+              <br />
+              Click the eye icon to reveal full IBAN
+            </p>
             <p className="mt-2 text-sm">
               <strong>Name:</strong> Carlos André Silva
               <br />

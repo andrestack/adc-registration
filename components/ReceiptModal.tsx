@@ -9,7 +9,7 @@ import {
   DialogTitle,
   DialogFooter,
 } from "@/components/ui/dialog";
-import { Loader2, Download, Check, Copy } from "lucide-react";
+import { Loader2, Download, Check, Copy, Eye, EyeOff } from "lucide-react";
 import {
   RegistrationFormData,
   Workshop,
@@ -17,6 +17,7 @@ import {
   accommodationOptions,
   foodOptions,
 } from "@/schemas/registrationSchema";
+import { maskIban, formatIban } from "@/lib/iban-utils";
 import {
   Tooltip,
   TooltipContent,
@@ -49,6 +50,7 @@ export default function ReceiptModal({
   );
   const [iban, setIban] = useState("");
   const [ibanCopied, setIbanCopied] = useState(false);
+  const [showFullIban, setShowFullIban] = useState(false);
 
   useEffect(() => {
     const fetchIban = async () => {
@@ -186,32 +188,61 @@ export default function ReceiptModal({
               )
             </div>
 
-            <div className="mt-2 flex items-center">
-              <div>IBAN: {iban}</div>
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button
-                      variant="outline"
-                      size="icon"
-                      onClick={() => {
-                        navigator.clipboard.writeText(iban);
-                        setIbanCopied(true);
-                        setTimeout(() => setIbanCopied(false), 2000);
-                      }}
-                    >
-                      {ibanCopied ? (
-                        <Check className="h-4 w-4" />
-                      ) : (
-                        <Copy className="h-4 w-4" />
-                      )}
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <div>{ibanCopied ? "Copied!" : "Copy IBAN"}</div>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
+            <div className="mt-2">
+              <div className="flex items-center gap-2">
+                <div className="font-mono text-sm">
+                  IBAN: {showFullIban ? formatIban(iban) : maskIban(iban)}
+                </div>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        className="h-8 w-8"
+                        onClick={() => setShowFullIban(!showFullIban)}
+                      >
+                        {showFullIban ? (
+                          <EyeOff className="h-4 w-4" />
+                        ) : (
+                          <Eye className="h-4 w-4" />
+                        )}
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <div>{showFullIban ? "Hide IBAN" : "Show IBAN"}</div>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        className="h-8 w-8"
+                        onClick={() => {
+                          navigator.clipboard.writeText(iban);
+                          setIbanCopied(true);
+                          setTimeout(() => setIbanCopied(false), 2000);
+                        }}
+                      >
+                        {ibanCopied ? (
+                          <Check className="h-4 w-4" />
+                        ) : (
+                          <Copy className="h-4 w-4" />
+                        )}
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <div>{ibanCopied ? "Copied!" : "Copy IBAN"}</div>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              </div>
+              <p className="text-xs text-muted-foreground mt-1">
+                Clique no ícone do olho para revelar o IBAN completo / Click eye icon to reveal full IBAN
+              </p>
             </div>
             <div>
               Nome: Carlos André Silva
