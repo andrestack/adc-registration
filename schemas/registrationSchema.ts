@@ -11,6 +11,41 @@ import * as z from "zod";
 //   })).optional(),
 // });
 
+// Schema for additional registrant (group member)
+export const additionalRegistrantSchema = z.object({
+  fullName: z.string().min(1, "Full name is required"),
+  email: z
+    .string()
+    .email("Invalid email address")
+    .regex(
+      /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+      "Invalid email format"
+    )
+    .min(5, "Email must be at least 5 characters long")
+    .max(255, "Email must not exceed 255 characters"),
+  workshops: z.array(
+    z.object({
+      id: z.string(),
+      level: z.string().optional(),
+    })
+  ),
+  food: z.object({
+    type: z.enum(["full", "single", "none"]),
+    days: z
+      .number()
+      .int()
+      .min(0, "Number of days must be at least 0")
+      .max(5, "Maximum number of days is 5"),
+  }),
+  children: z.object({
+    "under-5": z.number().int().min(0),
+    "5-10": z.number().int().min(0),
+    "10-17": z.number().int().min(0),
+  }),
+});
+
+export type AdditionalRegistrant = z.infer<typeof additionalRegistrantSchema>;
+
 export const registrationSchema = z.object({
   fullName: z.string().min(1, "Full name is required"),
   email: z
@@ -56,7 +91,7 @@ export const registrationSchema = z.object({
     days: z
       .number()
       .int()
-      .min(0, "Number of days must be at least 1")
+      .min(0, "Number of days must be at least 0")
       .max(5, "Maximum number of days is 5"),
   }),
   children: z.object({
@@ -67,6 +102,7 @@ export const registrationSchema = z.object({
   paymentMade: z.boolean(),
   total: z.number().min(0, "Total amount must be greater than or equal to 0"),
   year: z.number().optional(),
+  additionalRegistrants: z.array(additionalRegistrantSchema).optional(),
 });
 
 export type RegistrationFormData = z.infer<typeof registrationSchema>;
@@ -103,24 +139,24 @@ export const accommodationOptions = [
   },
   {
     value: "family-room",
-    label: "Quarto Família / Family Room (4 ppl) - ESGOTADO",
-    price: 40,
-    disabled: true,
-    available: 0,
+    label: "Quarto Família / Family Room (4 ppl)",
+    price: 45,
+    disabled: false,
+    available: 5,
   },
   {
     value: "single-room",
-    label: "Single (2 ppl) - ESGOTADO",
-    price: 40,
-    available: 0,
-    disabled: true,
+    label: "Single (2 ppl)",
+    price: 45,
+    available: 5,
+    disabled: false,
   },
   {
     value: "bungalow",
-    label: "Bungalow (6 ppl) - ESGOTADO",
-    price: 80,
-    available: 0,
-    disabled: true,
+    label: "Bungalow (6 ppl)",
+    price: 90,
+    available: 5,
+    disabled: false,
     fixedNights: 5,
   },
   {

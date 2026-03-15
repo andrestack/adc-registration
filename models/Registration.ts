@@ -122,6 +122,19 @@ const RegistrationSchema = new Schema(
       required: true,
       default: 2026,
     },
+    bookingGroupId: {
+      type: String,
+      required: false,
+    },
+    isPrimaryBooking: {
+      type: Boolean,
+      required: true,
+      default: true,
+    },
+    primaryRegistrantName: {
+      type: String,
+      required: false,
+    },
   },
   {
     collection: "Registrations",

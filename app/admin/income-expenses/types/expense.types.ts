@@ -7,6 +7,7 @@ export interface ExpenseData {
   amount: number;
   description?: string;
   category?: string; // For potential subcategories
+  type?: "income" | "expense"; // For income/expense tracking
   dateCreated?: Date | string;
   dateUpdated?: Date | string;
   createdBy?: string; // For audit trail

@@ -3,14 +3,17 @@ import dbConnect from "@/lib/db";
 import Registration from "@/models/Registration";
 import {
   registrationSchema,
+  additionalRegistrantSchema,
   workshops,
   accommodationOptions,
   foodOptions,
   RegistrationFormData,
+  AdditionalRegistrant,
 } from "@/schemas/registrationSchema";
 import { ZodError } from "zod";
+import { randomUUID } from "crypto";
 
-function calculateTotal(data: RegistrationFormData) {
+function calculateIndividualTotal(data: RegistrationFormData | AdditionalRegistrant, includeAccommodation: boolean = true) {
   let total = 0;
 
   // Calculate workshops total
@@ -28,12 +31,14 @@ function calculateTotal(data: RegistrationFormData) {
     }
   });
 
-  // Calculate accommodation total
-  const selectedAccommodation = accommodationOptions.find(
-    (a) => a.value === data.accommodation.type
-  );
-  if (selectedAccommodation) {
-    total += selectedAccommodation.price * data.accommodation.nights;
+  // Calculate accommodation total (only for primary)
+  if (includeAccommodation && 'accommodation' in data) {
+    const selectedAccommodation = accommodationOptions.find(
+      (a) => a.value === data.accommodation.type
+    );
+    if (selectedAccommodation) {
+      total += selectedAccommodation.price * data.accommodation.nights;
+    }
   }
 
   // Calculate food total
@@ -58,28 +63,81 @@ export async function POST(request: Request) {
     // Parse the request body
     const body = await request.json();
 
-    // Calculate total
-    const total = calculateTotal(body);
-    body.total = total;
-
-    // Validate the data using Zod schema
+    // Validate the primary registrant data
     const validatedData = registrationSchema.parse(body);
 
-    // Add default year if not provided
-    const registrationData = {
-      ...validatedData,
+    // Check if there are additional registrants
+    const additionalRegistrants = body.additionalRegistrants || [];
+    const hasAdditionalRegistrants = additionalRegistrants.length > 0;
+
+    // Generate booking group ID if there are additional registrants
+    const bookingGroupId = hasAdditionalRegistrants ? randomUUID() : undefined;
+
+    // Create registrations array to hold all registrations
+    const createdRegistrations = [];
+
+    // Calculate primary registrant total
+    const primaryTotal = calculateIndividualTotal(validatedData, true);
+
+    // Create primary registrant
+    const primaryRegistrationData = {
+      fullName: validatedData.fullName,
+      email: validatedData.email,
+      workshops: validatedData.workshops,
+      accommodation: validatedData.accommodation,
+      food: validatedData.food,
+      children: validatedData.children,
+      paymentMade: validatedData.paymentMade,
+      total: primaryTotal,
       year: validatedData.year || 2026,
+      bookingGroupId,
+      isPrimaryBooking: true,
+      primaryRegistrantName: undefined,
     };
 
-    // Create a new registration
-    const registration = await Registration.create(registrationData);
+    const primaryRegistration = await Registration.create(primaryRegistrationData);
+    createdRegistrations.push(primaryRegistration);
+
+    // Create additional registrants
+    for (const additionalRegistrant of additionalRegistrants) {
+      // Validate additional registrant
+      const validatedAdditional = additionalRegistrantSchema.parse(additionalRegistrant);
+
+      // Calculate their individual total (no accommodation cost - shared with primary)
+      const additionalTotal = calculateIndividualTotal(validatedAdditional, false);
+
+      const additionalRegistrationData = {
+        fullName: validatedAdditional.fullName,
+        email: validatedAdditional.email,
+        workshops: validatedAdditional.workshops,
+        accommodation: validatedData.accommodation, // Same accommodation as primary
+        food: validatedAdditional.food,
+        children: validatedAdditional.children,
+        paymentMade: false, // Additional registrants don't make separate payments
+        total: additionalTotal,
+        year: validatedData.year || 2026,
+        bookingGroupId,
+        isPrimaryBooking: false,
+        primaryRegistrantName: validatedData.fullName,
+      };
+
+      const additionalRegistration = await Registration.create(additionalRegistrationData);
+      createdRegistrations.push(additionalRegistration);
+    }
 
     // Return success response
     return NextResponse.json(
       {
         success: true,
-        message: "Registration successful",
-        data: registration,
+        message: hasAdditionalRegistrants
+          ? "Group registration successful"
+          : "Registration successful",
+        data: {
+          primary: createdRegistrations[0],
+          additional: createdRegistrations.slice(1),
+          totalRegistrations: createdRegistrations.length,
+          bookingGroupId,
+        },
       },
       { status: 201 }
     );

@@ -1,10 +1,10 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { useFormContext } from "react-hook-form";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Loader2, Check, Download } from "lucide-react";
+import { Loader2, Check, Download, UserPlus, UserX } from "lucide-react";
 import { downloadReceipt } from "@/utils/downloadReceipt";
 import FloatingTotal from "./FloatingTotal";
 import ReceiptModal from "./ReceiptModal";
@@ -14,12 +14,14 @@ import { AccommodationSelection } from "./AccommodationSelection";
 import { FoodSelection } from "./FoodSelection";
 import { ChildrenTickets } from "./ChildrenTickets";
 import { Receipt } from "./Receipt";
+import { AddRegistrantDialog } from "./AddRegistrantDialog";
 import {
   RegistrationFormData,
   workshops,
   accommodationOptions,
   foodOptions,
   Workshop,
+  AdditionalRegistrant,
 } from "@/schemas/registrationSchema";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
@@ -31,6 +33,7 @@ export default function RegistrationForm() {
   const [isReceiptModalOpen, setIsReceiptModalOpen] = useState(false);
   const [submitStatus, setSubmitStatus] = useState("idle");
   const [isThankYouModalOpen, setIsThankYouModalOpen] = useState(false);
+  const [isAddRegistrantOpen, setIsAddRegistrantOpen] = useState(false);
 
   const { watch, handleSubmit, setValue, reset } =
     useFormContext<RegistrationFormData>();
@@ -42,8 +45,15 @@ export default function RegistrationForm() {
     age10to17: formData.children["10-17"],
   };
 
+  const additionalRegistrants = useMemo(
+    () => formData.additionalRegistrants || [],
+    [formData.additionalRegistrants]
+  );
+
   const calculateTotal = useCallback(() => {
     let calculatedTotal = 0;
+    
+    // Primary registrant costs
     formData.workshops.forEach((workshopSelection) => {
       const workshop = workshops.find(
         (w: Workshop) => w.id === workshopSelection.id
@@ -59,6 +69,7 @@ export default function RegistrationForm() {
         }
       }
     });
+    
     const selectedAccommodation = accommodationOptions.find(
       (a) => a.value === formData.accommodation.type
     );
@@ -73,6 +84,39 @@ export default function RegistrationForm() {
     calculatedTotal += children.age5to10 * 50;
     calculatedTotal += children.age10to17 * 80;
     calculatedTotal += children.under5 * 0;
+
+    // Additional registrants costs
+    additionalRegistrants.forEach((registrant) => {
+      // Workshops
+      registrant.workshops.forEach((workshopSelection) => {
+        const workshop = workshops.find(
+          (w: Workshop) => w.id === workshopSelection.id
+        );
+        if (workshop) {
+          if (workshop.levels) {
+            const level = workshop.levels.find(
+              (l) => l.id === workshopSelection.level
+            );
+            if (level) calculatedTotal += level.price;
+          } else if (workshop.price) {
+            calculatedTotal += workshop.price;
+          }
+        }
+      });
+
+      // Food (no accommodation - shared)
+      const registrantFood = foodOptions.find(
+        (f) => f.value === registrant.food.type
+      );
+      if (registrantFood) {
+        calculatedTotal += registrantFood.price * registrant.food.days;
+      }
+
+      // Children
+      calculatedTotal += registrant.children["5-10"] * 50;
+      calculatedTotal += registrant.children["10-17"] * 80;
+    });
+
     return calculatedTotal;
   }, [
     formData.workshops,
@@ -83,6 +127,7 @@ export default function RegistrationForm() {
     children.under5,
     children.age5to10,
     children.age10to17,
+    additionalRegistrants,
   ]);
 
   useEffect(() => {
@@ -100,10 +145,24 @@ export default function RegistrationForm() {
     children.under5,
     children.age5to10,
     children.age10to17,
+    additionalRegistrants,
     setValue,
     total,
     calculateTotal,
   ]);
+
+  const handleAddRegistrant = (registrant: AdditionalRegistrant) => {
+    const current = formData.additionalRegistrants || [];
+    setValue("additionalRegistrants", [...current, registrant]);
+  };
+
+  const handleRemoveRegistrant = (index: number) => {
+    const current = formData.additionalRegistrants || [];
+    setValue(
+      "additionalRegistrants",
+      current.filter((_, i) => i !== index)
+    );
+  };
 
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text).then(
@@ -185,6 +244,57 @@ export default function RegistrationForm() {
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
               <div className="space-y-6">
                 <PersonalInfo />
+
+                {/* Additional Registrants Section */}
+                <div className="space-y-4 border-t pt-4">
+                  <div className="flex items-center justify-between">
+                    <Label className="text-lg font-bold">
+                      Pessoas Adicionais / Additional People
+                    </Label>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setIsAddRegistrantOpen(true)}
+                    >
+                      <UserPlus className="mr-2 h-4 w-4" />
+                      Adicionar Pessoa
+                    </Button>
+                  </div>
+
+                  {additionalRegistrants.length > 0 && (
+                    <div className="space-y-2">
+                      {additionalRegistrants.map((registrant, index) => (
+                        <div
+                          key={index}
+                          className="flex items-center justify-between p-3 bg-muted rounded-lg"
+                        >
+                          <div>
+                            <p className="font-medium">{registrant.fullName}</p>
+                            <p className="text-sm text-muted-foreground">
+                              {registrant.email}
+                            </p>
+                            <p className="text-sm text-muted-foreground">
+                              {registrant.workshops.length} workshop(s) | {" "}
+                              {registrant.food.type !== "none"
+                                ? `${registrant.food.type} food`
+                                : "No food"}
+                            </p>
+                          </div>
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleRemoveRegistrant(index)}
+                          >
+                            <UserX className="h-4 w-4 text-red-500" />
+                          </Button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
                 <WorkshopSelection />
                 <AccommodationSelection />
                 <FoodSelection />
@@ -200,7 +310,6 @@ export default function RegistrationForm() {
             total={total}
             ibanCopied={ibanCopied}
             copyToClipboard={copyToClipboard}
-            accommodationTotal={accommodationTotal}
             handleDownloadReceipt={handleDownloadReceipt}
             paymentMade={formData.paymentMade}
             onPaymentMadeChange={(checked) => setValue("paymentMade", checked)}
@@ -274,6 +383,12 @@ export default function RegistrationForm() {
       <ThankYouModal
         isOpen={isThankYouModalOpen}
         onClose={() => setIsThankYouModalOpen(false)}
+      />
+
+      <AddRegistrantDialog
+        isOpen={isAddRegistrantOpen}
+        onClose={() => setIsAddRegistrantOpen(false)}
+        onAdd={handleAddRegistrant}
       />
     </>
   );

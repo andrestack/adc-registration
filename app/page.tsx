@@ -10,7 +10,7 @@ export default function Home() {
           width={100}
           height={100}
         />
-        <span className="text-8xl font-bold font-garda-empty ml-4">2025</span>
+        <span className="text-8xl font-bold font-garda-empty ml-4">2026</span>
       </div>
       <RegistrationFormWrapper />
     </main>

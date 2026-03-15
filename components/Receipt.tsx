@@ -8,13 +8,14 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { Copy, Check } from "lucide-react";
+import { Copy, Check, Users } from "lucide-react";
 import {
   RegistrationFormData,
   workshops,
   accommodationOptions,
   foodOptions,
   Workshop,
+  AdditionalRegistrant,
 } from "@/schemas/registrationSchema";
 import { useState, useEffect } from "react";
 
@@ -23,48 +24,82 @@ interface ReceiptProps {
   total: number;
   ibanCopied: boolean;
   copyToClipboard: (text: string) => void;
-  accommodationTotal: () => number;
   handleDownloadReceipt: () => void;
   paymentMade: boolean;
   onPaymentMadeChange: (checked: boolean) => void;
 }
 
-export function Receipt({
-  formData,
-  total,
-  ibanCopied,
-  copyToClipboard,
-  accommodationTotal,
-}: ReceiptProps) {
-  const [iban, setIban] = useState("");
+function calculatePersonTotal(
+  person: RegistrationFormData | AdditionalRegistrant,
+  includeAccommodation: boolean = false
+): number {
+  let total = 0;
 
-  useEffect(() => {
-    const fetchIban = async () => {
-      const response = await fetch("/api/get-iban"); // Your API route
-      const data = await response.json();
-      setIban(data.iban);
-    };
+  // Workshops
+  person.workshops.forEach((workshopSelection) => {
+    const workshop = workshops.find((w: Workshop) => w.id === workshopSelection.id);
+    if (workshop) {
+      if (workshop.levels) {
+        const level = workshop.levels.find((l) => l.id === workshopSelection.level);
+        if (level) total += level.price;
+      } else if (workshop.price) {
+        total += workshop.price;
+      }
+    }
+  });
 
-    fetchIban();
-  }, []);
+  // Accommodation (only if included)
+  if (includeAccommodation && "accommodation" in person) {
+    const selectedAccommodation = accommodationOptions.find(
+      (a) => a.value === person.accommodation.type
+    );
+    if (selectedAccommodation) {
+      total += selectedAccommodation.price * person.accommodation.nights;
+    }
+  }
+
+  // Food
+  const selectedFood = foodOptions.find((f) => f.value === person.food.type);
+  if (selectedFood) {
+    total += selectedFood.price * person.food.days;
+  }
+
+  // Children
+  total += person.children["5-10"] * 50;
+  total += person.children["10-17"] * 80;
+
+  return total;
+}
+
+function PersonReceiptSection({
+  person,
+  index,
+  isPrimary,
+}: {
+  person: RegistrationFormData | AdditionalRegistrant;
+  index: number;
+  isPrimary: boolean;
+}) {
+  const personTotal = calculatePersonTotal(person, isPrimary);
 
   return (
-    <Card className="flex-1">
-      <CardHeader>
-        <CardTitle>Recibo / Receipt</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div id="registration-receipt" className="space-y-4">
-          <p>
-            <strong>Nome Completo:</strong> {formData.fullName}
-          </p>
-          <p>
-            <strong>Email:</strong> {formData.email}
-          </p>
+    <div className="border-b pb-4 mb-4 last:border-0">
+      <h3 className="font-semibold text-lg mb-2 flex items-center gap-2">
+        {isPrimary ? "1." : `${index + 1}.`} {person.fullName}
+        {isPrimary && (
+          <span className="text-xs bg-blue-100 text-blue-800 px-2 py-0.5 rounded">
+            Principal
+          </span>
+        )}
+      </h3>
+
+      <div className="ml-4 space-y-2 text-sm">
+        {/* Workshops */}
+        {person.workshops.length > 0 && (
           <div>
             <strong>Workshops:</strong>
-            <ul>
-              {formData.workshops.map((workshopSelection) => {
+            <ul className="ml-2">
+              {person.workshops.map((workshopSelection) => {
                 const workshop = workshops.find(
                   (w: Workshop) => w.id === workshopSelection.id
                 );
@@ -90,44 +125,125 @@ export function Receipt({
               })}
             </ul>
           </div>
+        )}
+
+        {/* Food */}
+        {person.food.type !== "none" && (
           <p>
-            <strong>Alojamento:</strong>{" "}
+            <strong>Food:</strong>{" "}
+            {foodOptions.find((f) => f.value === person.food.type)?.label} - €
+            {(foodOptions.find((f) => f.value === person.food.type)?.price || 0) *
+              person.food.days}{" "}
+            ({person.food.days} days)
+          </p>
+        )}
+
+        {/* Children */}
+        {(person.children["under-5"] > 0 ||
+          person.children["5-10"] > 0 ||
+          person.children["10-17"] > 0) && (
+          <div>
+            <strong>Children:</strong>
+            <ul className="ml-2">
+              {person.children["under-5"] > 0 && (
+                <li>
+                  Under 5: {person.children["under-5"]} x €0 = €0
+                </li>
+              )}
+              {person.children["5-10"] > 0 && (
+                <li>
+                  5-10 years: {person.children["5-10"]} x €50 = €
+                  {person.children["5-10"] * 50}
+                </li>
+              )}
+              {person.children["10-17"] > 0 && (
+                <li>
+                  10-17 years: {person.children["10-17"]} x €80 = €
+                  {person.children["10-17"] * 80}
+                </li>
+              )}
+            </ul>
+          </div>
+        )}
+
+        {/* Accommodation (only for primary) */}
+        {isPrimary && "accommodation" in person && (
+          <p>
+            <strong>Accommodation:</strong>{" "}
             {
               accommodationOptions.find(
-                (a) => a.value === formData.accommodation.type
+                (a) => a.value === person.accommodation.type
               )?.label
             }{" "}
             - €
             {(accommodationOptions.find(
-              (a) => a.value === formData.accommodation.type
-            )?.price || 0) * formData.accommodation.nights}{" "}
-            ({formData.accommodation.nights} nights)
+              (a) => a.value === person.accommodation.type
+            )?.price || 0) * person.accommodation.nights}{" "}
+            ({person.accommodation.nights} nights)
           </p>
-          <p>
-            <strong>Comida:</strong>{" "}
-            {foodOptions.find((f) => f.value === formData.food.type)?.label} - €
-            {(foodOptions.find((f) => f.value === formData.food.type)?.price ||
-              0) * formData.food.days}{" "}
-            ({formData.food.days} days)
-          </p>
-          <p>
-            <strong>Crianças / Children Tickets:</strong>
-          </p>
-          <ul>
-            <li>
-              under 5: {formData.children["under-5"]} x €0 = €
-              {formData.children["under-5"] * 0}
-            </li>
-            <li>
-              5-10 years: {formData.children["5-10"]} x €50 = €
-              {formData.children["5-10"] * 50}
-            </li>
-            <li>
-              10-17 years: {formData.children["10-17"]} x €80 = €
-              {formData.children["10-17"] * 80}
-            </li>
-          </ul>
-          <p className="text-xl font-bold">Total: €{total}</p>
+        )}
+
+        <p className="font-semibold text-right">Subtotal: €{personTotal}</p>
+      </div>
+    </div>
+  );
+}
+
+export function Receipt({
+  formData,
+  total,
+  ibanCopied,
+  copyToClipboard,
+}: ReceiptProps) {
+  const [iban, setIban] = useState("");
+
+  useEffect(() => {
+    const fetchIban = async () => {
+      const response = await fetch("/api/get-iban");
+      const data = await response.json();
+      setIban(data.iban);
+    };
+
+    fetchIban();
+  }, []);
+
+  const additionalRegistrants = formData.additionalRegistrants || [];
+  const totalPeople = 1 + additionalRegistrants.length;
+  const isGroupBooking = totalPeople > 1;
+
+  return (
+    <Card className="flex-1">
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          Recibo / Receipt
+          {isGroupBooking && (
+            <span className="text-sm font-normal text-muted-foreground flex items-center gap-1">
+              <Users className="h-4 w-4" />
+              ({totalPeople} pessoas / people)
+            </span>
+          )}
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div id="registration-receipt" className="space-y-4">
+          {/* Primary Registrant */}
+          <PersonReceiptSection
+            person={formData}
+            index={0}
+            isPrimary={true}
+          />
+
+          {/* Additional Registrants */}
+          {additionalRegistrants.map((registrant, index) => (
+            <PersonReceiptSection
+              key={index}
+              person={registrant}
+              index={index + 1}
+              isPrimary={false}
+            />
+          ))}
+
+          <p className="text-xl font-bold border-t pt-4">Total: €{total}</p>
 
           <div className="mt-6 p-4 bg-gray-100 rounded">
             <p className="font-semibold">Instruções / Instructions:</p>
@@ -138,23 +254,14 @@ export function Receipt({
             <p className="italic">
               Please transfer the following amount to confirm your booking:
             </p>
-            <p className="font-bold">
-              €
-              {100 +
-                (formData.accommodation.type.includes("room") ||
-                formData.accommodation.type === "bungalow"
-                  ? accommodationTotal()
-                  : 0)}
-            </p>
-            <p className="text-sm">
-              (€100 taxa de inscrição / registration fee{" "}
-              {(formData.accommodation.type.includes("room") ||
-                formData.accommodation.type === "bungalow") &&
-                `+ €${accommodationTotal()} para o alojamento`}
-              )
-            </p>
-            <div className="mt-2 flex items-center">
-              <p>IBAN: {iban}</p>
+            <p className="font-bold text-2xl">€{total}</p>
+            {isGroupBooking && (
+              <p className="text-sm text-muted-foreground">
+                (Montante total para {totalPeople} pessoas / Total amount for {totalPeople} people)
+              </p>
+            )}
+            <div className="mt-4 flex items-center gap-2">
+              <p className="font-mono">IBAN: {iban}</p>
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>
@@ -176,25 +283,20 @@ export function Receipt({
                 </Tooltip>
               </TooltipProvider>
             </div>
-            <p>
-              Nome: Carlos André Silva
+            <p className="mt-2 text-sm">
+              <strong>Name:</strong> Carlos André Silva
               <br />
-              Banco: N26
+              <strong>Bank:</strong> N26
               <br />
-              BIC: NTSBDEB1XXX
+              <strong>BIC:</strong> NTSBDEB1XXX
               <br />
-              Referencia / Reference: {formData.fullName} + ADC2025
+              <strong>Reference:</strong> {formData.fullName} + ADC2026
             </p>
-            <p className="mt-4">
-              Os restantes €
-              {total -
-                100 -
-                (formData.accommodation.type.includes("room") ||
-                formData.accommodation.type === "bungalow"
-                  ? accommodationTotal()
-                  : 0)}
-              {""} devem ser pagos em dinheiro no local / to be paid in cash at the
-              venue.
+            <p className="mt-4 text-sm text-muted-foreground">
+              Por favor envie o comprovativo por email para confirmar a sua
+              inscrição.
+              <br />
+              Please send the receipt by email to confirm your booking.
             </p>
           </div>
         </div>

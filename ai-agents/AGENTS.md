@@ -49,10 +49,11 @@ This document defines the specialized AI personas (Agents) and their current are
 - **Database**: MongoDB connection and core models.
 
 ### ⏳ In Progress
-- **Workshop Management**: Building out specific views for Djembe, Dance, and Balafon.
-- **Payment Confirmation**: Streamlining the "good will" checkbox into a verified status.
+TBC
 
 ### 🚀 Future / Planned
+- **Update to 2026 registrations**
+- **Allow registration of multiple participants (bungalows)**
 - **Email Notifications**: Automated confirmation emails.
 - **receipt Generation**: Expanding `utils/downloadReceipt.ts` for automated participant receipts.
 - **Advanced Stats**: Forecasting based on historical data.

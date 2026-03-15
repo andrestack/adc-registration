@@ -47,7 +47,17 @@ function formatCurrency(amount: number): string {
   return `€${amount.toLocaleString()}`;
 }
 
-function calculateFinancials(registrations: any[], incomeExpenses: any[]) {
+interface Registration {
+  total: number;
+  paymentMade: boolean;
+}
+
+interface IncomeExpense {
+  type: string;
+  amount: number;
+}
+
+function calculateFinancials(registrations: Registration[], incomeExpenses: IncomeExpense[]) {
   // Registration revenue
   const registrationRevenue = registrations.reduce(
     (sum: number, r: { total: number }) => sum + (r.total || 0),
