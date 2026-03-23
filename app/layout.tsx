@@ -1,6 +1,12 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
+import { Manrope } from "next/font/google";
 import "./globals.css";
+
+const manrope = Manrope({
+  subsets: ["latin"],
+  variable: "--font-manrope",
+});
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -31,7 +37,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} ${gardaEmpty.variable} antialiased`}
+        className={`${manrope.className} ${geistSans.variable} ${geistMono.variable} ${gardaEmpty.variable} antialiased`}
         style={{background: 'linear-gradient(to top, #c5d556, #ffffff)'}}
       >
         {children}
