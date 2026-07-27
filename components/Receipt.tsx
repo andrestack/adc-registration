@@ -9,6 +9,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { Copy, Check, Users, Eye, EyeOff } from "lucide-react";
+import { useTranslations } from "next-intl";
 import {
   RegistrationFormData,
   workshops,
@@ -81,6 +82,10 @@ function PersonReceiptSection({
   index: number;
   isPrimary: boolean;
 }) {
+  const t = useTranslations("receipt");
+  const tWorkshops = useTranslations("workshops");
+  const tAccommodation = useTranslations("accommodation");
+  const tFood = useTranslations("food");
   const personTotal = calculatePersonTotal(person, isPrimary);
 
   return (
@@ -89,7 +94,7 @@ function PersonReceiptSection({
         {isPrimary ? "1." : `${index + 1}.`} {person.fullName}
         {isPrimary && (
           <span className="text-xs bg-blue-100 text-blue-800 px-2 py-0.5 rounded">
-            Principal
+            {t("primaryBadge")}
           </span>
         )}
       </h3>
@@ -98,7 +103,7 @@ function PersonReceiptSection({
         {/* Workshops */}
         {person.workshops.length > 0 && (
           <div>
-            <strong>Workshops:</strong>
+            <strong>{t("workshops")}</strong>
             <ul className="ml-2">
               {person.workshops.map((workshopSelection) => {
                 const workshop = workshops.find(
@@ -111,13 +116,14 @@ function PersonReceiptSection({
                     );
                     return level ? (
                       <li key={`${workshop.id}-${level.id}`}>
-                        {workshop.name} ({level.name}) - €{level.price}
+                        {tWorkshops(`items.${workshop.id}`)} (
+                        {tWorkshops(`levels.${level.id}`)}) - €{level.price}
                       </li>
                     ) : null;
                   } else if (workshop.price) {
                     return (
                       <li key={workshop.id}>
-                        {workshop.name} - €{workshop.price}
+                        {tWorkshops(`items.${workshop.id}`)} - €{workshop.price}
                       </li>
                     );
                   }
@@ -131,11 +137,11 @@ function PersonReceiptSection({
         {/* Food */}
         {person.food.type !== "none" && (
           <p>
-            <strong>Food:</strong>{" "}
-            {foodOptions.find((f) => f.value === person.food.type)?.label} - €
+            <strong>{t("food")}</strong> {tFood(`options.${person.food.type}`)}{" "}
+            - €
             {(foodOptions.find((f) => f.value === person.food.type)?.price || 0) *
               person.food.days}{" "}
-            ({person.food.days} days)
+            ({tFood("days", { count: person.food.days })})
           </p>
         )}
 
@@ -144,22 +150,22 @@ function PersonReceiptSection({
           person.children["5-10"] > 0 ||
           person.children["10-17"] > 0) && (
           <div>
-            <strong>Children:</strong>
+            <strong>{t("children")}</strong>
             <ul className="ml-2">
               {person.children["under-5"] > 0 && (
                 <li>
-                  Under 5: {person.children["under-5"]} x €0 = €0
+                  {t("under5")} {person.children["under-5"]} x €0 = €0
                 </li>
               )}
               {person.children["5-10"] > 0 && (
                 <li>
-                  5-10 years: {person.children["5-10"]} x €50 = €
+                  {t("age5to10")} {person.children["5-10"]} x €50 = €
                   {person.children["5-10"] * 50}
                 </li>
               )}
               {person.children["10-17"] > 0 && (
                 <li>
-                  10-17 years: {person.children["10-17"]} x €80 = €
+                  {t("age10to17")} {person.children["10-17"]} x €80 = €
                   {person.children["10-17"] * 80}
                 </li>
               )}
@@ -170,21 +176,18 @@ function PersonReceiptSection({
         {/* Accommodation (only for primary) */}
         {isPrimary && "accommodation" in person && (
           <p>
-            <strong>Accommodation:</strong>{" "}
-            {
-              accommodationOptions.find(
-                (a) => a.value === person.accommodation.type
-              )?.label
-            }{" "}
-            - €
+            <strong>{t("accommodation")}</strong>{" "}
+            {tAccommodation(`options.${person.accommodation.type}`)} - €
             {(accommodationOptions.find(
               (a) => a.value === person.accommodation.type
             )?.price || 0) * person.accommodation.nights}{" "}
-            ({person.accommodation.nights} nights)
+            ({tAccommodation("nights", { count: person.accommodation.nights })})
           </p>
         )}
 
-        <p className="font-semibold text-right">Subtotal: €{personTotal}</p>
+        <p className="font-semibold text-right">
+          {t("subtotal")} €{personTotal}
+        </p>
       </div>
     </div>
   );
@@ -196,6 +199,7 @@ export function Receipt({
   ibanCopied,
   copyToClipboard,
 }: ReceiptProps) {
+  const t = useTranslations("receipt");
   const [iban, setIban] = useState("");
   const [showFullIban, setShowFullIban] = useState(false);
 
@@ -219,11 +223,11 @@ export function Receipt({
     <Card className="flex-1">
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
-          Recibo / Receipt
+          {t("title")}
           {isGroupBooking && (
             <span className="text-sm font-normal text-muted-foreground flex items-center gap-1">
               <Users className="h-4 w-4" />
-              ({totalPeople} pessoas / people)
+              {t("people", { count: totalPeople })}
             </span>
           )}
         </CardTitle>
@@ -247,21 +251,17 @@ export function Receipt({
             />
           ))}
 
-          <p className="text-xl font-bold border-t pt-4">Total: €{total}</p>
+          <p className="text-xl font-bold border-t pt-4">
+            {t("total")} €{total}
+          </p>
 
           <div className="mt-6 p-4 bg-gray-100 rounded">
-            <p className="font-semibold">Instruções / Instructions:</p>
-            <p>
-              Por favor transfira o seguinte valor para confirmar a sua
-              inscrição:
-            </p>
-            <p className="italic">
-              Please transfer the following amount to confirm your booking:
-            </p>
+            <p className="font-semibold">{t("instructions")}</p>
+            <p>{t("transferPrompt")}</p>
             <p className="font-bold text-2xl">€{total}</p>
             {isGroupBooking && (
               <p className="text-sm text-muted-foreground">
-                (Montante total para {totalPeople} pessoas / Total amount for {totalPeople} people)
+                {t("totalForPeople", { count: totalPeople })}
               </p>
             )}
             <div className="mt-4 flex items-center gap-2">
@@ -282,7 +282,7 @@ export function Receipt({
                     </Button>
                   </TooltipTrigger>
                   <TooltipContent>
-                    <p>{showFullIban ? "Hide IBAN" : "Show IBAN"}</p>
+                    <p>{showFullIban ? t("hideIban") : t("showIban")}</p>
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>
@@ -302,30 +302,24 @@ export function Receipt({
                     </Button>
                   </TooltipTrigger>
                   <TooltipContent>
-                    <p>{ibanCopied ? "Copied!" : "Copy IBAN"}</p>
+                    <p>{ibanCopied ? t("copied") : t("copyIban")}</p>
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>
             </div>
-            <p className="text-xs text-muted-foreground mt-2">
-              Clique no ícone do olho para revelar o IBAN completo
-              <br />
-              Click the eye icon to reveal full IBAN
-            </p>
+            <p className="text-xs text-muted-foreground mt-2">{t("eyeHint")}</p>
             <p className="mt-2 text-sm">
-              <strong>Name:</strong> Carlos André Silva
+              <strong>{t("nameLabel")}</strong> Carlos André Silva
               <br />
-              <strong>Bank:</strong> N26
+              <strong>{t("bankLabel")}</strong> N26
               <br />
               <strong>BIC:</strong> NTSBDEB1XXX
               <br />
-              <strong>Reference:</strong> {formData.fullName} + ADC2026
+              <strong>{t("referenceLabel")}</strong> {formData.fullName} +
+              ADC2026
             </p>
             <p className="mt-4 text-sm text-muted-foreground">
-              Por favor envie o comprovativo por email para confirmar a sua
-              inscrição.
-              <br />
-              Please send the receipt by email to confirm your booking.
+              {t("sendReceiptNote")}
             </p>
           </div>
         </div>

@@ -1,4 +1,5 @@
 import { useFormContext, Controller } from "react-hook-form";
+import { useTranslations } from "next-intl";
 import { Label } from "@/components/ui/label";
 import { NumberInput } from "@/components/ui/number-input";
 import {
@@ -19,8 +20,11 @@ import {
   Accordion,
 } from "@/components/ui/accordion";
 import { useMediaQuery } from "@/hooks/use-media-query";
+import { translateZodMessage } from "@/lib/zod-i18n";
 
 export function FoodSelection() {
+  const t = useTranslations("food");
+  const tZod = useTranslations("errors.zod");
   const isMobile = useMediaQuery("(max-width: 768px)");
 
   const {
@@ -36,19 +40,19 @@ export function FoodSelection() {
 
   const content = (
     <div className="space-y-4">
-      {!isMobile && <Label className="text-lg font-bold">Comida / Food</Label>}
+      {!isMobile && <Label className="text-lg font-bold">{t("title")}</Label>}
       <Controller
         name="food.type"
         control={control}
         render={({ field }) => (
           <Select onValueChange={field.onChange} defaultValue={field.value}>
             <SelectTrigger>
-              <SelectValue placeholder="Select food option" />
+              <SelectValue placeholder={t("selectPlaceholder")} />
             </SelectTrigger>
             <SelectContent>
               {foodOptions.map((option) => (
                 <SelectItem key={option.value} value={option.value}>
-                  {option.label} (€{option.price} per day)
+                  {t(`options.${option.value}`)} (€{option.price} {t("perDay")})
                 </SelectItem>
               ))}
             </SelectContent>
@@ -58,12 +62,13 @@ export function FoodSelection() {
       {errors.food?.type && (
         <p className="text-red-500 text-sm mt-1">
           {typeof errors.food.type === "string"
-            ? errors.food.type
-            : errors.food.type.message || "Invalid food type"}
+            ? translateZodMessage(tZod, errors.food.type)
+            : translateZodMessage(tZod, errors.food.type.message) ||
+              t("errors.invalidType")}
         </p>
       )}
       <div className="mt-2">
-        <Label htmlFor="days">Número de dias / Number of days</Label>
+        <Label htmlFor="days">{t("daysLabel")}</Label>
         <NumberInput
           id="days"
           min={1}
@@ -74,8 +79,9 @@ export function FoodSelection() {
         {errors.food?.days && (
           <p className="text-red-500 text-sm mt-1">
             {typeof errors.food.days === "string"
-              ? errors.food.days
-              : errors.food.days.message || "Invalid number of days"}
+              ? translateZodMessage(tZod, errors.food.days)
+              : translateZodMessage(tZod, errors.food.days.message) ||
+                t("errors.invalidDays")}
           </p>
         )}
       </div>
@@ -86,7 +92,7 @@ export function FoodSelection() {
     <Accordion type="single" collapsible>
       <AccordionItem value="food">
         <AccordionTrigger className="text-md font-bold">
-          Comida / Food
+          {t("title")}
         </AccordionTrigger>
         <AccordionContent>{content}</AccordionContent>
       </AccordionItem>

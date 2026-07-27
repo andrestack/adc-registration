@@ -10,6 +10,12 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { formatDate } from "@/lib/utils";
+import {
+  getAccommodationTypeLabel,
+  getFoodTypeLabel,
+  getWorkshopLabel,
+  getWorkshopLevelLabel,
+} from "@/app/(admin)/admin/utils/labels";
 import { MoreHorizontal, Check, X, MoreVertical } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
@@ -140,7 +146,7 @@ function EditablePayment({
               setIsEditing(false);
               window.location.reload();
             } catch {
-              alert("Failed to update initial payment. Please try again.");
+              alert("Falha ao atualizar o pagamento inicial. Tente novamente.");
             }
           }}
         >
@@ -179,7 +185,7 @@ function EditablePayment({
 export const columns: ColumnDef<Registration>[] = [
   {
     accessorKey: "fullName",
-    header: "Name",
+    header: "Nome",
   },
   {
     accessorKey: "email",
@@ -194,8 +200,8 @@ export const columns: ColumnDef<Registration>[] = [
         <div className="flex flex-wrap gap-1">
           {workshops.map((workshop, idx) => (
             <Badge key={idx} variant="secondary">
-              {workshop.id}
-              {workshop.level ? ` (${workshop.level})` : ""}
+              {getWorkshopLabel(workshop.id)}
+              {workshop.level ? ` (${getWorkshopLevelLabel(workshop.level)})` : ""}
             </Badge>
           ))}
         </div>
@@ -204,24 +210,24 @@ export const columns: ColumnDef<Registration>[] = [
   },
   {
     accessorKey: "accommodation",
-    header: "Accommodation",
+    header: "Alojamento",
     cell: ({ row }) => {
       const accommodation = row.original.accommodation;
       return (
         <span>
-          {accommodation.type} ({accommodation.nights} nights)
+          {getAccommodationTypeLabel(accommodation.type)} ({accommodation.nights} noites)
         </span>
       );
     },
   },
   {
     accessorKey: "food",
-    header: "Food",
+    header: "Comida",
     cell: ({ row }) => {
       const food = row.original.food;
       return (
         <span>
-          {food.type} ({food.days} days)
+          {getFoodTypeLabel(food.type)} ({food.days} dias)
         </span>
       );
     },
@@ -235,7 +241,7 @@ export const columns: ColumnDef<Registration>[] = [
   },
   {
     accessorKey: "initialPayment",
-    header: "Initial Payment",
+    header: "Pagamento Inicial",
     cell: ({ row }) => {
       const defaultInitialPayment =
         100 +
@@ -257,7 +263,7 @@ export const columns: ColumnDef<Registration>[] = [
   },
   {
     accessorKey: "remainingPayment",
-    header: "To be paid at venue",
+    header: "A pagar no local",
     cell: ({ row }) => {
       const defaultInitialPayment =
         100 +
@@ -275,7 +281,7 @@ export const columns: ColumnDef<Registration>[] = [
   },
   {
     accessorKey: "paymentMade",
-    header: "Paid at venue",
+    header: "Pago no local",
     cell: ({ row }) => {
       return (
         <div className="flex items-center justify-center">
@@ -287,7 +293,7 @@ export const columns: ColumnDef<Registration>[] = [
                 window.location.reload();
               } catch (error) {
                 console.error("Failed to update payment status:", error);
-                alert("Failed to update payment status. Please try again.");
+                alert("Falha ao atualizar o estado do pagamento. Tente novamente.");
               }
             }}
           />
@@ -303,7 +309,7 @@ export const columns: ColumnDef<Registration>[] = [
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Open menu</span>
+              <span className="sr-only">Abrir menu</span>
               <MoreHorizontal className="h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
@@ -312,19 +318,19 @@ export const columns: ColumnDef<Registration>[] = [
               className="text-red-600"
               onClick={async () => {
                 if (
-                  confirm("Are you sure you want to delete this registration?")
+                  confirm("Tem a certeza que deseja eliminar esta inscrição?")
                 ) {
                   try {
                     await deleteRegistration(row.original._id);
                     window.location.reload();
                   } catch (error) {
                     console.error("Failed to delete registration:", error);
-                    alert("Failed to delete registration. Please try again.");
+                    alert("Falha ao eliminar a inscrição. Tente novamente.");
                   }
                 }
               }}
             >
-              Delete Registration
+              Eliminar Inscrição
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -333,7 +339,7 @@ export const columns: ColumnDef<Registration>[] = [
   },
   {
     accessorKey: "createdAt",
-    header: "Registration Date",
+    header: "Data de Inscrição",
     cell: ({ row }) => {
       return <span>{formatDate(row.original.createdAt)}</span>;
     },

@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/table";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Spinner } from "@/components/ui/spinner";
+import { getWorkshopLevelLabel } from "@/app/(admin)/admin/utils/labels";
 
 
 interface Participant {
@@ -88,9 +89,9 @@ export function WorkshopPage({ title, workshopId, level }: WorkshopPageProps) {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Name</TableHead>
+                  <TableHead>Nome</TableHead>
                   <TableHead>Email</TableHead>
-                  {level && <TableHead>Level</TableHead>}
+                  {level && <TableHead>Nível</TableHead>}
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -100,10 +101,10 @@ export function WorkshopPage({ title, workshopId, level }: WorkshopPageProps) {
                     <TableCell>{participant.email}</TableCell>
                     {level && (
                       <TableCell>
-                        {
+                        {getWorkshopLevelLabel(
                           participant.workshops.find((w) => w.id === workshopId)
-                            ?.level
-                        }
+                            ?.level ?? ""
+                        )}
                       </TableCell>
                     )}
                   </TableRow>

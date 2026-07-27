@@ -29,27 +29,27 @@ import {
 // Menu items for admin navigation
 const items = [
   {
-    title: "Dashboard",
+    title: "Painel",
     url: "/admin",
     icon: Home,
   },
   {
-    title: "All Registrations",
+    title: "Todas as Inscrições",
     url: "/admin",
     icon: Users,
   },
   {
-    title: "Accommodation",
+    title: "Alojamento",
     url: "/admin/accommodation",
     icon: Hotel,
   },
   {
-    title: "Food",
+    title: "Comida",
     url: "/admin/food",
     icon: UtensilsCrossed,
   },
   {
-    title: "Income & Expenses",
+    title: "Receitas e Despesas",
     url: "/admin/income-expenses",
     icon: DollarSign,
   },
@@ -72,7 +72,7 @@ const workshopItems = [
     icon: UserCheck,
   },
   {
-    title: "Dance",
+    title: "Dança",
     url: "/admin/workshops/dance",
     icon: UserCheck,
   },
@@ -101,7 +101,7 @@ export function AppSidebar() {
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>Main</SidebarGroupLabel>
+          <SidebarGroupLabel>Principal</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {items.map((item) => (
@@ -135,7 +135,7 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
         <SidebarGroup>
-          <SidebarGroupLabel>Archive</SidebarGroupLabel>
+          <SidebarGroupLabel>Arquivo</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {archiveItems.map((item) => (
@@ -158,7 +158,7 @@ export function AppSidebar() {
             <SidebarMenuButton asChild>
               <Link href="/admin/settings">
                 <Settings />
-                <span>Settings</span>
+                <span>Definições</span>
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>

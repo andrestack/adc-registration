@@ -1,4 +1,5 @@
 import { useFormContext } from "react-hook-form";
+import { useTranslations } from "next-intl";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { RegistrationFormData } from "@/schemas/registrationSchema";
@@ -9,8 +10,11 @@ import {
 } from "@/components/ui/accordion";
 import { Accordion } from "@/components/ui/accordion";
 import { useMediaQuery } from "@/hooks/use-media-query";
+import { translateZodMessage } from "@/lib/zod-i18n";
 
 export function PersonalInfo() {
+  const t = useTranslations("form");
+  const tZod = useTranslations("errors.zod");
   const {
     register,
     formState: { errors },
@@ -23,18 +27,20 @@ export function PersonalInfo() {
       <div>
         {!isMobile && (
           <Label htmlFor="fullName" className="text-lg font-bold">
-            Nome Completo / Full Name
+            {t("fullName")}
           </Label>
         )}
 
         <Input
-          placeholder="Nome"
+          placeholder={t("fullNamePlaceholder")}
           id="fullName"
           {...register("fullName")}
           className={errors.fullName ? "border-red-500" : ""}
         />
         {errors.fullName && (
-          <p className="text-red-500 text-sm mt-1">{errors.fullName.message}</p>
+          <p className="text-red-500 text-sm mt-1">
+            {translateZodMessage(tZod, errors.fullName.message)}
+          </p>
         )}
       </div>
       <div>
@@ -52,7 +58,9 @@ export function PersonalInfo() {
           className={errors.email ? "border-red-500" : ""}
         />
         {errors.email && (
-          <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>
+          <p className="text-red-500 text-sm mt-1">
+            {translateZodMessage(tZod, errors.email.message)}
+          </p>
         )}
       </div>
     </div>
@@ -64,7 +72,7 @@ export function PersonalInfo() {
       <Accordion type="single" collapsible className="md:hidden">
         <AccordionItem value="personal-info">
           <AccordionTrigger className="text-md font-bold">
-            Nome & Email
+            {t("nameAndEmail")}
           </AccordionTrigger>
           <AccordionContent>{content}</AccordionContent>
         </AccordionItem>

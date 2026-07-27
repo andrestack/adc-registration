@@ -88,19 +88,19 @@ export function validateExpenseData(expense: Partial<ExpenseData>): {
   const errors: string[] = [];
 
   if (!expense.name || expense.name.trim().length === 0) {
-    errors.push("Expense name is required");
+    errors.push("O nome da despesa é obrigatório");
   }
 
   if (typeof expense.amount !== "number" || expense.amount < 0) {
-    errors.push("Amount must be a valid positive number");
+    errors.push("O valor deve ser um número positivo válido");
   }
 
   if (expense.name && expense.name.length > 100) {
-    errors.push("Expense name must be less than 100 characters");
+    errors.push("O nome da despesa deve ter menos de 100 caracteres");
   }
 
   if (expense.description && expense.description.length > 500) {
-    errors.push("Description must be less than 500 characters");
+    errors.push("A descrição deve ter menos de 500 caracteres");
   }
 
   return {

@@ -10,6 +10,7 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { Loader2, Download, Check, Copy, Eye, EyeOff } from "lucide-react";
+import { useTranslations } from "next-intl";
 import {
   RegistrationFormData,
   Workshop,
@@ -44,6 +45,12 @@ export default function ReceiptModal({
   onDownloadReceipt,
   onSubmit,
 }: ReceiptModalProps) {
+  const t = useTranslations("receiptModal");
+  const tForm = useTranslations("form");
+  const tWorkshops = useTranslations("workshops");
+  const tAccommodation = useTranslations("accommodation");
+  const tFood = useTranslations("food");
+  const tReceipt = useTranslations("receipt");
   const [paymentMade, setPaymentMade] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<"idle" | "loading" | "done">(
     "idle"
@@ -86,16 +93,14 @@ export default function ReceiptModal({
     }
   };
 
+  const includesAccommodation =
+    formData.accommodation.type !== "already-booked" &&
+    (formData.accommodation.type.includes("room") ||
+      formData.accommodation.type === "bungalow");
+
   const initialPayment = useMemo(() => {
-    return (
-      100 +
-      (formData.accommodation.type !== "already-booked" &&
-      (formData.accommodation.type.includes("room") ||
-        formData.accommodation.type === "bungalow")
-        ? accommodationTotal()
-        : 0)
-    );
-  }, [formData.accommodation.type, accommodationTotal]);
+    return 100 + (includesAccommodation ? accommodationTotal() : 0);
+  }, [includesAccommodation, accommodationTotal]);
 
   const remainingPayment = useMemo(() => {
     return total - initialPayment;
@@ -105,17 +110,17 @@ export default function ReceiptModal({
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[425px] h-[calc(100vh-2rem)] sm:h-auto overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Registration Receipt</DialogTitle>
+          <DialogTitle>{t("title")}</DialogTitle>
         </DialogHeader>
         <div className="space-y-4">
           <div>
-            <strong>Nome:</strong> {formData.fullName}
+            <strong>{t("name")}</strong> {formData.fullName}
           </div>
           <div>
             <strong>Email:</strong> {formData.email}
           </div>
           <div>
-            <strong>Workshops:</strong>
+            <strong>{t("workshops")}</strong>
             <ul>
               {formData.workshops.map((workshopSelection) => {
                 const workshop = workshops.find(
@@ -131,61 +136,59 @@ export default function ReceiptModal({
 
                 return (
                   <li key={workshop.id}>
-                    {workshop.name} - €{price}
+                    {tWorkshops(`items.${workshop.id}`)} - €{price}
                   </li>
                 );
               })}
             </ul>
           </div>
           <div>
-            <strong>Accommodation/Alojamento:</strong>{" "}
-            {
-              accommodationOptions.find(
-                (a) => a.value === formData.accommodation.type
-              )?.label
-            }{" "}
-            - €
+            <strong>{t("accommodation")}</strong>{" "}
+            {tAccommodation(`options.${formData.accommodation.type}`)} - €
             {(accommodationOptions.find(
               (a) => a.value === formData.accommodation.type
             )?.price || 0) * formData.accommodation.nights}{" "}
-            ({formData.accommodation.nights} nights)
+            (
+            {tAccommodation("nights", {
+              count: formData.accommodation.nights,
+            })}
+            )
           </div>
           <div>
-            <strong>Food/Alimentação:</strong>{" "}
-            {foodOptions.find((f) => f.value === formData.food.type)?.label} - €
+            <strong>{t("food")}</strong>{" "}
+            {tFood(`options.${formData.food.type}`)} - €
             {(foodOptions.find((f) => f.value === formData.food.type)?.price ||
               0) * formData.food.days}{" "}
-            ({formData.food.days} days)
+            ({tFood("days", { count: formData.food.days })})
           </div>
           <div>
-            <strong>Children/Crianças:</strong>
+            <strong>{t("children")}</strong>
             <ul>
-              <li>under 5: {formData.children["under-5"]} x €0 = €0</li>
               <li>
-                5-10 years: {formData.children["5-10"]} x €50 = €
+                {t("under5")}: {formData.children["under-5"]} x €0 = €0
+              </li>
+              <li>
+                {t("age5to10")}: {formData.children["5-10"]} x €50 = €
                 {formData.children["5-10"] * 50}
               </li>
               <li>
-                10-17 years: {formData.children["10-17"]} x €80 = €
+                {t("age10to17")}: {formData.children["10-17"]} x €80 = €
                 {formData.children["10-17"] * 80}
               </li>
             </ul>
           </div>
-          <div className="text-xl font-bold">Total: €{total}</div>
+          <div className="text-xl font-bold">
+            {tReceipt("total")} €{total}
+          </div>
 
           <div className="mt-6 p-4 bg-gray-100 rounded">
-            <div className="font-semibold">Instructions/Instruções:</div>
-            <div>
-              Por favor transferir para confirmar/ please transfer this amount
-              to confirm your booking:
-            </div>
+            <div className="font-semibold">{t("instructions")}</div>
+            <div>{t("transferPrompt")}</div>
             <div className="font-bold">€{initialPayment}</div>
             <div className="text-sm">
-              (€100 registration fee{" "}
-              {(formData.accommodation.type.includes("room") ||
-                formData.accommodation.type === "bungalow") &&
-                `+ €${accommodationTotal()} for accommodation`}
-              )
+              {includesAccommodation
+                ? t("feeWithAccommodation", { amount: accommodationTotal() })
+                : t("feeOnly")}
             </div>
 
             <div className="mt-2">
@@ -210,7 +213,11 @@ export default function ReceiptModal({
                       </Button>
                     </TooltipTrigger>
                     <TooltipContent>
-                      <div>{showFullIban ? "Hide IBAN" : "Show IBAN"}</div>
+                      <div>
+                        {showFullIban
+                          ? tReceipt("hideIban")
+                          : tReceipt("showIban")}
+                      </div>
                     </TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
@@ -235,27 +242,28 @@ export default function ReceiptModal({
                       </Button>
                     </TooltipTrigger>
                     <TooltipContent>
-                      <div>{ibanCopied ? "Copied!" : "Copy IBAN"}</div>
+                      <div>
+                        {ibanCopied ? tReceipt("copied") : tReceipt("copyIban")}
+                      </div>
                     </TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
               </div>
               <p className="text-xs text-muted-foreground mt-1">
-                Clique no ícone do olho para revelar o IBAN completo / Click eye icon to reveal full IBAN
+                {tReceipt("eyeHint")}
               </p>
             </div>
             <div>
-              Nome: Carlos André Silva
+              {tReceipt("nameLabel")} Carlos André Silva
               <br />
-              Banco: N26
+              {tReceipt("bankLabel")} N26
               <br />
               BIC: N26DEFFXXX
               <br />
-              Referencia / Reference: {formData.fullName} + ADC2025
+              {tReceipt("referenceLabel")} {formData.fullName} + ADC2026
             </div>
             <div className="mt-4">
-              Os restantes / The remaining amount of €{remainingPayment} devem
-              ser pagos em dinheiro no local / to be paid in cash at the venue.
+              {t("remaining", { amount: remainingPayment })}
             </div>
           </div>
         </div>
@@ -267,9 +275,7 @@ export default function ReceiptModal({
                 checked={paymentMade}
                 onCheckedChange={(checked: boolean) => setPaymentMade(checked)}
               />
-              <Label htmlFor="paymentMade">
-                Li as instruções e efectuei pagamento
-              </Label>
+              <Label htmlFor="paymentMade">{tForm("paymentCheckbox")}</Label>
             </div>
             <div className="flex justify-between gap-4">
               <Button
@@ -278,7 +284,7 @@ export default function ReceiptModal({
                 className="flex-1"
               >
                 <Download className="mr-2 h-4 w-4" />
-                Download Recibo
+                {tForm("downloadReceipt")}
               </Button>
               <Button
                 onClick={handleSubmit}
@@ -290,10 +296,10 @@ export default function ReceiptModal({
                 )}
                 {submitStatus === "done" && <Check className="mr-2 h-4 w-4" />}
                 {submitStatus === "idle"
-                  ? "Enviar"
+                  ? tForm("submit")
                   : submitStatus === "loading"
-                  ? "A enviar..."
-                  : "Enviado"}
+                  ? tForm("submitting")
+                  : tForm("submitted")}
               </Button>
             </div>
           </div>

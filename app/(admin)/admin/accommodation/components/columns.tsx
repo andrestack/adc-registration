@@ -1,6 +1,7 @@
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
+import { getAccommodationTypeLabel } from "@/app/(admin)/admin/utils/labels";
 
 // Assuming the Participant interface from your page.tsx is consistent
 interface Accommodation {
@@ -20,7 +21,7 @@ export interface ParticipantData {
 export const columns: ColumnDef<ParticipantData>[] = [
   {
     accessorKey: "fullName",
-    header: "Full Name",
+    header: "Nome Completo",
   },
   {
     accessorKey: "email",
@@ -28,15 +29,15 @@ export const columns: ColumnDef<ParticipantData>[] = [
   },
   {
     accessorKey: "accommodation.type",
-    header: "Acc. Type",
+    header: "Tipo Aloj.",
     cell: ({ row }) => {
       const type = row.original.accommodation.type;
-      return <span className="capitalize">{type.replace("-", " ")}</span>;
+      return <span className="capitalize">{getAccommodationTypeLabel(type)}</span>;
     },
   },
   {
     accessorKey: "accommodation.nights",
-    header: "Nights",
+    header: "Noites",
   },
   // Example: Adding a payment status column if needed
   // {

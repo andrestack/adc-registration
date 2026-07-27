@@ -24,6 +24,7 @@ import {
   getExpenseCategoryColor,
 } from "../utils/expense.utils";
 import { useToast } from "@/hooks/use-toast";
+import { getExpenseCategoryLabel } from "@/app/(admin)/admin/utils/labels";
 
 interface ExpenseIncomeFormProps {
   onSubmit: (data: ExpenseData & { type: "income" | "expense" }) => void;
@@ -58,7 +59,7 @@ export function ExpenseIncomeForm({
 
       if (!validation.isValid) {
         toast({
-          title: "Validation Error",
+          title: "Erro de Validação",
           description: validation.errors.join(", "),
           variant: "destructive",
         });
@@ -67,8 +68,8 @@ export function ExpenseIncomeForm({
 
       if (!category) {
         toast({
-          title: "Validation Error",
-          description: "Please select a category",
+          title: "Erro de Validação",
+          description: "Por favor selecione uma categoria",
           variant: "destructive",
         });
         return;
@@ -116,16 +117,18 @@ export function ExpenseIncomeForm({
       onSuccess?.();
 
       toast({
-        title: "Success",
+        title: "Sucesso",
         description:
           result.message ||
-          `${type === "income" ? "Income" : "Expense"} added successfully`,
+          `${
+            type === "income" ? "Receita" : "Despesa"
+          } adicionada com sucesso`,
       });
     } catch (error) {
       console.error("Error submitting form:", error);
       toast({
-        title: "Error",
-        description: "Failed to submit form. Please try again.",
+        title: "Erro",
+        description: "Falha ao submeter o formulário. Por favor tente novamente.",
         variant: "destructive",
       });
     } finally {
@@ -140,13 +143,15 @@ export function ExpenseIncomeForm({
   return (
     <Card className="h-fit">
       <CardHeader>
-        <CardTitle>Add {type === "income" ? "Income" : "Expense"}</CardTitle>
+        <CardTitle>
+          Adicionar {type === "income" ? "Receita" : "Despesa"}
+        </CardTitle>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Income/Expense Type Selection */}
           <div className="space-y-3">
-            <Label className="text-sm font-medium">Type</Label>
+            <Label className="text-sm font-medium">Tipo</Label>
             <RadioGroup
               value={type}
               onValueChange={(value) => setType(value as "income" | "expense")}
@@ -155,13 +160,13 @@ export function ExpenseIncomeForm({
               <div className="flex items-center space-x-2">
                 <RadioGroupItem value="expense" id="expense" />
                 <Label htmlFor="expense" className="cursor-pointer">
-                  Expense
+                  Despesa
                 </Label>
               </div>
               <div className="flex items-center space-x-2">
                 <RadioGroupItem value="income" id="income" />
                 <Label htmlFor="income" className="cursor-pointer">
-                  Income
+                  Receita
                 </Label>
               </div>
             </RadioGroup>
@@ -169,10 +174,10 @@ export function ExpenseIncomeForm({
 
           {/* Category Selection */}
           <div className="space-y-3">
-            <Label className="text-sm font-medium">Category</Label>
+            <Label className="text-sm font-medium">Categoria</Label>
             <Select value={category} onValueChange={setCategory}>
               <SelectTrigger>
-                <SelectValue placeholder="Select a category" />
+                <SelectValue placeholder="Selecionar categoria" />
               </SelectTrigger>
               <SelectContent>
                 {DEFAULT_EXPENSE_CATEGORIES.filter((cat) => cat.isActive).map(
@@ -184,7 +189,7 @@ export function ExpenseIncomeForm({
                             cat.color.split(" ")[0]
                           }`}
                         />
-                        {cat.name}
+                        {getExpenseCategoryLabel(cat.name)}
                       </div>
                     </SelectItem>
                   )
@@ -196,7 +201,7 @@ export function ExpenseIncomeForm({
                 variant="outline"
                 className={`${getExpenseCategoryColor(category)} w-fit`}
               >
-                {category}
+                {getExpenseCategoryLabel(category)}
               </Badge>
             )}
           </div>
@@ -204,25 +209,25 @@ export function ExpenseIncomeForm({
           {/* Description Field */}
           <div className="space-y-3">
             <Label htmlFor="description" className="text-sm font-medium">
-              Short Description
+              Descrição Breve
             </Label>
             <Input
               id="description"
               type="text"
-              placeholder="Enter a brief description"
+              placeholder="Introduza uma breve descrição"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               maxLength={500}
             />
             <div className="text-xs text-muted-foreground">
-              {description.length}/500 characters
+              {description.length}/500 caracteres
             </div>
           </div>
 
           {/* Amount Field */}
           <div className="space-y-3">
             <Label htmlFor="amount" className="text-sm font-medium">
-              Amount (€)
+              Valor (€)
             </Label>
             <Input
               id="amount"
@@ -243,8 +248,8 @@ export function ExpenseIncomeForm({
             disabled={isSubmitting || !category || !amount}
           >
             {isSubmitting
-              ? "Adding..."
-              : `Adicionar ${type === "income" ? "Income" : "Expense"}`}
+              ? "A adicionar..."
+              : `Adicionar ${type === "income" ? "Receita" : "Despesa"}`}
           </Button>
         </form>
       </CardContent>

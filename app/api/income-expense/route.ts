@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import dbConnect from "@/lib/db";
 import IncomeExpense from "@/models/IncomeExpense";
-import { IncomeExpenseFormData } from "@/app/admin/income-expenses/types/expense.types";
+import { IncomeExpenseFormData } from "@/app/(admin)/admin/income-expenses/types/expense.types";
 
 // GET - Fetch all income and expenses
 export async function GET(request: NextRequest) {

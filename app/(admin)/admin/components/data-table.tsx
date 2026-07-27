@@ -58,7 +58,7 @@ export function DataTable<TData, TValue>({
     <div>
       <div className="flex items-center py-4">
         <Input
-          placeholder="Filter by name..."
+          placeholder="Filtrar por nome..."
           value={
             (table.getColumn("fullName")?.getFilterValue() as string) ?? ""
           }
@@ -125,7 +125,7 @@ export function DataTable<TData, TValue>({
           onClick={() => table.previousPage()}
           disabled={!table.getCanPreviousPage()}
         >
-          Previous
+          Anterior
         </Button>
         <Button
           variant="outline"
@@ -133,7 +133,7 @@ export function DataTable<TData, TValue>({
           onClick={() => table.nextPage()}
           disabled={!table.getCanNextPage()}
         >
-          Next
+          Seguinte
         </Button>
       </div>
     </div>

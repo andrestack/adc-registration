@@ -1,8 +1,19 @@
-import RegistrationFormWrapper from '@/components/RegistrationFormWrapper'
-import Image from 'next/image'
-export default function Home() {
+import { setRequestLocale } from "next-intl/server";
+import RegistrationFormWrapper from "@/components/RegistrationFormWrapper";
+import { LanguageToggle } from "@/components/LanguageToggle";
+import Image from "next/image";
+
+export default function Home({ params: { locale } }: { params: { locale: string } }) {
+  setRequestLocale(locale);
+
   return (
-    <main className="container mx-auto py-6 min-h-screen" style={{ background: 'linear-gradient(to top, #c5d556, #ffffff)' }}>
+    <main
+      className="container mx-auto py-6 min-h-screen"
+      style={{ background: "linear-gradient(to top, #c5d556, #ffffff)" }}
+    >
+      <div className="flex justify-end px-6">
+        <LanguageToggle />
+      </div>
       <div className="flex justify-center items-center">
         <Image
           src="/images/ADC_logo_no_bg.png"
@@ -14,6 +25,5 @@ export default function Home() {
       </div>
       <RegistrationFormWrapper />
     </main>
-  )
+  );
 }
-

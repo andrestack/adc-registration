@@ -27,11 +27,11 @@ export interface FoodParticipantData {
 function getFoodTypeDisplay(type: string): string {
   switch (type) {
     case "full":
-      return "3x Meals";
+      return "3x Refeições";
     case "single":
-      return "1x Meal";
+      return "1x Refeição";
     case "none":
-      return "No Meals";
+      return "Sem refeições";
     default:
       return type;
   }
@@ -62,7 +62,7 @@ function calculateFoodCost(food: Food): number {
 export const columns: ColumnDef<FoodParticipantData>[] = [
   {
     accessorKey: "fullName",
-    header: "Full Name",
+    header: "Nome Completo",
   },
   {
     accessorKey: "email",
@@ -70,7 +70,7 @@ export const columns: ColumnDef<FoodParticipantData>[] = [
   },
   {
     accessorKey: "food.type",
-    header: "Food Type",
+    header: "Tipo de Comida",
     cell: ({ row }) => {
       const type = row.original.food.type;
       return (
@@ -82,14 +82,14 @@ export const columns: ColumnDef<FoodParticipantData>[] = [
   },
   {
     accessorKey: "food.days",
-    header: "Days",
+    header: "Dias",
     cell: ({ row }) => {
       return <span className="font-mono">{row.original.food.days}</span>;
     },
   },
   {
     accessorKey: "foodCost",
-    header: "Food Cost",
+    header: "Custo de Comida",
     cell: ({ row }) => {
       const cost = calculateFoodCost(row.original.food);
       return <span className="font-mono">€{cost}</span>;
@@ -97,7 +97,7 @@ export const columns: ColumnDef<FoodParticipantData>[] = [
   },
   {
     accessorKey: "pricePerDay",
-    header: "Price/Day",
+    header: "Preço/Dia",
     cell: ({ row }) => {
       const pricePerDay = FOOD_PRICES[row.original.food.type];
       return (

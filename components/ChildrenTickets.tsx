@@ -1,4 +1,5 @@
 import { useFormContext } from "react-hook-form";
+import { useTranslations } from "next-intl";
 import { Label } from "@/components/ui/label";
 import { NumberInput } from "@/components/ui/number-input";
 import { RegistrationFormData } from "@/schemas/registrationSchema";
@@ -10,8 +11,11 @@ import {
 } from "@/components/ui/accordion";
 import { FieldErrors } from "react-hook-form";
 import { useMediaQuery } from "@/hooks/use-media-query";
+import { translateZodMessage } from "@/lib/zod-i18n";
 
 export function ChildrenTickets() {
+  const t = useTranslations("children");
+  const tZod = useTranslations("errors.zod");
   const isMobile = useMediaQuery("(max-width: 768px)");
 
   const {
@@ -27,11 +31,11 @@ export function ChildrenTickets() {
   const content = (
     <div>
       {!isMobile && (
-        <Label className="text-lg font-bold">Crianças / Children</Label>
+        <Label className="text-lg font-bold">{t("title")}</Label>
       )}
       <div className="space-y-4 mt-4">
         <div className="flex items-center justify-between">
-          <Label>0-5 anos (free)</Label>
+          <Label>{t("under5")}</Label>
           <NumberInput
             value={under5}
             onValueChange={(value) => setValue("children.under-5", value)}
@@ -40,7 +44,7 @@ export function ChildrenTickets() {
           />
         </div>
         <div className="flex items-center justify-between">
-          <Label>5-10 anos (€50)</Label>
+          <Label>{t("age5to10")}</Label>
           <NumberInput
             value={age5to10}
             onValueChange={(value) => setValue("children.5-10", value)}
@@ -49,7 +53,7 @@ export function ChildrenTickets() {
           />
         </div>
         <div className="flex items-center justify-between">
-          <Label>10-17 anos (€80)</Label>
+          <Label>{t("age10to17")}</Label>
           <NumberInput
             value={age10to17}
             onValueChange={(value) => setValue("children.10-17", value)}
@@ -61,7 +65,9 @@ export function ChildrenTickets() {
       {errors.children && (
         <p className="text-red-500 text-sm mt-1">
           {Object.values(errors.children as FieldErrors)
-            .map((error) => error?.message as string)
+            .map((error) =>
+              translateZodMessage(tZod, error?.message as string)
+            )
             .join(", ")}
         </p>
       )}
@@ -72,7 +78,7 @@ export function ChildrenTickets() {
     <Accordion type="single" collapsible>
       <AccordionItem value="children">
         <AccordionTrigger className="text-md font-bold">
-          Crianças / Children
+          {t("title")}
         </AccordionTrigger>
         <AccordionContent>{content}</AccordionContent>
       </AccordionItem>

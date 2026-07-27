@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import {
   Dialog,
   DialogContent,
@@ -33,6 +34,10 @@ export function AddRegistrantDialog({
   onClose,
   onAdd,
 }: AddRegistrantDialogProps) {
+  const t = useTranslations("addRegistrant");
+  const tWorkshops = useTranslations("workshops");
+  const tFood = useTranslations("food");
+  const tChildren = useTranslations("children");
   const [formData, setFormData] = useState<AdditionalRegistrant>({
     fullName: "",
     email: "",
@@ -84,7 +89,7 @@ export function AddRegistrantDialog({
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <UserPlus className="h-5 w-5" />
-            Adicionar Pessoa / Add Person
+            {t("title")}
           </DialogTitle>
         </DialogHeader>
 
@@ -92,18 +97,18 @@ export function AddRegistrantDialog({
           {/* Personal Info */}
           <div className="space-y-4">
             <div>
-              <Label htmlFor="additional-name">Nome Completo / Full Name *</Label>
+              <Label htmlFor="additional-name">{t("fullName")}</Label>
               <Input
                 id="additional-name"
                 value={formData.fullName}
                 onChange={(e) =>
                   setFormData((prev) => ({ ...prev, fullName: e.target.value }))
                 }
-                placeholder="Nome completo"
+                placeholder={t("fullNamePlaceholder")}
               />
             </div>
             <div>
-              <Label htmlFor="additional-email">Email *</Label>
+              <Label htmlFor="additional-email">{t("email")}</Label>
               <Input
                 id="additional-email"
                 type="email"
@@ -118,13 +123,15 @@ export function AddRegistrantDialog({
 
           {/* Workshops */}
           <div className="space-y-3">
-            <Label className="text-lg font-bold">Workshops</Label>
+            <Label className="text-lg font-bold">{tWorkshops("title")}</Label>
             <div className="space-y-3 ml-2">
               {workshops.map((workshop: Workshop) => (
                 <div key={workshop.id} className="space-y-2">
                   {workshop.levels ? (
                     <div className="flex flex-col gap-2">
-                      <Label className="font-medium">{workshop.name}</Label>
+                      <Label className="font-medium">
+                        {tWorkshops(`items.${workshop.id}`)}
+                      </Label>
                       <RadioGroup
                         onValueChange={(value) =>
                           handleWorkshopChange(workshop.id, true, value)
@@ -146,7 +153,7 @@ export function AddRegistrantDialog({
                             <Label
                               htmlFor={`additional-workshop-${workshop.id}-${level.id}`}
                             >
-                              {level.name} - €{level.price}
+                              {tWorkshops(`levels.${level.id}`)} - €{level.price}
                             </Label>
                           </div>
                         ))}
@@ -167,7 +174,7 @@ export function AddRegistrantDialog({
                         }
                       />
                       <Label htmlFor={`additional-workshop-${workshop.id}`}>
-                        {workshop.name} - €{workshop.price}
+                        {tWorkshops(`items.${workshop.id}`)} - €{workshop.price}
                       </Label>
                     </div>
                   )}
@@ -178,7 +185,7 @@ export function AddRegistrantDialog({
 
           {/* Food Selection */}
           <div className="space-y-3">
-            <Label className="text-lg font-bold">Refeições / Food</Label>
+            <Label className="text-lg font-bold">{tFood("mealsTitle")}</Label>
             <RadioGroup
               value={formData.food.type}
               onValueChange={(value: "full" | "single" | "none") =>
@@ -195,14 +202,14 @@ export function AddRegistrantDialog({
                     id={`additional-food-${option.value}`}
                   />
                   <Label htmlFor={`additional-food-${option.value}`}>
-                    {option.label} - €{option.price}
+                    {tFood(`options.${option.value}`)} - €{option.price}
                   </Label>
                 </div>
               ))}
               <div className="flex items-center space-x-2">
                 <RadioGroupItem value="none" id="additional-food-none" />
                 <Label htmlFor="additional-food-none">
-                  Sem refeições / No meals
+                  {tFood("options.none")}
                 </Label>
               </div>
             </RadioGroup>
@@ -210,7 +217,7 @@ export function AddRegistrantDialog({
             {formData.food.type !== "none" && (
               <div className="mt-3">
                 <Label htmlFor="additional-food-days">
-                  Número de dias / Number of days
+                  {tFood("daysLabel")}
                 </Label>
                 <NumberInput
                   id="additional-food-days"
@@ -231,11 +238,13 @@ export function AddRegistrantDialog({
           {/* Children */}
           <div className="space-y-3">
             <Label className="text-lg font-bold">
-              Bilhetes de Crianças / Children Tickets
+              {tChildren("ticketsTitle")}
             </Label>
             <div className="space-y-3">
               <div>
-                <Label htmlFor="additional-under-5">Menores de 5 / Under 5</Label>
+                <Label htmlFor="additional-under-5">
+                  {tChildren("under5short")}
+                </Label>
                 <NumberInput
                   id="additional-under-5"
                   min={0}
@@ -247,10 +256,14 @@ export function AddRegistrantDialog({
                     }))
                   }
                 />
-                <p className="text-sm text-muted-foreground mt-1">Gratuito / Free</p>
+                <p className="text-sm text-muted-foreground mt-1">
+                  {tChildren("free")}
+                </p>
               </div>
               <div>
-                <Label htmlFor="additional-5-10">5-10 anos / 5-10 years</Label>
+                <Label htmlFor="additional-5-10">
+                  {tChildren("age5to10short")}
+                </Label>
                 <NumberInput
                   id="additional-5-10"
                   min={0}
@@ -265,7 +278,9 @@ export function AddRegistrantDialog({
                 <p className="text-sm text-muted-foreground mt-1">€50</p>
               </div>
               <div>
-                <Label htmlFor="additional-10-17">10-17 anos / 10-17 years</Label>
+                <Label htmlFor="additional-10-17">
+                  {tChildren("age10to17short")}
+                </Label>
                 <NumberInput
                   id="additional-10-17"
                   min={0}
@@ -286,11 +301,11 @@ export function AddRegistrantDialog({
         <DialogFooter>
           <Button variant="outline" onClick={onClose}>
             <X className="mr-2 h-4 w-4" />
-            Cancelar
+            {t("cancel")}
           </Button>
           <Button onClick={handleSubmit} disabled={!isValid}>
             <UserPlus className="mr-2 h-4 w-4" />
-            Adicionar
+            {t("add")}
           </Button>
         </DialogFooter>
       </DialogContent>

@@ -11,8 +11,10 @@ import {
 } from "@/components/ui/tooltip";
 import { Copy, Check } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useTranslations } from "next-intl";
 
 export default function IbanPage() {
+  const t = useTranslations("iban");
   const [iban, setIban] = useState("");
   const [ibanCopied, setIbanCopied] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -27,8 +29,8 @@ export default function IbanPage() {
         setIban(data.iban);
       } catch {
         toast({
-          title: "Erro / Error",
-          description: "Falha ao carregar IBAN / Failed to load IBAN",
+          title: t("errorTitle"),
+          description: t("loadFailed"),
           variant: "destructive",
         });
       } finally {
@@ -37,22 +39,21 @@ export default function IbanPage() {
     };
 
     fetchIban();
-  }, [toast]);
+  }, [toast, t]);
 
   const copyToClipboard = async (text: string) => {
     try {
       await navigator.clipboard.writeText(text);
       setIbanCopied(true);
       toast({
-        title: "Copiado! / Copied!",
-        description:
-          "IBAN copiado para a área de transferência / IBAN copied to clipboard",
+        title: t("copiedTitle"),
+        description: t("copiedDescription"),
       });
       setTimeout(() => setIbanCopied(false), 2000);
     } catch {
       toast({
-        title: "Erro / Error",
-        description: "Falha ao copiar / Failed to copy",
+        title: t("errorTitle"),
+        description: t("copyFailed"),
         variant: "destructive",
       });
     }
@@ -64,21 +65,15 @@ export default function IbanPage() {
         <Card className="shadow-lg">
           <CardHeader className="text-center">
             <CardTitle className="text-2xl font-bold text-gray-900">
-              ADC 2025 Payment
+              {t("title")}
             </CardTitle>
-            <p className="text-sm text-gray-600 mt-2">
-              Dados bancários para transferência
-              <br />
-              <span className="italic">Bank details for transfer</span>
-            </p>
+            <p className="text-sm text-gray-600 mt-2">{t("subtitle")}</p>
           </CardHeader>
           <CardContent className="space-y-6">
             {isLoading ? (
               <div className="text-center">
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mx-auto"></div>
-                <p className="mt-2 text-sm text-gray-600">
-                  Carregando... / Loading...
-                </p>
+                <p className="mt-2 text-sm text-gray-600">{t("loading")}</p>
               </div>
             ) : (
               <>
@@ -108,11 +103,7 @@ export default function IbanPage() {
                             </Button>
                           </TooltipTrigger>
                           <TooltipContent>
-                            <p>
-                              {ibanCopied
-                                ? "Copiado! / Copied!"
-                                : "Copiar IBAN / Copy IBAN"}
-                            </p>
+                            <p>{ibanCopied ? t("copiedTitle") : t("copyIban")}</p>
                           </TooltipContent>
                         </Tooltip>
                       </TooltipProvider>
@@ -121,11 +112,11 @@ export default function IbanPage() {
 
                   <div className="space-y-2 text-sm">
                     <p>
-                      <span className="font-medium">Nome / Name:</span> Carlos
-                      André Silva
+                      <span className="font-medium">{t("nameLabel")}</span>{" "}
+                      Carlos André Silva
                     </p>
                     <p>
-                      <span className="font-medium">Banco / Bank:</span> N26
+                      <span className="font-medium">{t("bankLabel")}</span> N26
                     </p>
                     <p>
                       <span className="font-medium">BIC:</span> NTSBDEB1XXX
@@ -135,15 +126,13 @@ export default function IbanPage() {
 
                 <div className="p-4 bg-yellow-50 rounded-lg border border-yellow-200">
                   <p className="text-sm font-medium text-gray-700 mb-2">
-                    Referência / Reference:
+                    {t("referenceLabel")}
                   </p>
                   <p className="font-semibold text-gray-900">
-                    [SEU NOME / YOUR NAME] + ADC2025
+                    {t("yourName")} + ADC2026
                   </p>
                   <p className="text-xs text-gray-600 mt-1 italic">
-                    Não esqueça de incluir o seu nome na referência
-                    <br />
-                    Don&apos;t forget to include your name in the reference
+                    {t("referenceReminder")}
                   </p>
                 </div>
 
@@ -155,12 +144,12 @@ export default function IbanPage() {
                   {ibanCopied ? (
                     <>
                       <Check className="mr-2 h-4 w-4" />
-                      Copiado! / Copied!
+                      {t("copiedTitle")}
                     </>
                   ) : (
                     <>
                       <Copy className="mr-2 h-4 w-4" />
-                      Copiar IBAN / Copy IBAN
+                      {t("copyIban")}
                     </>
                   )}
                 </Button>
@@ -173,11 +162,7 @@ export default function IbanPage() {
           <p className="text-xs text-gray-500">
             ADC - Aldeia da Cultura
             <br />
-            Para mais informações visite o nosso site
-            <br />
-            <span className="italic">
-              For more information visit our website
-            </span>
+            {t("moreInfo")}
           </p>
         </div>
       </div>

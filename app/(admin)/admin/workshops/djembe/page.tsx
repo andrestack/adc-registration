@@ -8,28 +8,28 @@ export default function DjembePage() {
     <div className="space-y-6">
       <div>
         <h2 className="text-2xl font-semibold tracking-tight">
-          Djembe Workshop 2026
+          Workshop de Djembe 2026
         </h2>
         <p className="text-muted-foreground">
-          List of participants registered for Djembe workshops - ADC 2026
+          Lista de participantes inscritos nos workshops de Djembe - ADC 2026
         </p>
       </div>
 
       <Tabs defaultValue="intermediate">
         <TabsList>
-          <TabsTrigger value="intermediate">Intermediate</TabsTrigger>
-          <TabsTrigger value="advanced">Advanced</TabsTrigger>
+          <TabsTrigger value="intermediate">Intermédio</TabsTrigger>
+          <TabsTrigger value="advanced">Avançado</TabsTrigger>
         </TabsList>
         <TabsContent value="intermediate">
           <WorkshopPage
-            title="Djembe Intermediate"
+            title="Djembe Intermédio"
             workshopId="djembe"
             level="intermediate"
           />
         </TabsContent>
         <TabsContent value="advanced">
           <WorkshopPage
-            title="Djembe Advanced"
+            title="Djembe Avançado"
             workshopId="djembe"
             level="advanced"
           />

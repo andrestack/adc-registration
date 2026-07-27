@@ -78,7 +78,7 @@ export function IncomeExpensesStatsCards({
       {/* Total Revenue Card */}
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Total Revenue</CardTitle>
+          <CardTitle className="text-sm font-medium">Receita Total</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold">
@@ -86,10 +86,10 @@ export function IncomeExpensesStatsCards({
           </div>
           <p className="text-xs text-muted-foreground">
             {additionalIncome > 0
-              ? `Registrations (${formatCurrency(
+              ? `Inscrições (${formatCurrency(
                   totalRegistrationRevenue
-                )}) + Additional Income (${formatCurrency(additionalIncome)})`
-              : "From all registrations"}
+                )}) + Receita Adicional (${formatCurrency(additionalIncome)})`
+              : "De todas as inscrições"}
           </p>
         </CardContent>
       </Card>
@@ -97,14 +97,14 @@ export function IncomeExpensesStatsCards({
       {/* Total Expenses Card */}
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Total Expenses</CardTitle>
+          <CardTitle className="text-sm font-medium">Despesas Totais</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold text-red-600">
             {formatCurrency(totalExpenses)}
           </div>
           <p className="text-xs text-muted-foreground">
-            All expense categories
+            Todas as categorias de despesa
           </p>
         </CardContent>
       </Card>
@@ -112,7 +112,7 @@ export function IncomeExpensesStatsCards({
       {/* Profit Card */}
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Profit/Loss</CardTitle>
+          <CardTitle className="text-sm font-medium">Lucro/Prejuízo</CardTitle>
         </CardHeader>
         <CardContent>
           <div
@@ -123,7 +123,7 @@ export function IncomeExpensesStatsCards({
             {formatCurrency(profit)}
           </div>
           <p className="text-xs text-muted-foreground">
-            Revenue - Expenses {calculationsMatch ? "✅" : "⚠️"}
+            Receita - Despesas {calculationsMatch ? "✅" : "⚠️"}
           </p>
         </CardContent>
       </Card>

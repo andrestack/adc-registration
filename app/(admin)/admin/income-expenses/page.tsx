@@ -239,10 +239,11 @@ export default function AdminIncomeExpensesPage() {
     <div className="space-y-6">
       <div>
         <h2 className="text-2xl font-semibold tracking-tight">
-          Income & Expenses 2026
+          Receitas e Despesas 2026
         </h2>
         <p className="text-muted-foreground">
-          Financial overview of registrations, revenue, and expenses for ADC 2026.
+          Visão geral financeira de inscrições, receita e despesas para o ADC
+          2026.
         </p>
       </div>
 

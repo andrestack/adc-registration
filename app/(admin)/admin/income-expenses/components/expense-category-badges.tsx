@@ -11,6 +11,7 @@ import {
   aggregateExpensesByCategory,
 } from "../utils/expense.utils";
 import { ExpenseCategoryModal } from "./expense-category-modal";
+import { getExpenseCategoryLabel } from "@/app/(admin)/admin/utils/labels";
 
 interface ExpenseCategoryBadgesProps {
   expenses: ExpenseData[];
@@ -58,9 +59,11 @@ export function ExpenseCategoryBadges({
                 ${isHighest ? "ring-2 ring-red-500/50" : ""}
               `}
               onClick={() => handleBadgeClick(expense.name)}
-              title={`Click to view all ${expense.name} expenses`}
+              title={`Clique para ver todas as despesas de ${getExpenseCategoryLabel(
+                expense.name
+              )}`}
             >
-              <span>{expense.name}</span>
+              <span>{getExpenseCategoryLabel(expense.name)}</span>
               <span
                 className={`font-mono font-bold ${
                   isHighest ? "text-red-700" : ""

@@ -20,6 +20,7 @@ import {
   getExpenseCategoryColor,
   formatCurrency,
 } from "../utils/expense.utils";
+import { getExpenseCategoryLabel } from "@/app/(admin)/admin/utils/labels";
 
 interface ExpenseCategoryModalProps {
   isOpen: boolean;
@@ -54,9 +55,9 @@ export function ExpenseCategoryModal({
               variant="outline"
               className={`${getExpenseCategoryColor(categoryName)} text-sm`}
             >
-              {categoryName}
+              {getExpenseCategoryLabel(categoryName)}
             </Badge>
-            <span className="text-lg">Category Details</span>
+            <span className="text-lg">Detalhes da Categoria</span>
           </DialogTitle>
         </DialogHeader>
 
@@ -65,7 +66,7 @@ export function ExpenseCategoryModal({
           <div className="bg-muted/50 p-4 rounded-lg">
             <div className="flex justify-between items-center">
               <span className="text-sm text-muted-foreground">
-                Total Expenses in Category
+                Total de Despesas na Categoria
               </span>
               <span className="text-lg font-bold">
                 {formatCurrency(categoryTotal)}
@@ -73,11 +74,11 @@ export function ExpenseCategoryModal({
             </div>
             <div className="flex justify-between items-center mt-1">
               <span className="text-sm text-muted-foreground">
-                Number of Entries
+                Número de Entradas
               </span>
               <span className="text-sm font-medium">
                 {categoryExpenses.length}{" "}
-                {categoryExpenses.length === 1 ? "entry" : "entries"}
+                {categoryExpenses.length === 1 ? "entrada" : "entradas"}
               </span>
             </div>
           </div>
@@ -88,9 +89,9 @@ export function ExpenseCategoryModal({
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Description</TableHead>
-                    <TableHead className="text-right">Amount</TableHead>
-                    <TableHead className="text-right">Date</TableHead>
+                    <TableHead>Descrição</TableHead>
+                    <TableHead className="text-right">Valor</TableHead>
+                    <TableHead className="text-right">Data</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -119,7 +120,7 @@ export function ExpenseCategoryModal({
                           <div className="space-y-1">
                             <div className="font-medium text-sm">
                               {expense.description ||
-                                "No description available"}
+                                "Sem descrição disponível"}
                             </div>
                             {expense.id || expense._id ? (
                               <div className="text-xs text-muted-foreground font-mono">
@@ -136,7 +137,7 @@ export function ExpenseCategoryModal({
                             ? new Date(
                                 expense.dateCreated || expense.dateUpdated!
                               ).toLocaleDateString()
-                            : "Unknown"}
+                            : "Desconhecido"}
                         </TableCell>
                       </TableRow>
                     ))}
@@ -145,7 +146,7 @@ export function ExpenseCategoryModal({
             </div>
           ) : (
             <div className="text-center py-8 text-muted-foreground">
-              <p>No expenses found for this category.</p>
+              <p>Nenhuma despesa encontrada nesta categoria.</p>
             </div>
           )}
         </div>

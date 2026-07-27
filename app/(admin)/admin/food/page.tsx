@@ -80,17 +80,18 @@ export default function AdminFoodPage() {
     <div className="space-y-6">
       <div>
         <h2 className="text-2xl font-semibold tracking-tight">
-          Food Management 2026
+          Gestão de Comida 2026
         </h2>
         <p className="text-muted-foreground">
-          Overview of all food and meal bookings for ADC 2026.
+          Visão geral de todas as reservas de comida e refeições para o ADC
+          2026.
         </p>
       </div>
 
       <FoodStatsCards data={foodParticipants} />
 
       <FoodPage
-        title="Food Bookings"
+        title="Reservas de Comida"
         participants={foodParticipants}
         isLoading={isLoading}
       />

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useFormContext } from "react-hook-form";
+import { useTranslations } from "next-intl";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { NumberInput } from "@/components/ui/number-input";
@@ -15,8 +16,11 @@ import {
   AccordionContent,
 } from "@/components/ui/accordion";
 import { useMediaQuery } from "@/hooks/use-media-query";
+import { translateZodMessage } from "@/lib/zod-i18n";
 
 export function AccommodationSelection() {
+  const t = useTranslations("accommodation");
+  const tZod = useTranslations("errors.zod");
   const isMobile = useMediaQuery("(max-width: 768px)");
 
   const {
@@ -73,7 +77,7 @@ export function AccommodationSelection() {
   const content = (
     <div className="space-y-4">
       {!isMobile && (
-        <Label className="text-lg font-bold">Alojamento / Accommodation</Label>
+        <Label className="text-lg font-bold">{t("title")}</Label>
       )}
       <RadioGroup
         value={accommodationType}
@@ -97,17 +101,17 @@ export function AccommodationSelection() {
                   isDisabled ? "text-muted-foreground line-through" : ""
                 }
               >
-                {option.label} (€{option.price} per night)
+                {t(`options.${option.value}`)} (€{option.price} {t("perNight")})
                 {(option.value === "family-room" ||
                   option.value === "single-room" ||
                   option.value === "bungalow") && (
                   <span className="text-sm text-muted-foreground ml-1">
-                    (5 nights only)
+                    ({t("fiveNightsOnly")})
                   </span>
                 )}
                 {soldOut && (
                   <span className="text-sm font-medium text-red-500 ml-1">
-                    (esgotado / sold out)
+                    ({t("soldOut")})
                   </span>
                 )}
               </Label>
@@ -118,13 +122,14 @@ export function AccommodationSelection() {
       {errors.accommodation?.type && (
         <p className="text-red-500 text-sm mt-1">
           {typeof errors.accommodation.type === "string"
-            ? errors.accommodation.type
-            : errors.accommodation.type.message || "Invalid accommodation type"}
+            ? translateZodMessage(tZod, errors.accommodation.type)
+            : translateZodMessage(tZod, errors.accommodation.type.message) ||
+              t("errors.invalidType")}
         </p>
       )}
 
       <div className="mt-4">
-        <Label htmlFor="nights">Número de noites / Number of nights</Label>
+        <Label htmlFor="nights">{t("nightsLabel")}</Label>
         <NumberInput
           id="nights"
           min={1}
@@ -141,16 +146,15 @@ export function AccommodationSelection() {
           accommodationType === "single-room" ||
           accommodationType === "bungalow") && (
           <p className="text-sm text-muted-foreground mt-1">
-            Reservas em bungalow só para 5 noites / Bungalow bookings are for 5
-            nights only
+            {t("bungalowNote")}
           </p>
         )}
         {errors.accommodation?.nights && (
           <p className="text-red-500 text-sm mt-1">
             {typeof errors.accommodation.nights === "string"
-              ? errors.accommodation.nights
-              : errors.accommodation.nights.message ||
-                "Invalid number of nights"}
+              ? translateZodMessage(tZod, errors.accommodation.nights)
+              : translateZodMessage(tZod, errors.accommodation.nights.message) ||
+                t("errors.invalidNights")}
           </p>
         )}
       </div>
@@ -161,7 +165,7 @@ export function AccommodationSelection() {
     <Accordion type="single" collapsible>
       <AccordionItem value="accommodation">
         <AccordionTrigger className="text-md font-bold">
-          Alojamento / Accommodation
+          {t("title")}
         </AccordionTrigger>
         <AccordionContent>{content}</AccordionContent>
       </AccordionItem>

@@ -3,8 +3,9 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
- 
+
 } from "@/components/ui/dialog";
+import { useTranslations } from "next-intl";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -14,6 +15,8 @@ interface ThankYouModalProps {
 }
 
 export function ThankYouModal({ isOpen, onClose }: ThankYouModalProps) {
+  const t = useTranslations("thankYou");
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[425px]">
@@ -21,28 +24,24 @@ export function ThankYouModal({ isOpen, onClose }: ThankYouModalProps) {
           <div className="flex flex-col gap-2 items-center justify-center">
             <Image src="/images/aldeia.jpg" alt="Logo" width={70} height={70} />
             <DialogTitle className="text-2xl font-bold font-garda-empty">
-              Obrigado!
+              {t("title")}
             </DialogTitle>
           </div>
         </DialogHeader>
         <div className="space-y-4 pt-3 text-black text-center">
-          <div>Sua inscrição foi submetida com sucesso.</div>
-          <div>
-            Por favor envie uma cópia do seu recibo de transferência bancária
-            para o nosso email
-          </div>
+          <div>{t("submitted")}</div>
+          <div>{t("sendCopy")}</div>
           <div className="flex justify-center">
             <Link
-              href="mailto:contact@aldeia-djembe-camp.com?subject=Comprovativo%20de%20Pagamento"
+              href={`mailto:contact@aldeia-djembe-camp.com?subject=${encodeURIComponent(
+                t("emailSubject")
+              )}`}
               className="text-lg border-2 border-adc-green bg-adc-green rounded-md px-2 py-1 hover:bg-white"
             >
-              Enviar
+              {t("send")}
             </Link>
           </div>
-          <div>
-            Confirmaremos a sua inscrição assim que recebermos a confirmação do
-            pagamento.
-          </div>
+          <div>{t("willConfirm")}</div>
         </div>
       </DialogContent>
     </Dialog>

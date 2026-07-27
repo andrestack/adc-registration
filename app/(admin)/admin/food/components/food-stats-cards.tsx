@@ -63,25 +63,13 @@ export function FoodStatsCards({ data }: FoodStatsCardsProps) {
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium">
-            Total Food Bookings
+            Total de Reservas de Comida
           </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold">{totalFoodBookings}</div>
           <p className="text-xs text-muted-foreground">
-            Participants with food selected
-          </p>
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Full Meals (3x)</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="text-2xl font-bold">{bookingsByType.full || 0}</div>
-          <p className="text-xs text-muted-foreground">
-            €35/day - Breakfast, lunch & dinner
+            Participantes com comida selecionada
           </p>
         </CardContent>
       </Card>
@@ -89,25 +77,39 @@ export function FoodStatsCards({ data }: FoodStatsCardsProps) {
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium">
-            Single Meals (1x)
+            Refeições Completas (3x)
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold">{bookingsByType.single || 0}</div>
+          <div className="text-2xl font-bold">{bookingsByType.full || 0}</div>
           <p className="text-xs text-muted-foreground">
-            €15/day - One meal per day
+            €35/dia - Pequeno-almoço, almoço e jantar
           </p>
         </CardContent>
       </Card>
 
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Food Revenue</CardTitle>
+          <CardTitle className="text-sm font-medium">
+            Refeições Simples (1x)
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="text-2xl font-bold">{bookingsByType.single || 0}</div>
+          <p className="text-xs text-muted-foreground">
+            €15/dia - Uma refeição por dia
+          </p>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <CardTitle className="text-sm font-medium">Receita de Comida</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold">€{totalFoodRevenue}</div>
           <p className="text-xs text-muted-foreground">
-            Avg {averageDays.toFixed(1)} days per booking
+            Média de {averageDays.toFixed(1)} dias por reserva
           </p>
         </CardContent>
       </Card>

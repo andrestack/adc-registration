@@ -1,0 +1,185 @@
+{
+  "metadata": {
+    "title": "Inscrição ADC 2026",
+    "description": "Formulário de inscrição para o Aldeia Djembe Camp 2026"
+  },
+  "language": {
+    "label": "Idioma"
+  },
+  "form": {
+    "title": "Inscrição",
+    "fullName": "Nome Completo",
+    "fullNamePlaceholder": "Nome",
+    "nameAndEmail": "Nome & Email",
+    "additionalPeople": "Pessoas Adicionais",
+    "addPerson": "Adicionar Pessoa",
+    "workshopsSummary": "{count, plural, one {# workshop} other {# workshops}}",
+    "noFood": "Sem comida",
+    "paymentCheckbox": "Li as instruções e efectuei pagamento",
+    "downloadReceipt": "Descarregar Recibo",
+    "submit": "Enviar",
+    "submitting": "A enviar...",
+    "submitted": "Enviado"
+  },
+  "workshops": {
+    "title": "Workshops",
+    "items": {
+      "djembe": "Djembe (9h)",
+      "dance": "Dança (12h)",
+      "balafon": "Balafon (4,5h)",
+      "kora": "Kora (4,5h)"
+    },
+    "levels": {
+      "beginner": "Iniciante",
+      "intermediate": "Intermédio",
+      "advanced": "Avançado"
+    }
+  },
+  "accommodation": {
+    "title": "Alojamento",
+    "perNight": "por noite",
+    "fiveNightsOnly": "só 5 noites",
+    "soldOut": "esgotado",
+    "nightsLabel": "Número de noites",
+    "bungalowNote": "Reservas em bungalow só para 5 noites",
+    "nights": "{count, plural, one {# noite} other {# noites}}",
+    "options": {
+      "tent": "Tenda/Van - por pessoa",
+      "family-room": "Bungalow - Quarto Família (4 pessoas)",
+      "single-room": "Bungalow - Quarto Individual (cama de casal)",
+      "bungalow": "Bungalow Completo (6 pessoas)",
+      "already-booked": "Já tenho alojamento"
+    },
+    "errors": {
+      "invalidType": "Tipo de alojamento inválido",
+      "invalidNights": "Número de noites inválido"
+    }
+  },
+  "food": {
+    "title": "Comida",
+    "mealsTitle": "Refeições",
+    "selectPlaceholder": "Selecionar opção de comida",
+    "perDay": "por dia",
+    "daysLabel": "Número de dias",
+    "days": "{count, plural, one {# dia} other {# dias}}",
+    "options": {
+      "full": "3x Refeições",
+      "single": "1x Refeição",
+      "none": "Sem refeições"
+    },
+    "errors": {
+      "invalidType": "Tipo de comida inválido",
+      "invalidDays": "Número de dias inválido"
+    }
+  },
+  "children": {
+    "title": "Crianças",
+    "ticketsTitle": "Bilhetes de Crianças",
+    "under5": "0-5 anos (gratuito)",
+    "age5to10": "5-10 anos (€50)",
+    "age10to17": "10-17 anos (€80)",
+    "under5short": "Menores de 5",
+    "age5to10short": "5-10 anos",
+    "age10to17short": "10-17 anos",
+    "free": "Gratuito"
+  },
+  "receipt": {
+    "title": "Recibo",
+    "people": "({count} {count, plural, one {pessoa} other {pessoas}})",
+    "primaryBadge": "Principal",
+    "workshops": "Workshops:",
+    "food": "Comida:",
+    "children": "Crianças:",
+    "accommodation": "Alojamento:",
+    "under5": "Menores de 5:",
+    "age5to10": "5-10 anos:",
+    "age10to17": "10-17 anos:",
+    "subtotal": "Subtotal:",
+    "total": "Total:",
+    "instructions": "Instruções:",
+    "transferPrompt": "Por favor transfira o seguinte valor para confirmar a sua inscrição:",
+    "totalForPeople": "(Montante total para {count} {count, plural, one {pessoa} other {pessoas}})",
+    "hideIban": "Esconder IBAN",
+    "showIban": "Mostrar IBAN",
+    "copied": "Copiado!",
+    "copyIban": "Copiar IBAN",
+    "eyeHint": "Clique no ícone do olho para revelar o IBAN completo",
+    "nameLabel": "Nome:",
+    "bankLabel": "Banco:",
+    "referenceLabel": "Referência:",
+    "sendReceiptNote": "Por favor envie o comprovativo por email para confirmar a sua inscrição."
+  },
+  "receiptModal": {
+    "title": "Recibo de Inscrição",
+    "name": "Nome:",
+    "workshops": "Workshops:",
+    "accommodation": "Alojamento:",
+    "food": "Alimentação:",
+    "children": "Crianças:",
+    "under5": "menores de 5",
+    "age5to10": "5-10 anos",
+    "age10to17": "10-17 anos",
+    "instructions": "Instruções:",
+    "transferPrompt": "Por favor transfira este valor para confirmar a sua inscrição:",
+    "feeOnly": "(€100 taxa de inscrição)",
+    "feeWithAccommodation": "(€100 taxa de inscrição + €{amount} de alojamento)",
+    "remaining": "Os restantes €{amount} devem ser pagos em dinheiro no local."
+  },
+  "thankYou": {
+    "title": "Obrigado!",
+    "submitted": "Sua inscrição foi submetida com sucesso.",
+    "sendCopy": "Por favor envie uma cópia do seu recibo de transferência bancária para o nosso email",
+    "send": "Enviar",
+    "willConfirm": "Confirmaremos a sua inscrição assim que recebermos a confirmação do pagamento.",
+    "emailSubject": "Comprovativo de Pagamento"
+  },
+  "addRegistrant": {
+    "title": "Adicionar Pessoa",
+    "fullName": "Nome Completo *",
+    "fullNamePlaceholder": "Nome completo",
+    "email": "Email *",
+    "cancel": "Cancelar",
+    "add": "Adicionar"
+  },
+  "floatingTotal": {
+    "continue": "Continuar"
+  },
+  "iban": {
+    "title": "Pagamento ADC 2026",
+    "subtitle": "Dados bancários para transferência",
+    "loading": "A carregar...",
+    "errorTitle": "Erro",
+    "loadFailed": "Falha ao carregar IBAN",
+    "copiedTitle": "Copiado!",
+    "copiedDescription": "IBAN copiado para a área de transferência",
+    "copyFailed": "Falha ao copiar",
+    "copyIban": "Copiar IBAN",
+    "nameLabel": "Nome:",
+    "bankLabel": "Banco:",
+    "referenceLabel": "Referência:",
+    "yourName": "[O SEU NOME]",
+    "referenceReminder": "Não esqueça de incluir o seu nome na referência",
+    "moreInfo": "Para mais informações visite o nosso site"
+  },
+  "errors": {
+    "submitFailed": "Falha ao submeter a inscrição. Por favor tente novamente.",
+    "accommodationUnavailable": "Esta opção de alojamento já não está disponível.",
+    "zod": {
+      "fullNameRequired": "O nome completo é obrigatório",
+      "emailInvalid": "Endereço de email inválido",
+      "emailFormat": "Formato de email inválido",
+      "emailTooShort": "O email deve ter pelo menos 5 caracteres",
+      "emailTooLong": "O email não pode exceder 255 caracteres",
+      "daysMin": "O número de dias deve ser pelo menos 0",
+      "daysMax": "O número máximo de dias é 5",
+      "bungalowFiveNights": "Bungalows têm de ser reservados exatamente por 5 noites",
+      "totalMin": "O valor total deve ser maior ou igual a 0"
+    }
+  },
+  "ui": {
+    "close": "Fechar",
+    "toggleSidebar": "Alternar barra lateral",
+    "sidebar": "Barra lateral",
+    "sidebarDescription": "Mostra a barra lateral móvel."
+  }
+}

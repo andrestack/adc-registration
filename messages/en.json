@@ -1,0 +1,185 @@
+{
+  "metadata": {
+    "title": "ADC 2026 Registration",
+    "description": "Registration form for Aldeia Djembe Camp 2026"
+  },
+  "language": {
+    "label": "Language"
+  },
+  "form": {
+    "title": "Registration",
+    "fullName": "Full Name",
+    "fullNamePlaceholder": "Name",
+    "nameAndEmail": "Name & Email",
+    "additionalPeople": "Additional People",
+    "addPerson": "Add Person",
+    "workshopsSummary": "{count, plural, one {# workshop} other {# workshops}}",
+    "noFood": "No food",
+    "paymentCheckbox": "I have read the instructions and made the payment",
+    "downloadReceipt": "Download Receipt",
+    "submit": "Send",
+    "submitting": "Sending...",
+    "submitted": "Sent"
+  },
+  "workshops": {
+    "title": "Workshops",
+    "items": {
+      "djembe": "Djembe (9h)",
+      "dance": "Dance (12h)",
+      "balafon": "Balafon (4.5h)",
+      "kora": "Kora (4.5h)"
+    },
+    "levels": {
+      "beginner": "Beginner",
+      "intermediate": "Intermediate",
+      "advanced": "Advanced"
+    }
+  },
+  "accommodation": {
+    "title": "Accommodation",
+    "perNight": "per night",
+    "fiveNightsOnly": "5 nights only",
+    "soldOut": "sold out",
+    "nightsLabel": "Number of nights",
+    "bungalowNote": "Bungalow bookings are for 5 nights only",
+    "nights": "{count, plural, one {# night} other {# nights}}",
+    "options": {
+      "tent": "Tent/Van - per person",
+      "family-room": "Bungalow - Family Room (4 ppl)",
+      "single-room": "Bungalow - Single Room (double bed)",
+      "bungalow": "Whole Bungalow (6 ppl)",
+      "already-booked": "I have already booked accommodation"
+    },
+    "errors": {
+      "invalidType": "Invalid accommodation type",
+      "invalidNights": "Invalid number of nights"
+    }
+  },
+  "food": {
+    "title": "Food",
+    "mealsTitle": "Meals",
+    "selectPlaceholder": "Select food option",
+    "perDay": "per day",
+    "daysLabel": "Number of days",
+    "days": "{count, plural, one {# day} other {# days}}",
+    "options": {
+      "full": "3x Meals",
+      "single": "1x Meal",
+      "none": "No meals"
+    },
+    "errors": {
+      "invalidType": "Invalid food type",
+      "invalidDays": "Invalid number of days"
+    }
+  },
+  "children": {
+    "title": "Children",
+    "ticketsTitle": "Children Tickets",
+    "under5": "0-5 years (free)",
+    "age5to10": "5-10 years (€50)",
+    "age10to17": "10-17 years (€80)",
+    "under5short": "Under 5",
+    "age5to10short": "5-10 years",
+    "age10to17short": "10-17 years",
+    "free": "Free"
+  },
+  "receipt": {
+    "title": "Receipt",
+    "people": "({count} {count, plural, one {person} other {people}})",
+    "primaryBadge": "Primary",
+    "workshops": "Workshops:",
+    "food": "Food:",
+    "children": "Children:",
+    "accommodation": "Accommodation:",
+    "under5": "Under 5:",
+    "age5to10": "5-10 years:",
+    "age10to17": "10-17 years:",
+    "subtotal": "Subtotal:",
+    "total": "Total:",
+    "instructions": "Instructions:",
+    "transferPrompt": "Please transfer the following amount to confirm your booking:",
+    "totalForPeople": "(Total amount for {count} {count, plural, one {person} other {people}})",
+    "hideIban": "Hide IBAN",
+    "showIban": "Show IBAN",
+    "copied": "Copied!",
+    "copyIban": "Copy IBAN",
+    "eyeHint": "Click the eye icon to reveal the full IBAN",
+    "nameLabel": "Name:",
+    "bankLabel": "Bank:",
+    "referenceLabel": "Reference:",
+    "sendReceiptNote": "Please send the receipt by email to confirm your booking."
+  },
+  "receiptModal": {
+    "title": "Registration Receipt",
+    "name": "Name:",
+    "workshops": "Workshops:",
+    "accommodation": "Accommodation:",
+    "food": "Food:",
+    "children": "Children:",
+    "under5": "under 5",
+    "age5to10": "5-10 years",
+    "age10to17": "10-17 years",
+    "instructions": "Instructions:",
+    "transferPrompt": "Please transfer this amount to confirm your booking:",
+    "feeOnly": "(€100 registration fee)",
+    "feeWithAccommodation": "(€100 registration fee + €{amount} for accommodation)",
+    "remaining": "The remaining €{amount} is to be paid in cash at the venue."
+  },
+  "thankYou": {
+    "title": "Thank you!",
+    "submitted": "Your registration has been submitted successfully.",
+    "sendCopy": "Please send a copy of your bank transfer receipt to our email",
+    "send": "Send",
+    "willConfirm": "We will confirm your registration as soon as we receive the payment confirmation.",
+    "emailSubject": "Payment Receipt"
+  },
+  "addRegistrant": {
+    "title": "Add Person",
+    "fullName": "Full Name *",
+    "fullNamePlaceholder": "Full name",
+    "email": "Email *",
+    "cancel": "Cancel",
+    "add": "Add"
+  },
+  "floatingTotal": {
+    "continue": "Continue"
+  },
+  "iban": {
+    "title": "ADC 2026 Payment",
+    "subtitle": "Bank details for transfer",
+    "loading": "Loading...",
+    "errorTitle": "Error",
+    "loadFailed": "Failed to load IBAN",
+    "copiedTitle": "Copied!",
+    "copiedDescription": "IBAN copied to clipboard",
+    "copyFailed": "Failed to copy",
+    "copyIban": "Copy IBAN",
+    "nameLabel": "Name:",
+    "bankLabel": "Bank:",
+    "referenceLabel": "Reference:",
+    "yourName": "[YOUR NAME]",
+    "referenceReminder": "Don't forget to include your name in the reference",
+    "moreInfo": "For more information visit our website"
+  },
+  "errors": {
+    "submitFailed": "Failed to submit registration. Please try again.",
+    "accommodationUnavailable": "This accommodation option is no longer available.",
+    "zod": {
+      "fullNameRequired": "Full name is required",
+      "emailInvalid": "Invalid email address",
+      "emailFormat": "Invalid email format",
+      "emailTooShort": "Email must be at least 5 characters long",
+      "emailTooLong": "Email must not exceed 255 characters",
+      "daysMin": "Number of days must be at least 0",
+      "daysMax": "Maximum number of days is 5",
+      "bungalowFiveNights": "Bungalows must be booked for exactly 5 nights",
+      "totalMin": "Total amount must be greater than or equal to 0"
+    }
+  },
+  "ui": {
+    "close": "Close",
+    "toggleSidebar": "Toggle Sidebar",
+    "sidebar": "Sidebar",
+    "sidebarDescription": "Displays the mobile sidebar."
+  }
+}

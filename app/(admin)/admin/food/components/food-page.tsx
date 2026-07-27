@@ -2,7 +2,7 @@
 
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Spinner } from "@/components/ui/spinner";
-import { DataTable } from "@/app/admin/components/data-table";
+import { DataTable } from "@/app/(admin)/admin/components/data-table";
 import { columns, FoodParticipantData } from "./columns";
 
 interface FoodPageProps {

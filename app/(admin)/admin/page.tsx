@@ -156,14 +156,14 @@ export default function AdminPage() {
       <div className="flex flex-col gap-4">
         <div>
           <h2 className="text-2xl font-semibold font-garda-empty tracking-tight">
-            Dashboard
+            Painel
           </h2>
           <p className="text-muted-foreground">
-            ADC 2026 - Current Year Overview
+            ADC 2026 - Visão geral do ano atual
           </p>
         </div>
         <div className="flex justify-center items-center h-64">
-          <div className="animate-pulse text-muted-foreground">Loading...</div>
+          <div className="animate-pulse text-muted-foreground">A carregar...</div>
         </div>
       </div>
     );
@@ -172,55 +172,55 @@ export default function AdminPage() {
   return (
     <div className="flex flex-col gap-4">
       <div>
-        <h2 className="text-2xl font-semibold font-garda-empty tracking-tight">
-          Dashboard
-        </h2>
-        <p className="text-muted-foreground">
-          ADC 2026 - Current Year Overview
-        </p>
-      </div>
+          <h2 className="text-2xl font-semibold font-garda-empty tracking-tight">
+            Painel
+          </h2>
+          <p className="text-muted-foreground">
+            ADC 2026 - Visão geral do ano atual
+          </p>
+        </div>
 
-      {/* Participant Comparison Card */}
+        {/* Participant Comparison Card */}
       <Card className="bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200">
         <CardHeader>
-          <CardTitle className="text-lg">Year over Year Comparison - Participants</CardTitle>
+          <CardTitle className="text-lg">Comparação Anual - Participantes</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-3 gap-4">
             <div className="text-center">
               <p className="text-sm text-muted-foreground mb-1">2025</p>
               <p className="text-2xl font-bold">{stats2025.participants}</p>
-              <p className="text-xs text-muted-foreground">participants</p>
+              <p className="text-xs text-muted-foreground">participantes</p>
               <p className="text-lg font-semibold text-green-600 mt-1">
                 {formatCurrency(stats2025.totalRevenue)}
               </p>
-              <p className="text-xs text-muted-foreground">revenue</p>
+              <p className="text-xs text-muted-foreground">receita</p>
             </div>
             <div className="text-center border-x border-blue-200">
               <p className="text-sm text-muted-foreground mb-1">2026</p>
               <p className="text-2xl font-bold">{stats2026.participants}</p>
-              <p className="text-xs text-muted-foreground">participants</p>
+              <p className="text-xs text-muted-foreground">participantes</p>
               <p className="text-lg font-semibold text-green-600 mt-1">
                 {formatCurrency(stats2026.totalRevenue)}
               </p>
-              <p className="text-xs text-muted-foreground">revenue</p>
+              <p className="text-xs text-muted-foreground">receita</p>
             </div>
             <div className="text-center">
-              <p className="text-sm text-muted-foreground mb-1">Growth</p>
+              <p className="text-sm text-muted-foreground mb-1">Crescimento</p>
               <div className="flex items-center justify-center gap-1">
                 {getChangeIcon(stats2026.participants, stats2025.participants)}
                 <p className={`text-2xl font-bold ${stats2026.participants >= stats2025.participants ? 'text-green-600' : 'text-red-600'}`}>
                   {calculatePercentageChange(stats2026.participants, stats2025.participants)}
                 </p>
               </div>
-              <p className="text-xs text-muted-foreground">participants</p>
+              <p className="text-xs text-muted-foreground">participantes</p>
               <div className="flex items-center justify-center gap-1 mt-1">
                 {getChangeIcon(stats2026.totalRevenue, stats2025.totalRevenue)}
                 <p className={`text-lg font-semibold ${stats2026.totalRevenue >= stats2025.totalRevenue ? 'text-green-600' : 'text-red-600'}`}>
                   {calculatePercentageChange(stats2026.totalRevenue, stats2025.totalRevenue)}
                 </p>
               </div>
-              <p className="text-xs text-muted-foreground">revenue</p>
+              <p className="text-xs text-muted-foreground">receita</p>
             </div>
           </div>
         </CardContent>
@@ -229,7 +229,7 @@ export default function AdminPage() {
       {/* Financial Performance Card */}
       <Card className="bg-gradient-to-r from-emerald-50 to-teal-50 border-emerald-200">
         <CardHeader>
-          <CardTitle className="text-lg">Financial Performance</CardTitle>
+          <CardTitle className="text-lg">Desempenho Financeiro</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-2 gap-6">
@@ -238,28 +238,28 @@ export default function AdminPage() {
               <h3 className="text-lg font-semibold text-center border-b border-emerald-200 pb-2">2025</h3>
               
               <div className="flex justify-between items-center">
-                <span className="text-sm text-muted-foreground">Revenue</span>
+                <span className="text-sm text-muted-foreground">Receita</span>
                 <span className="font-semibold text-green-700">
                   {formatCurrency(financials2025.totalRevenue)}
                 </span>
               </div>
-              
+
               <div className="flex justify-between items-center">
-                <span className="text-sm text-muted-foreground">Expenses</span>
+                <span className="text-sm text-muted-foreground">Despesas</span>
                 <span className="font-semibold text-red-600">
                   {formatCurrency(financials2025.totalExpenses)}
                 </span>
               </div>
-              
+
               <div className="border-t border-emerald-200 pt-2">
                 <div className="flex justify-between items-center">
-                  <span className="text-sm font-medium">Profit/Loss</span>
+                  <span className="text-sm font-medium">Lucro/Prejuízo</span>
                   <span className={`font-bold text-lg ${financials2025.profit >= 0 ? 'text-green-600' : 'text-red-600'}`}>
                     {formatCurrency(financials2025.profit)}
                   </span>
                 </div>
                 <div className="flex justify-between items-center mt-1">
-                  <span className="text-xs text-muted-foreground">Net Margin</span>
+                  <span className="text-xs text-muted-foreground">Margem Líquida</span>
                   <span className={`text-sm font-semibold ${financials2025.netMargin >= 0 ? 'text-green-600' : 'text-red-600'}`}>
                     {financials2025.netMargin.toFixed(1)}%
                   </span>
@@ -272,28 +272,28 @@ export default function AdminPage() {
               <h3 className="text-lg font-semibold text-center border-b border-emerald-200 pb-2">2026</h3>
               
               <div className="flex justify-between items-center">
-                <span className="text-sm text-muted-foreground">Revenue</span>
+                <span className="text-sm text-muted-foreground">Receita</span>
                 <span className="font-semibold text-green-700">
                   {formatCurrency(financials2026.totalRevenue)}
                 </span>
               </div>
-              
+
               <div className="flex justify-between items-center">
-                <span className="text-sm text-muted-foreground">Expenses</span>
+                <span className="text-sm text-muted-foreground">Despesas</span>
                 <span className="font-semibold text-red-600">
                   {formatCurrency(financials2026.totalExpenses)}
                 </span>
               </div>
-              
+
               <div className="border-t border-emerald-200 pt-2">
                 <div className="flex justify-between items-center">
-                  <span className="text-sm font-medium">Profit/Loss</span>
+                  <span className="text-sm font-medium">Lucro/Prejuízo</span>
                   <span className={`font-bold text-lg ${financials2026.profit >= 0 ? 'text-green-600' : 'text-red-600'}`}>
                     {formatCurrency(financials2026.profit)}
                   </span>
                 </div>
                 <div className="flex justify-between items-center mt-1">
-                  <span className="text-xs text-muted-foreground">Net Margin</span>
+                  <span className="text-xs text-muted-foreground">Margem Líquida</span>
                   <span className={`text-sm font-semibold ${financials2026.netMargin >= 0 ? 'text-green-600' : 'text-red-600'}`}>
                     {financials2026.netMargin.toFixed(1)}%
                   </span>
@@ -306,7 +306,7 @@ export default function AdminPage() {
           <div className="mt-6 pt-4 border-t border-emerald-200">
             <div className="grid grid-cols-3 gap-4 text-center">
               <div>
-                <p className="text-xs text-muted-foreground">Revenue Change</p>
+                <p className="text-xs text-muted-foreground">Variação da Receita</p>
                 <div className="flex items-center justify-center gap-1">
                   {getChangeIcon(financials2026.totalRevenue, financials2025.totalRevenue)}
                   <span className={`font-semibold ${financials2026.totalRevenue >= financials2025.totalRevenue ? 'text-green-600' : 'text-red-600'}`}>
@@ -315,7 +315,7 @@ export default function AdminPage() {
                 </div>
               </div>
               <div>
-                <p className="text-xs text-muted-foreground">Expense Change</p>
+                <p className="text-xs text-muted-foreground">Variação das Despesas</p>
                 <div className="flex items-center justify-center gap-1">
                   {getChangeIcon(financials2026.totalExpenses, financials2025.totalExpenses)}
                   <span className={`font-semibold ${financials2026.totalExpenses <= financials2025.totalExpenses ? 'text-green-600' : 'text-red-600'}`}>
@@ -324,7 +324,7 @@ export default function AdminPage() {
                 </div>
               </div>
               <div>
-                <p className="text-xs text-muted-foreground">Profit Change</p>
+                <p className="text-xs text-muted-foreground">Variação do Lucro</p>
                 <div className="flex items-center justify-center gap-1">
                   {getChangeIcon(financials2026.profit, financials2025.profit)}
                   <span className={`font-semibold ${financials2026.profit >= financials2025.profit ? 'text-green-600' : 'text-red-600'}`}>

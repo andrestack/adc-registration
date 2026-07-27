@@ -7,15 +7,15 @@ export default function BalafonPage() {
     <div className="space-y-6">
       <div>
         <h2 className="text-2xl font-semibold tracking-tight">
-          Balafon Workshop 2026
+          Workshop de Balafon 2026
         </h2>
         <p className="text-muted-foreground">
-          List of participants registered for Balafon workshop - ADC 2026
+          Lista de participantes inscritos no workshop de Balafon - ADC 2026
         </p>
       </div>
 
       <WorkshopPage
-        title="Balafon Workshop Participants"
+        title="Participantes do Workshop de Balafon"
         workshopId="balafon"
       />
     </div>

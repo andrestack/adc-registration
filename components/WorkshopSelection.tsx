@@ -1,4 +1,5 @@
 import { useFormContext } from "react-hook-form";
+import { useTranslations } from "next-intl";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
@@ -19,6 +20,7 @@ import { useMediaQuery } from "@/hooks/use-media-query";
 
 
 export function WorkshopSelection() {
+  const t = useTranslations("workshops");
   const {
     formState: { errors },
     watch,
@@ -51,7 +53,7 @@ export function WorkshopSelection() {
   const content = (
     <div>
       {!isMobile && (
-        <Label className="text-lg font-bold">Workshops</Label>
+        <Label className="text-lg font-bold">{t("title")}</Label>
       )}
 
       <div className="space-y-4 mx-2">
@@ -59,7 +61,9 @@ export function WorkshopSelection() {
           <div key={workshop.id} className="space-y-2">
             {workshop.levels ? (
               <div className="flex flex-col gap-2">
-                <Label className="text-lg font-bold">{workshop.name}</Label>
+                <Label className="text-lg font-bold">
+                  {t(`items.${workshop.id}`)}
+                </Label>
                 <RadioGroup
                   onValueChange={(value) =>
                     handleWorkshopChange(workshop.id, true, value)
@@ -76,7 +80,7 @@ export function WorkshopSelection() {
                         id={`workshop-${workshop.id}-${level.id}`}
                       />
                       <Label htmlFor={`workshop-${workshop.id}-${level.id}`}>
-                        {level.name} - €{level.price}
+                        {t(`levels.${level.id}`)} - €{level.price}
                       </Label>
                     </div>
                   ))}
@@ -92,7 +96,7 @@ export function WorkshopSelection() {
                   }
                 />
                 <Label htmlFor={`workshop-${workshop.id}`}>
-                  {workshop.name} - €{workshop.price}
+                  {t(`items.${workshop.id}`)} - €{workshop.price}
                 </Label>
               </div>
             )}
@@ -111,7 +115,7 @@ export function WorkshopSelection() {
       <Accordion type="single" collapsible className="md:hidden">
         <AccordionItem value="workshops">
           <AccordionTrigger className="text-md font-bold">
-            Workshops
+            {t("title")}
           </AccordionTrigger>
           <AccordionContent>{content}</AccordionContent>
         </AccordionItem>

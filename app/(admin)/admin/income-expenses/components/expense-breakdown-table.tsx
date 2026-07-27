@@ -25,6 +25,7 @@ import {
   parseExpenseAmount,
 } from "../utils/expense.utils";
 import { useToast } from "@/hooks/use-toast";
+import { getExpenseCategoryLabel } from "@/app/(admin)/admin/utils/labels";
 
 interface ExpenseBreakdownTableProps {
   expenses: ExpenseData[];
@@ -57,8 +58,9 @@ function EditableAmount({ expense, isHighest, onUpdate }: EditableAmountProps) {
 
     if (!expenseId) {
       toast({
-        title: "Cannot Edit",
-        description: "This expense needs to be saved to the database first.",
+        title: "Não é possível editar",
+        description:
+          "Esta despesa precisa de ser guardada na base de dados primeiro.",
         variant: "destructive",
       });
       return;
@@ -69,8 +71,8 @@ function EditableAmount({ expense, isHighest, onUpdate }: EditableAmountProps) {
 
       if (parsedAmount <= 0) {
         toast({
-          title: "Validation Error",
-          description: "Amount must be greater than 0",
+          title: "Erro de Validação",
+          description: "O valor deve ser maior que 0",
           variant: "destructive",
         });
         return;
@@ -108,14 +110,14 @@ function EditableAmount({ expense, isHighest, onUpdate }: EditableAmountProps) {
       setIsEditing(false);
 
       toast({
-        title: "Success",
-        description: "Expense updated successfully",
+        title: "Sucesso",
+        description: "Despesa atualizada com sucesso",
       });
     } catch (error) {
       console.error("Error updating expense:", error);
       toast({
-        title: "Error",
-        description: "Failed to update expense. Please try again.",
+        title: "Erro",
+        description: "Falha ao atualizar a despesa. Por favor tente novamente.",
         variant: "destructive",
       });
     }
@@ -171,8 +173,8 @@ function EditableAmount({ expense, isHighest, onUpdate }: EditableAmountProps) {
         disabled={!expense.id && !expense._id}
         title={
           !expense.id && !expense._id
-            ? "Save to database first to enable editing"
-            : "Edit amount"
+            ? "Guarde primeiro na base de dados para poder editar"
+            : "Editar valor"
         }
       >
         <MoreVertical
@@ -198,16 +200,16 @@ export function ExpenseBreakdownTable({
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Expense Breakdown</CardTitle>
+        <CardTitle>Detalhe de Despesas</CardTitle>
       </CardHeader>
       <CardContent>
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Category</TableHead>
-              <TableHead>Short Description</TableHead>
-              <TableHead className="text-right">Amount</TableHead>
-              <TableHead className="text-right">% of Total</TableHead>
+              <TableHead>Categoria</TableHead>
+              <TableHead>Descrição Breve</TableHead>
+              <TableHead className="text-right">Valor</TableHead>
+              <TableHead className="text-right">% do Total</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -227,11 +229,11 @@ export function ExpenseBreakdownTable({
                       variant="outline"
                       className={getExpenseCategoryColor(expense.name)}
                     >
-                      {expense.name}
+                      {getExpenseCategoryLabel(expense.name)}
                     </Badge>
                   </TableCell>
                   <TableCell className="text-sm text-muted-foreground">
-                    {expense.description || "No description available"}
+                    {expense.description || "Sem descrição disponível"}
                   </TableCell>
                   <TableCell className="text-right font-mono">
                     <EditableAmount

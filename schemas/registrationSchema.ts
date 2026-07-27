@@ -109,51 +109,48 @@ export type RegistrationFormData = z.infer<typeof registrationSchema>;
 
 export type Workshop = {
   id: string;
-  name: string;
   price?: number;
-  levels?: Array<{ id: string; name: string; price: number }>;
+  levels?: Array<{ id: string; price: number }>;
 };
 
+// Display names are translations, not data: see messages/*.json under
+// workshops.items / workshops.levels (ids are stored in MongoDB)
 export const workshops: Workshop[] = [
   {
     id: "djembe",
-    name: "Djembe (9h)",
     levels: [
-      { id: "intermediate", name: "Intermediate", price: 150 },
-      { id: "advanced", name: "Advanced", price: 150 },
-      { id: "beginner", name: "Beginner", price: 150 },
+      { id: "intermediate", price: 150 },
+      { id: "advanced", price: 150 },
+      { id: "beginner", price: 150 },
     ],
   },
-  { id: "dance", name: "Dance (12h)", price: 130 },
-  { id: "balafon", name: "Balafon (4,5h)", price: 60 },
-  { id: "kora", name: "Kora (4,5h)", price: 60 },
+  { id: "dance", price: 130 },
+  { id: "balafon", price: 60 },
+  { id: "kora", price: 60 },
 ];
 
+// Labels live in messages/*.json under accommodation.options
 export const accommodationOptions = [
   {
     value: "tent",
-    label: "Tenda/Van - por pessoa/per person",
     price: 10,
     disabled: false,
     available: 100,
   },
   {
     value: "family-room",
-    label: "Bungalow - Quarto Família / Bungalow - Family Room (4 ppl)",
     price: 45,
     disabled: false,
     available: 1,
   },
   {
     value: "single-room",
-    label: "Bungalow - Quarto Individual (cama de casal) / Bungalow - Single Room (double bed)",
     price: 45,
     available: 1,
     disabled: false,
   },
   {
     value: "bungalow",
-    label: "Bungalow Completo (6 ppl) / Whole Bungalow (6 ppl)",
     price: 90,
     available: 1,
     disabled: false,
@@ -161,7 +158,6 @@ export const accommodationOptions = [
   },
   {
     value: "already-booked",
-    label: "Já tenho alojamento / I have already booked accommodation",
     price: 0,
     disabled: false,
     available: 100,
@@ -171,14 +167,14 @@ export const accommodationOptions = [
 // Add a type for accommodation options
 export type AccommodationOption = {
   value: "tent" | "family-room" | "single-room" | "bungalow" | "already-booked";
-  label: string;
   price: number;
   disabled: boolean;
   available: number;
   fixedNights?: number;
 };
 
+// Labels live in messages/*.json under food.options
 export const foodOptions = [
-  { value: "full", label: "3x Refeições/Meals", price: 35 },
-  { value: "single", label: "1x Refeição/Meal", price: 15 },
+  { value: "full", price: 35 },
+  { value: "single", price: 15 },
 ] as const;

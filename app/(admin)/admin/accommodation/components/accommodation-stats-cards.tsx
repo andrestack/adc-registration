@@ -1,6 +1,7 @@
 "use client";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { getAccommodationTypeLabel } from "@/app/(admin)/admin/utils/labels";
 
 interface Accommodation {
   type: "tent" | "family-room" | "single-room" | "bungalow" | "already-booked";
@@ -56,7 +57,7 @@ export function AccommodationStatsCards({
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium">
-            Total On-site Bookings
+            Total de Reservas no Local
           </CardTitle>
           {/* You can add an icon here if you have an icon library configured */}
           {/* <Users className="h-4 w-4 text-muted-foreground" /> */}
@@ -64,7 +65,7 @@ export function AccommodationStatsCards({
         <CardContent>
           <div className="text-2xl font-bold">{totalBookings}</div>
           <p className="text-xs text-muted-foreground">
-            Participants with on-site accommodation
+            Participantes com alojamento no local
           </p>
         </CardContent>
       </Card>
@@ -76,7 +77,7 @@ export function AccommodationStatsCards({
           <Card key={type}>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium capitalize">
-                {type.replace("-", " ")}
+                {getAccommodationTypeLabel(type)}
               </CardTitle>
               {/* <DollarSign className="h-4 w-4 text-muted-foreground" /> */}
             </CardHeader>
@@ -85,7 +86,7 @@ export function AccommodationStatsCards({
                 {bookingsByType[type] || 0}
               </div>
               <p className="text-xs text-muted-foreground">
-                Bookings for {type.replace("-", " ")}
+                Reservas de {getAccommodationTypeLabel(type)}
               </p>
             </CardContent>
           </Card>

@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { useFormContext } from "react-hook-form";
+import { useTranslations } from "next-intl";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Loader2, Check, Download, UserPlus, UserX } from "lucide-react";
@@ -28,6 +29,9 @@ import { Label } from "@/components/ui/label";
 import { ThankYouModal } from "./ThankYouModal";
 
 export default function RegistrationForm() {
+  const t = useTranslations("form");
+  const tErrors = useTranslations("errors");
+  const tFood = useTranslations("food");
   const [total, setTotal] = useState(0);
   const [ibanCopied, setIbanCopied] = useState(false);
   const [isReceiptModalOpen, setIsReceiptModalOpen] = useState(false);
@@ -197,7 +201,14 @@ export default function RegistrationForm() {
       const result = await response.json();
 
       if (!response.ok) {
-        throw new Error(result.message || "Registration failed");
+        // Map API error codes to translated messages
+        alert(
+          result.error === "accommodation-unavailable"
+            ? tErrors("accommodationUnavailable")
+            : tErrors("submitFailed")
+        );
+        setSubmitStatus("idle");
+        throw new Error(result.error || "registration-failed");
       }
 
       // If successful
@@ -210,10 +221,13 @@ export default function RegistrationForm() {
         reset();
       }, 2000);
     } catch (error) {
+      if (error instanceof Error && error.message !== "accommodation-unavailable" && error.message !== "registration-failed") {
+        // Network or unexpected error
+        alert(tErrors("submitFailed"));
+      }
       console.error("Submission error:", error);
       setSubmitStatus("idle");
-      // You might want to show an error toast here
-      alert("Failed to submit registration. Please try again.");
+      throw error;
     }
   };
 
@@ -238,7 +252,7 @@ export default function RegistrationForm() {
       <div className="flex flex-col md:flex-row gap-6 p-6">
         <Card className="flex-1">
           <CardHeader>
-            <CardTitle>Inscrição / Registration</CardTitle>
+            <CardTitle>{t("title")}</CardTitle>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
@@ -249,7 +263,7 @@ export default function RegistrationForm() {
                 <div className="space-y-4 border-t pt-4">
                   <div className="flex items-center justify-between">
                     <Label className="text-lg font-bold">
-                      Pessoas Adicionais / Additional People
+                      {t("additionalPeople")}
                     </Label>
                     <Button
                       type="button"
@@ -258,7 +272,7 @@ export default function RegistrationForm() {
                       onClick={() => setIsAddRegistrantOpen(true)}
                     >
                       <UserPlus className="mr-2 h-4 w-4" />
-                      Adicionar Pessoa
+                      {t("addPerson")}
                     </Button>
                   </div>
 
@@ -275,10 +289,13 @@ export default function RegistrationForm() {
                               {registrant.email}
                             </p>
                             <p className="text-sm text-muted-foreground">
-                              {registrant.workshops.length} workshop(s) | {" "}
+                              {t("workshopsSummary", {
+                                count: registrant.workshops.length,
+                              })}{" "}
+                              |{" "}
                               {registrant.food.type !== "none"
-                                ? `${registrant.food.type} food`
-                                : "No food"}
+                                ? tFood(`options.${registrant.food.type}`)
+                                : t("noFood")}
                             </p>
                           </div>
                           <Button
@@ -326,10 +343,7 @@ export default function RegistrationForm() {
                     }
                   }}
                 />
-                <Label htmlFor="paymentMade">
-                  Li as instruções e efectuei pagamento / Read the instructions
-                  and made the payment
-                </Label>
+                <Label htmlFor="paymentMade">{t("paymentCheckbox")}</Label>
               </div>
               <div className="mt-4">
                 <Button
@@ -338,13 +352,17 @@ export default function RegistrationForm() {
                   className="w-full"
                 >
                   <Download className="mr-2 h-4 w-4" />
-                  Download Recibo
+                  {t("downloadReceipt")}
                 </Button>
               </div>
 
               <div className="mt-4">
                 <Button
-                  onClick={handleSubmit(onSubmit)}
+                  onClick={() => {
+                    handleSubmit(onSubmit)().catch(() => {
+                      // Error already surfaced via translated alert in onSubmit
+                    });
+                  }}
                   disabled={!formData.paymentMade || submitStatus !== "idle"}
                   className="w-full"
                 >
@@ -355,10 +373,10 @@ export default function RegistrationForm() {
                     <Check className="mr-2 h-4 w-4" />
                   )}
                   {submitStatus === "idle"
-                    ? "Enviar"
+                    ? t("submit")
                     : submitStatus === "loading"
-                    ? "A enviar..."
-                    : "Enviado"}
+                    ? t("submitting")
+                    : t("submitted")}
                 </Button>
               </div>
             </CardContent>

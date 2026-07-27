@@ -2,7 +2,7 @@
 
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Spinner } from "@/components/ui/spinner";
-import { DataTable } from "@/app/admin/components/data-table"; // Assuming generic DataTable path
+import { DataTable } from "@/app/(admin)/admin/components/data-table"; // Assuming generic DataTable path
 import { columns, ParticipantData } from "./columns"; // Import columns and ParticipantData type
 
 interface AccommodationPageProps {

@@ -78,17 +78,18 @@ export default function AdminAccommodationPage() {
     <div className="space-y-6">
       <div>
         <h2 className="text-2xl font-semibold tracking-tight">
-          Accommodation Management 2026
+          Gestão de Alojamento 2026
         </h2>
         <p className="text-muted-foreground">
-          Overview of all on-site accommodation bookings for ADC 2026.
+          Visão geral de todas as reservas de alojamento no local para o ADC
+          2026.
         </p>
       </div>
 
       <AccommodationStatsCards data={accommodationBookings} />
 
       <AccommodationPage // This component will be refactored to use DataTable
-        title="All Accommodation Bookings"
+        title="Todas as Reservas de Alojamento"
         participants={accommodationBookings}
         isLoading={isLoading}
       />
