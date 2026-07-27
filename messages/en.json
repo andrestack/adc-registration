@@ -42,6 +42,7 @@
     "soldOut": "sold out",
     "nightsLabel": "Number of nights",
     "bungalowNote": "Bungalow bookings are for 5 nights only",
+    "remaining": "{count, plural, one {# left} other {# left}}",
     "nights": "{count, plural, one {# night} other {# nights}}",
     "options": {
       "tent": "Tent/Van - per person",

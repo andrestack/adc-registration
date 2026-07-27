@@ -43,7 +43,7 @@ This document defines the specialized AI personas (Agents) and their current are
 
 ### ✅ Implemented
 - **Public Registration**: Complex form handling workshops, children, food, and accommodation.
-- **Accommodation Availability**: Live bungalow tally (1 bungalow = family room + single room) via `/api/accommodation-availability`; sold-out options disable in the form and are rejected with 409 in POST `/api/registration`.
+- **Accommodation Availability**: Live bungalow tally (5 bungalows, each = 1 family room + 1 single room; a whole booking consumes both rooms of a unit) via `/api/accommodation-availability`; remaining counts show in the form, sold-out options disable, and POST `/api/registration` rejects sold-out options with 409.
 - **Internationalization (EN/PT)**: `next-intl` with `[locale]` routing — public pages live under `app/(public)/[locale]/` (`/pt`, `/en`, PT default + browser detection via `middleware.ts`); language toggle on the form. Admin (`app/(admin)/admin/`, no locale prefix) is PT-only with hardcoded strings; enum display maps in `app/(admin)/admin/utils/labels.ts`. Dictionaries in `messages/*.json`; zod error mapping in `lib/zod-i18n.ts`.
 - **Admin Dashboard**: Base layout, stats cards, and registration data table.
 - **Food & Accommodation**: Specialized views with filtering and stats cards for logistics.

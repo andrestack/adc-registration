@@ -88,6 +88,7 @@ export function AccommodationSelection() {
             ? !availability[option.value].available
             : false;
           const isDisabled = option.disabled || soldOut;
+          const remaining = availability?.[option.value].remaining;
           return (
             <div key={option.value} className="flex items-center space-x-2">
               <RadioGroupItem
@@ -107,6 +108,11 @@ export function AccommodationSelection() {
                   option.value === "bungalow") && (
                   <span className="text-sm text-muted-foreground ml-1">
                     ({t("fiveNightsOnly")})
+                  </span>
+                )}
+                {!soldOut && remaining !== undefined && (
+                  <span className="text-sm text-muted-foreground ml-1">
+                    — {t("remaining", { count: remaining })}
                   </span>
                 )}
                 {soldOut && (

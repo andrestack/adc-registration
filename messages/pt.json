@@ -42,6 +42,7 @@
     "soldOut": "esgotado",
     "nightsLabel": "Número de noites",
     "bungalowNote": "Reservas em bungalow só para 5 noites",
+    "remaining": "{count, plural, one {# restante} other {# restantes}}",
     "nights": "{count, plural, one {# noite} other {# noites}}",
     "options": {
       "tent": "Tenda/Van - por pessoa",
