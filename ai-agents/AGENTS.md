@@ -33,7 +33,7 @@ This document defines the specialized AI personas (Agents) and their current are
 **Responsibility**: MongoDB schemas, API route logic, and data integrity.
 **Current State**:
 - **Models**: `Registration` and `IncomeExpense` schemas defined in `mongoose`.
-- **API**: Endpoints for registration, income-expense, and IBAN retrieval.
+- **API**: Endpoints for registration, accommodation availability, income-expense, and IBAN retrieval.
 - **Database**: MongoDB integration via `mongoose` in `lib/db.ts`.
 **Focus**: Server-side logic, database performance, and type safety.
 

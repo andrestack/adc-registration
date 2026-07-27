@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import dbConnect from "@/lib/db";
 import Registration from "@/models/Registration";
+import { getAccommodationAvailability } from "@/lib/accommodation-availability";
 import {
   registrationSchema,
   additionalRegistrantSchema,
@@ -65,6 +66,29 @@ export async function POST(request: Request) {
 
     // Validate the primary registrant data
     const validatedData = registrationSchema.parse(body);
+
+    // Enforce accommodation availability (one bungalow: family room + single room)
+    const accommodationType = validatedData.accommodation.type;
+    if (
+      accommodationType === "family-room" ||
+      accommodationType === "single-room" ||
+      accommodationType === "bungalow"
+    ) {
+      const availability = await getAccommodationAvailability(
+        validatedData.year || 2026
+      );
+      if (!availability[accommodationType].available) {
+        return NextResponse.json(
+          {
+            success: false,
+            message:
+              "This accommodation option is no longer available / Esta opção de alojamento já não está disponível",
+            error: "accommodation-unavailable",
+          },
+          { status: 409 }
+        );
+      }
+    }
 
     // Check if there are additional registrants
     const additionalRegistrants = body.additionalRegistrants || [];

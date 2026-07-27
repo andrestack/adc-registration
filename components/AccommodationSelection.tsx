@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { useFormContext } from "react-hook-form";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
@@ -6,6 +7,7 @@ import {
   RegistrationFormData,
   accommodationOptions,
 } from "@/schemas/registrationSchema";
+import { AccommodationAvailabilityMap } from "@/lib/accommodation-availability";
 import {
   Accordion,
   AccordionItem,
@@ -26,20 +28,26 @@ export function AccommodationSelection() {
   const accommodationType = watch("accommodation.type");
   const nights = watch("accommodation.nights");
 
-  // const [roomAvailability, setRoomAvailability] = useState({
-  //   'family-room': 6,
-  //   'single-room': 6,
-  // });
+  const [availability, setAvailability] =
+    useState<AccommodationAvailabilityMap | null>(null);
 
-  // useEffect(() => {
-  //   const timer = setTimeout(() => {
-  //     setRoomAvailability({
-  //       'family-room': Math.max(0, Math.floor(Math.random() * 7)),
-  //       'single-room': Math.max(0, Math.floor(Math.random() * 7)),
-  //     });
-  //   }, 5000);
-  //   return () => clearTimeout(timer);
-  // }, []);
+  useEffect(() => {
+    const fetchAvailability = async () => {
+      try {
+        const res = await fetch("/api/accommodation-availability?year=2026", {
+          cache: "no-store",
+        });
+        if (!res.ok) throw new Error(`Failed to fetch availability: ${res.statusText}`);
+        const json = await res.json();
+        setAvailability(json.data);
+      } catch (error) {
+        // Fail open: options stay enabled and the server-side check in
+        // POST /api/registration remains the source of truth
+        console.error("Could not load accommodation availability:", error);
+      }
+    };
+    fetchAvailability();
+  }, []);
 
   const handleAccommodationChange = (
     value:
@@ -71,30 +79,41 @@ export function AccommodationSelection() {
         value={accommodationType}
         onValueChange={handleAccommodationChange}
       >
-        {accommodationOptions.map((option) => (
-          <div key={option.value} className="flex items-center space-x-2">
-            <RadioGroupItem
-              value={option.value}
-              id={option.value}
-              disabled={option.disabled}
-            />
-            <Label
-              htmlFor={option.value}
-              className={
-                option.disabled ? "text-muted-foreground line-through" : ""
-              }
-            >
-              {option.label} (€{option.price} per night)
-              {(option.value === "family-room" ||
-                option.value === "single-room" ||
-                option.value === "bungalow") && (
-                <span className="text-sm text-muted-foreground ml-1">
-                  (5 nights only)
-                </span>
-              )}
-            </Label>
-          </div>
-        ))}
+        {accommodationOptions.map((option) => {
+          const soldOut = availability
+            ? !availability[option.value].available
+            : false;
+          const isDisabled = option.disabled || soldOut;
+          return (
+            <div key={option.value} className="flex items-center space-x-2">
+              <RadioGroupItem
+                value={option.value}
+                id={option.value}
+                disabled={isDisabled}
+              />
+              <Label
+                htmlFor={option.value}
+                className={
+                  isDisabled ? "text-muted-foreground line-through" : ""
+                }
+              >
+                {option.label} (€{option.price} per night)
+                {(option.value === "family-room" ||
+                  option.value === "single-room" ||
+                  option.value === "bungalow") && (
+                  <span className="text-sm text-muted-foreground ml-1">
+                    (5 nights only)
+                  </span>
+                )}
+                {soldOut && (
+                  <span className="text-sm font-medium text-red-500 ml-1">
+                    (esgotado / sold out)
+                  </span>
+                )}
+              </Label>
+            </div>
+          );
+        })}
       </RadioGroup>
       {errors.accommodation?.type && (
         <p className="text-red-500 text-sm mt-1">
