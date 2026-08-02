@@ -30,10 +30,13 @@ export type AccommodationAvailabilityMap = Record<
  * So for W whole, S single-room and F family-room primary bookings:
  *   singles left  = 5 - W - S
  *   families left = 5 - W - F
- *   wholes left   = 5 - W - S - F   (a whole needs a fully untouched unit)
+ *   wholes left   = 5 - W - max(S, F)   (a whole needs a fully untouched unit)
  *
- * The whole-bungalow count is conservative: it assumes each room booking
- * sits in a different unit, so it never oversells.
+ * The whole-bungalow count uses exact capacity: a single room and a family
+ * room can share one unit, so room bookings can always be packed into
+ * max(S, F) units. Guests are never assigned specific unit numbers, so
+ * repacking is always possible — selling a whole is feasible exactly when
+ * W + max(S, F) < 5.
  *
  * Only primary bookings count: additional registrants share the primary
  * registrant's accommodation.
@@ -65,7 +68,7 @@ export async function getAccommodationAvailability(
   const familyRemaining = Math.max(0, TOTAL_BUNGALOWS - wholes - families);
   const wholeRemaining = Math.max(
     0,
-    TOTAL_BUNGALOWS - wholes - singles - families
+    TOTAL_BUNGALOWS - wholes - Math.max(singles, families)
   );
 
   return {
