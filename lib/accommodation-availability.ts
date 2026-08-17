@@ -22,74 +22,134 @@ export type AccommodationAvailabilityMap = Record<
 /**
  * Physical model: FIVE bungalows, each made up of one family room (4 ppl)
  * and one single room (2 ppl). Each bungalow can be booked per-room or as
- * a whole (6 ppl):
- * - A whole-bungalow booking consumes both rooms of one unit.
- * - A room booking consumes that room of one unit, and also blocks that
- *   unit from being sold as a whole.
+ * a whole (6 ppl). Guests ARE assigned to a specific physical unit
+ * (accommodation.bungalowUnit, 1-5) and room slot (accommodation.bungalowRoom,
+ * "single"/"family"/"whole") by the admin after booking — see
+ * app/(admin)/admin/accommodation. A "whole" booking occupies both slots
+ * of its unit.
  *
- * So for W whole, S single-room and F family-room primary bookings:
- *   singles left  = 5 - W - S
- *   families left = 5 - W - F
- *   wholes left   = 5 - W - max(S, F)   (a whole needs a fully untouched unit)
+ * Availability is computed from actual per-unit occupancy for bookings
+ * that already have a unit assigned. Bookings of a bungalow-related type
+ * that do NOT yet have a unit assigned (the admin hasn't gotten to them)
+ * are handled conservatively: each one could still land on any currently
+ * free slot, so it's subtracted from every remaining count (single, family,
+ * AND whole) rather than being packed into a specific unit. This can never
+ * overbook, but note singleRemaining/familyRemaining/wholeRemaining are NOT
+ * additive with each other (as before) — they're independent worst-case
+ * counts, not partitions of the same pool.
  *
- * The whole-bungalow count uses exact capacity: a single room and a family
- * room can share one unit, so room bookings can always be packed into
- * max(S, F) units. Guests are never assigned specific unit numbers, so
- * repacking is always possible — selling a whole is feasible exactly when
- * W + max(S, F) < 5.
- *
- * Only primary bookings count: additional registrants share the primary
- * registrant's accommodation.
+ * Only primary bookings count: additional registrants (isPrimaryBooking:
+ * false) share the primary registrant's accommodation and never get their
+ * own unit.
  */
 export const TOTAL_BUNGALOWS = 5;
+
+type BungalowRoom = "single" | "family" | "whole";
+
+interface BungalowBookingRow {
+  accommodation: {
+    type: AccommodationType;
+    bungalowUnit?: number;
+    bungalowRoom?: BungalowRoom;
+  };
+}
 
 export async function getAccommodationAvailability(
   year: number = 2026
 ): Promise<AccommodationAvailabilityMap> {
-  const counts = await Registration.aggregate<{
-    _id: AccommodationType;
-    count: number;
-  }>([
-    // isPrimaryBooking may be missing on legacy documents; treat missing as primary
-    { $match: { year, isPrimaryBooking: { $ne: false } } },
-    { $group: { _id: "$accommodation.type", count: { $sum: 1 } } },
-  ]);
+  const allBookings = await Registration.find(
+    { year, isPrimaryBooking: { $ne: false } },
+    { "accommodation.type": 1, "accommodation.bungalowUnit": 1, "accommodation.bungalowRoom": 1 }
+  ).lean<BungalowBookingRow[]>();
 
-  const booked = counts.reduce<Partial<Record<AccommodationType, number>>>(
-    (acc, { _id, count }) => ({ ...acc, [_id]: count }),
-    {}
+  const tentCount = allBookings.filter(
+    (r) => r.accommodation.type === "tent"
+  ).length;
+  const alreadyBookedCount = allBookings.filter(
+    (r) => r.accommodation.type === "already-booked"
+  ).length;
+
+  const bungalowRelated = allBookings.filter((r) =>
+    ["bungalow", "single-room", "family-room"].includes(r.accommodation.type)
   );
 
-  const wholes = booked["bungalow"] ?? 0;
-  const singles = booked["single-room"] ?? 0;
-  const families = booked["family-room"] ?? 0;
+  // Per-unit occupancy grid, built only from bookings with a valid assigned
+  // unit (1-5) and room. Anything else (missing/out-of-range) is treated as
+  // unassigned rather than clamped, so bad data can't fabricate a false
+  // occupancy collision.
+  const occSingle = Array(TOTAL_BUNGALOWS + 1).fill(false);
+  const occFamily = Array(TOTAL_BUNGALOWS + 1).fill(false);
 
-  const singleRemaining = Math.max(0, TOTAL_BUNGALOWS - wholes - singles);
-  const familyRemaining = Math.max(0, TOTAL_BUNGALOWS - wholes - families);
-  const wholeRemaining = Math.max(
-    0,
-    TOTAL_BUNGALOWS - wholes - Math.max(singles, families)
-  );
+  let unassignedCount = 0;
+  let wholeBooked = 0;
+  let singleBooked = 0;
+  let familyBooked = 0;
+
+  for (const row of bungalowRelated) {
+    const { type, bungalowUnit, bungalowRoom } = row.accommodation;
+    if (type === "bungalow") wholeBooked++;
+    if (type === "single-room") singleBooked++;
+    if (type === "family-room") familyBooked++;
+
+    const validUnit =
+      Number.isInteger(bungalowUnit) &&
+      (bungalowUnit as number) >= 1 &&
+      (bungalowUnit as number) <= TOTAL_BUNGALOWS;
+    const validRoom =
+      bungalowRoom === "single" ||
+      bungalowRoom === "family" ||
+      bungalowRoom === "whole";
+
+    if (!validUnit || !validRoom) {
+      unassignedCount++;
+      continue;
+    }
+
+    const unit = bungalowUnit as number;
+    if (bungalowRoom === "whole") {
+      occSingle[unit] = true;
+      occFamily[unit] = true;
+    } else if (bungalowRoom === "single") {
+      occSingle[unit] = true;
+    } else {
+      occFamily[unit] = true;
+    }
+  }
+
+  let nSingleFree = 0;
+  let nFamilyFree = 0;
+  let nWholeFree = 0;
+  for (let unit = 1; unit <= TOTAL_BUNGALOWS; unit++) {
+    if (!occSingle[unit]) nSingleFree++;
+    if (!occFamily[unit]) nFamilyFree++;
+    if (!occSingle[unit] && !occFamily[unit]) nWholeFree++;
+  }
+
+  // Conservative reservation: an unassigned booking could still take any
+  // free slot, so it's subtracted from all three counts independently.
+  const singleRemaining = Math.max(0, nSingleFree - unassignedCount);
+  const familyRemaining = Math.max(0, nFamilyFree - unassignedCount);
+  const wholeRemaining = Math.max(0, nWholeFree - unassignedCount);
 
   return {
-    tent: { booked: booked["tent"] ?? 0, available: true },
+    tent: { booked: tentCount, available: true },
     "family-room": {
-      booked: families,
+      booked: familyBooked,
       available: familyRemaining > 0,
       remaining: familyRemaining,
     },
     "single-room": {
-      booked: singles,
+      booked: singleBooked,
       available: singleRemaining > 0,
       remaining: singleRemaining,
     },
     bungalow: {
-      booked: wholes,
+      booked: wholeBooked,
       available: wholeRemaining > 0,
       remaining: wholeRemaining,
     },
     "already-booked": {
-      booked: booked["already-booked"] ?? 0,
+      booked: alreadyBookedCount,
       available: true,
     },
   };

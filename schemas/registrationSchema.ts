@@ -73,6 +73,9 @@ export const registrationSchema = z.object({
         "already-booked",
       ]),
       nights: z.number().int().min(1).max(5),
+      // Physical unit assignment (admin-only, set after booking)
+      bungalowUnit: z.number().int().min(1).max(5).optional(),
+      bungalowRoom: z.enum(["single", "family", "whole"]).optional(),
     })
     .refine(
       (data) => {

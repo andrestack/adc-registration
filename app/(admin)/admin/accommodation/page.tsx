@@ -3,10 +3,13 @@
 import { AccommodationPage } from "./components/accommodation-page";
 import { useEffect, useState } from "react";
 import { AccommodationStatsCards } from "./components/accommodation-stats-cards";
+import { BungalowOccupancyGrid } from "./components/bungalow-occupancy-grid";
 
 interface Accommodation {
   type: "tent" | "family-room" | "single-room" | "bungalow" | "already-booked";
   nights: number;
+  bungalowUnit?: number;
+  bungalowRoom?: "single" | "family" | "whole";
 }
 
 // Updated Participant interface to be comprehensive for this page
@@ -87,6 +90,8 @@ export default function AdminAccommodationPage() {
       </div>
 
       <AccommodationStatsCards data={accommodationBookings} />
+
+      <BungalowOccupancyGrid data={accommodationBookings} />
 
       <AccommodationPage // This component will be refactored to use DataTable
         title="Todas as Reservas de Alojamento"

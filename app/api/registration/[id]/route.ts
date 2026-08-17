@@ -2,6 +2,17 @@ import { NextResponse } from "next/server";
 import dbConnect from "@/lib/db";
 import Registration from "@/models/Registration";
 
+const BUNGALOW_ROOMS = ["single", "family", "whole"] as const;
+type BungalowRoom = (typeof BUNGALOW_ROOMS)[number];
+
+// A "whole" booking occupies both the single and family slot of its unit,
+// so it conflicts with any other booking on that unit; single/family only
+// conflict with the same room or with a whole.
+function roomsConflict(a: BungalowRoom, b: BungalowRoom) {
+  if (a === "whole" || b === "whole") return true;
+  return a === b;
+}
+
 export async function PATCH(
   request: Request,
   { params }: { params: { id: string } }
@@ -10,19 +21,111 @@ export async function PATCH(
     await dbConnect();
 
     const body = await request.json();
-    const { paymentMade, initialPayment } = body;
+    const { paymentMade, initialPayment, bungalowUnit, bungalowRoom } = body;
 
     // Create update object based on provided fields
-    const updateData: { paymentMade?: boolean; initialPayment?: number } = {};
+    const updateData: {
+      paymentMade?: boolean;
+      initialPayment?: number;
+    } = {};
+    const dotSet: Record<string, unknown> = {};
+    const dotUnset: Record<string, ""> = {};
+
     if (typeof paymentMade !== "undefined")
       updateData.paymentMade = paymentMade;
     if (typeof initialPayment !== "undefined")
       updateData.initialPayment = initialPayment;
 
+    const settingBungalow =
+      typeof bungalowUnit !== "undefined" ||
+      typeof bungalowRoom !== "undefined";
+
+    if (settingBungalow) {
+      const clearing = bungalowUnit === null && bungalowRoom === null;
+
+      if (clearing) {
+        dotUnset["accommodation.bungalowUnit"] = "";
+        dotUnset["accommodation.bungalowRoom"] = "";
+      } else {
+        const validUnit =
+          Number.isInteger(bungalowUnit) &&
+          bungalowUnit >= 1 &&
+          bungalowUnit <= 5;
+        const validRoom = BUNGALOW_ROOMS.includes(bungalowRoom);
+
+        if (!validUnit || !validRoom) {
+          return NextResponse.json(
+            {
+              success: false,
+              message:
+                "bungalowUnit must be an integer 1-5 and bungalowRoom must be one of single/family/whole (or both null to clear)",
+            },
+            { status: 400 }
+          );
+        }
+
+        const current = await Registration.findById(params.id);
+        if (!current) {
+          return NextResponse.json(
+            { success: false, message: "Registration not found" },
+            { status: 404 }
+          );
+        }
+
+        const currentType = current.accommodation?.type;
+        if (!["bungalow", "single-room", "family-room"].includes(currentType)) {
+          return NextResponse.json(
+            {
+              success: false,
+              message: `Cannot assign a bungalow unit to a registration of type "${currentType}"`,
+            },
+            { status: 400 }
+          );
+        }
+
+        // Conflict check against other primary bookings in the same year/unit
+        const others = await Registration.find({
+          _id: { $ne: params.id },
+          year: current.year,
+          isPrimaryBooking: { $ne: false },
+          "accommodation.bungalowUnit": bungalowUnit,
+        });
+
+        const conflict = others.find((o) =>
+          roomsConflict(o.accommodation.bungalowRoom, bungalowRoom)
+        );
+
+        if (conflict) {
+          return NextResponse.json(
+            {
+              success: false,
+              message: `Bungalow ${bungalowUnit} (${bungalowRoom}) conflicts with ${conflict.fullName}'s existing assignment (${conflict.accommodation.bungalowRoom})`,
+            },
+            { status: 409 }
+          );
+        }
+
+        dotSet["accommodation.bungalowUnit"] = bungalowUnit;
+        dotSet["accommodation.bungalowRoom"] = bungalowRoom;
+      }
+    }
+
+    // MongoDB update docs can't mix plain top-level fields with operators
+    // ($set/$unset), so fold everything into operator form once either is used.
+    const usingOperators =
+      Object.keys(dotSet).length > 0 || Object.keys(dotUnset).length > 0;
+
+    const mongoUpdate: Record<string, unknown> = usingOperators
+      ? {
+          $set: { ...updateData, ...dotSet },
+          ...(Object.keys(dotUnset).length ? { $unset: dotUnset } : {}),
+        }
+      : updateData;
+
     const registration = await Registration.findByIdAndUpdate(
       params.id,
-      updateData,
-      { new: true }
+      mongoUpdate,
+      { new: true, runValidators: true }
     );
 
     if (!registration) {

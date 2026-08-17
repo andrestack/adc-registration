@@ -29,6 +29,19 @@ const AccommodationSchema = new Schema({
       message: "Bungalows must be booked for exactly 5 nights",
     },
   },
+  // Physical unit assignment (admin-only, set after booking). Only meaningful
+  // when type is bungalow/single-room/family-room. See lib/accommodation-availability.ts
+  bungalowUnit: {
+    type: Number,
+    required: false,
+    min: 1,
+    max: 5,
+  },
+  bungalowRoom: {
+    type: String,
+    enum: ["single", "family", "whole"],
+    required: false,
+  },
 });
 
 // Food sub-schema

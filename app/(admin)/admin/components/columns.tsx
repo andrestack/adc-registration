@@ -96,6 +96,8 @@ export type Registration = {
       | "bungalow"
       | "already-booked";
     nights: number;
+    bungalowUnit?: number;
+    bungalowRoom?: "single" | "family" | "whole";
   };
   food: {
     type: "full" | "single" | "none";
