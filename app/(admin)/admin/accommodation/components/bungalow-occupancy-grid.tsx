@@ -11,6 +11,7 @@ interface Accommodation {
 
 interface Participant {
   fullName: string;
+  isPrimaryBooking?: boolean;
   accommodation: Accommodation;
 }
 
@@ -28,6 +29,10 @@ export function BungalowOccupancyGrid({ data }: BungalowOccupancyGridProps) {
   const unassigned: Participant[] = [];
 
   for (const p of data) {
+    // Additional registrants share the primary registrant's physical unit
+    // (see lib/accommodation-availability.ts) — they never occupy a slot of
+    // their own, so they must not count towards occupancy here.
+    if (p.isPrimaryBooking === false) continue;
     const { type, bungalowUnit, bungalowRoom } = p.accommodation;
     if (!["bungalow", "single-room", "family-room"].includes(type)) continue;
 

@@ -22,6 +22,8 @@ interface Participant {
   food?: { type: string; days: number }; // Example from schema
   total?: number; // Example from schema
   paymentMade?: boolean; // From schema, potentially useful
+  isPrimaryBooking?: boolean;
+  primaryRegistrantName?: string;
   // Add other fields from RegistrationFormData / MongoDB document as needed
 }
 

@@ -83,6 +83,20 @@ export async function PATCH(
           );
         }
 
+        // Additional registrants share the primary registrant's physical unit
+        // (see lib/accommodation-availability.ts) — assigning them their own
+        // unit would occupy a phantom slot the availability check never counts.
+        if (current.isPrimaryBooking === false) {
+          return NextResponse.json(
+            {
+              success: false,
+              message:
+                "Additional registrants share the primary registrant's accommodation — assign the unit on the primary booking instead",
+            },
+            { status: 400 }
+          );
+        }
+
         // Conflict check against other primary bookings in the same year/unit
         const others = await Registration.find({
           _id: { $ne: params.id },

@@ -26,6 +26,8 @@ export interface ParticipantData {
   fullName: string;
   email: string;
   accommodation: Accommodation;
+  isPrimaryBooking?: boolean;
+  primaryRegistrantName?: string;
   // other fields like paymentMade can be added if needed for display or filtering
   paymentMade?: boolean;
 }
@@ -204,8 +206,18 @@ export const columns: ColumnDef<ParticipantData>[] = [
     id: "bungalowAssignment",
     header: "Bungalow Atribuído",
     cell: ({ row }) => {
-      const { accommodation, _id } = row.original;
+      const { accommodation, _id, isPrimaryBooking, primaryRegistrantName } =
+        row.original;
       if (!_id) return null;
+      // Additional registrants share the primary's unit — nothing to assign.
+      // See lib/accommodation-availability.ts for the physical model.
+      if (isPrimaryBooking === false) {
+        return (
+          <span className="text-muted-foreground">
+            Partilhado com {primaryRegistrantName ?? "o titular"}
+          </span>
+        );
+      }
       return (
         <EditableBungalowAssignment
           id={_id}
