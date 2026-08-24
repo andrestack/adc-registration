@@ -21,7 +21,13 @@ export async function PATCH(
     await dbConnect();
 
     const body = await request.json();
-    const { paymentMade, initialPayment, bungalowUnit, bungalowRoom } = body;
+    const {
+      paymentMade,
+      initialPayment,
+      bungalowUnit,
+      bungalowRoom,
+      accommodationType,
+    } = body;
 
     // Create update object based on provided fields
     const updateData: {
@@ -31,6 +37,30 @@ export async function PATCH(
     const dotSet: Record<string, unknown> = {};
     const dotUnset: Record<string, ""> = {};
 
+    const VALID_ACCOMMODATION_TYPES = [
+      "tent",
+      "family-room",
+      "single-room",
+      "bungalow",
+      "already-booked",
+    ] as const;
+
+    if (typeof accommodationType !== "undefined") {
+      if (
+        !(VALID_ACCOMMODATION_TYPES as readonly string[]).includes(
+          accommodationType
+        )
+      ) {
+        return NextResponse.json(
+          {
+            success: false,
+            message: `Invalid accommodation type: ${accommodationType}`,
+          },
+          { status: 400 }
+        );
+      }
+      dotSet["accommodation.type"] = accommodationType;
+    }
     if (typeof paymentMade !== "undefined")
       updateData.paymentMade = paymentMade;
     if (typeof initialPayment !== "undefined")
@@ -47,11 +77,17 @@ export async function PATCH(
         dotUnset["accommodation.bungalowUnit"] = "";
         dotUnset["accommodation.bungalowRoom"] = "";
       } else {
+        // Promoting to bungalow implies the whole unit; default room if omitted.
+        const effectiveRoom: BungalowRoom =
+          accommodationType === "bungalow" && typeof bungalowRoom === "undefined"
+            ? "whole"
+            : bungalowRoom;
+
         const validUnit =
           Number.isInteger(bungalowUnit) &&
           bungalowUnit >= 1 &&
           bungalowUnit <= 5;
-        const validRoom = BUNGALOW_ROOMS.includes(bungalowRoom);
+        const validRoom = BUNGALOW_ROOMS.includes(effectiveRoom);
 
         if (!validUnit || !validRoom) {
           return NextResponse.json(
@@ -73,11 +109,12 @@ export async function PATCH(
         }
 
         const currentType = current.accommodation?.type;
-        if (!["bungalow", "single-room", "family-room"].includes(currentType)) {
+        const finalType = accommodationType || currentType;
+        if (!["bungalow", "single-room", "family-room"].includes(finalType)) {
           return NextResponse.json(
             {
               success: false,
-              message: `Cannot assign a bungalow unit to a registration of type "${currentType}"`,
+              message: `Cannot assign a bungalow unit to a registration of type "${finalType}"`,
             },
             { status: 400 }
           );
@@ -106,21 +143,21 @@ export async function PATCH(
         });
 
         const conflict = others.find((o) =>
-          roomsConflict(o.accommodation.bungalowRoom, bungalowRoom)
+          roomsConflict(o.accommodation.bungalowRoom, effectiveRoom)
         );
 
         if (conflict) {
           return NextResponse.json(
             {
               success: false,
-              message: `Bungalow ${bungalowUnit} (${bungalowRoom}) conflicts with ${conflict.fullName}'s existing assignment (${conflict.accommodation.bungalowRoom})`,
+              message: `Bungalow ${bungalowUnit} (${effectiveRoom}) conflicts with ${conflict.fullName}'s existing assignment (${conflict.accommodation.bungalowRoom})`,
             },
             { status: 409 }
           );
         }
 
         dotSet["accommodation.bungalowUnit"] = bungalowUnit;
-        dotSet["accommodation.bungalowRoom"] = bungalowRoom;
+        dotSet["accommodation.bungalowRoom"] = effectiveRoom;
       }
     }
 

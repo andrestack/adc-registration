@@ -46,12 +46,16 @@ function defaultRoomForType(
 async function updateBungalowAssignment(
   id: string,
   bungalowUnit: number | null,
-  bungalowRoom: "single" | "family" | "whole" | null
+  bungalowRoom: "single" | "family" | "whole" | null,
+  accommodationType?: string
 ) {
+  const body: Record<string, unknown> = { bungalowUnit, bungalowRoom };
+  if (accommodationType) body.accommodationType = accommodationType;
+
   const response = await fetch(`/api/registration/${id}`, {
     method: "PATCH",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ bungalowUnit, bungalowRoom }),
+    body: JSON.stringify(body),
   });
 
   const data = await response.json();
@@ -159,7 +163,7 @@ function EditableBungalowAssignment({
   }
 
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex items-center gap-2 flex-wrap">
       <span>
         {bungalowUnit
           ? `Bungalow ${bungalowUnit}${
@@ -169,6 +173,37 @@ function EditableBungalowAssignment({
             }`
           : "Não atribuído"}
       </span>
+      {type !== "bungalow" && bungalowUnit && (
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={async () => {
+            if (
+              !confirm(
+                `Converter esta reserva para Bungalow Completo no Bungalow ${bungalowUnit}?`
+              )
+            )
+              return;
+            try {
+              await updateBungalowAssignment(
+                id,
+                bungalowUnit,
+                "whole",
+                "bungalow"
+              );
+              window.location.reload();
+            } catch (error) {
+              alert(
+                error instanceof Error
+                  ? error.message
+                  : "Falha ao converter para bungalow completo."
+              );
+            }
+          }}
+        >
+          Converter para Completo
+        </Button>
+      )}
       <Button
         variant="ghost"
         size="icon"
