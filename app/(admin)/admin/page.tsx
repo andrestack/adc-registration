@@ -3,9 +3,11 @@
 import React from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { DataTable } from "./components/data-table";
-import { columns } from "./components/columns";
+import { columns, Registration as AdminRegistration } from "./components/columns";
 import { StatsCards } from "./components/stats-cards";
-import { TrendingUp, TrendingDown, Minus } from "lucide-react";
+import { TrendingUp, TrendingDown, Minus, Download } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { generatePaymentsCSV } from "./utils/csv-export";
 
 async function getRegistrations(year: number) {
   const baseUrl =
@@ -47,17 +49,12 @@ function formatCurrency(amount: number): string {
   return `€${amount.toLocaleString()}`;
 }
 
-interface Registration {
-  total: number;
-  paymentMade: boolean;
-}
-
 interface IncomeExpense {
   type: string;
   amount: number;
 }
 
-function calculateFinancials(registrations: Registration[], incomeExpenses: IncomeExpense[]) {
+function calculateFinancials(registrations: AdminRegistration[], incomeExpenses: IncomeExpense[]) {
   // Registration revenue
   const registrationRevenue = registrations.reduce(
     (sum: number, r: { total: number }) => sum + (r.total || 0),
@@ -106,11 +103,24 @@ function getChangeIcon(current: number, previous: number) {
   return <Minus className="h-4 w-4 text-gray-400" />;
 }
 
+function downloadPaymentsCSV(registrations: AdminRegistration[]) {
+  const csv = generatePaymentsCSV(registrations);
+  const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = "adc-2026-pagamentos.csv";
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+}
+
 export default function AdminPage() {
-  const [registrations2025, setRegistrations2025] = React.useState([]);
-  const [registrations2026, setRegistrations2026] = React.useState([]);
-  const [incomeExpenses2025, setIncomeExpenses2025] = React.useState([]);
-  const [incomeExpenses2026, setIncomeExpenses2026] = React.useState([]);
+  const [registrations2025, setRegistrations2025] = React.useState<AdminRegistration[]>([]);
+  const [registrations2026, setRegistrations2026] = React.useState<AdminRegistration[]>([]);
+  const [incomeExpenses2025, setIncomeExpenses2025] = React.useState<IncomeExpense[]>([]);
+  const [incomeExpenses2026, setIncomeExpenses2026] = React.useState<IncomeExpense[]>([]);
   const [isLoading, setIsLoading] = React.useState(true);
 
   React.useEffect(() => {
@@ -339,7 +349,19 @@ export default function AdminPage() {
 
       <StatsCards data={registrations2026} />
 
-      <div className="rounded-lg border shadow p-4">
+      <div className="rounded-lg border shadow p-4 space-y-4">
+        <div className="flex items-center justify-between">
+          <h3 className="text-lg font-semibold">Inscrições 2026</h3>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => downloadPaymentsCSV(registrations2026)}
+            disabled={registrations2026.length === 0}
+          >
+            <Download className="h-4 w-4 mr-2" />
+            Exportar CSV
+          </Button>
+        </div>
         <DataTable columns={columns} data={registrations2026} />
       </div>
     </div>
