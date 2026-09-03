@@ -24,11 +24,12 @@ When the admin form is submitted, the app posts to `N8N_WEBHOOK_URL` with the fo
 ## Recommended n8n workflow
 
 1. **Webhook** node — receives the payload.
-2. **Code** node — turns the `recipients` array into one n8n item per email address.
-3. **Email (SMTP)** node — sends one email for each item.
-4. **Respond to Webhook** node — replies to the app immediately so the UI shows success.
+2. **Validate Data** node — validates the payload and normalises it.
+3. **Expand Recipients** node — turns the `recipients` array into one n8n item per email address.
+4. **Email (SMTP)** node — sends one email for each item.
+5. **Respond to Webhook** node — replies to the app immediately so the UI shows success.
 
-> **Why a Code node?** n8n's "Split In Batches" splits **items**, not the values inside an item. Without the Code node, the Send Email node received the whole payload object (`$json`) as the recipient and produced no visible output.
+> **Why a Code node?** n8n's "Split In Batches" splits **items**, not the values inside an item. Without the Code node, the Send Email node receives the whole payload object (`$json`) as the recipient and produces no visible output.
 
 ## Import the workflow (ready-to-paste JSON)
 
@@ -62,20 +63,32 @@ When the admin form is submitted, the app posts to `N8N_WEBHOOK_URL` with the fo
       "parameters": {
         "mode": "runOnceForAllItems",
         "language": "javaScript",
+        "jsCode": "const input = $('ADC Webhook').first().json.body || $('ADC Webhook').first().json;\n\nconst subject = input.subject;\nconst body = input.body;\nconst recipients = input.recipients;\n\nif (!subject || !body || !Array.isArray(recipients) || recipients.length === 0) {\n  throw new Error('Missing required fields: subject, body, or recipients');\n}\n\nreturn [{\n  json: {\n    subject,\n    body,\n    recipients,\n    recipientCount: recipients.length,\n    timestamp: new Date().toISOString(),\n    source: input.source || 'adc-registration-app'\n  }\n}];"
+      },
+      "id": "adc-validate-data",
+      "name": "Validate Data",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [440, 300]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
         "jsCode": "const recipients = $input.first().json.recipients || [];\nreturn recipients.map((email) => ({ json: { email } }));"
       },
       "id": "adc-expand-recipients",
       "name": "Expand Recipients",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [460, 300]
+      "position": [620, 300]
     },
     {
       "parameters": {
-        "fromEmail": "=contact@aldeia-djembe-camp.com",
-        "toEmail": "{{ $('ADC Webhook').item.json.body.recipients[0] }}",
-        "subject": "={{ $('ADC Webhook').first().json.subject }}",
-        "html": "={{ $('ADC Webhook').first().json.body }}",
+        "fromEmail": "=info@aldeia-djembe-camp.com",
+        "toEmail": "={{ $json.email }}",
+        "subject": "={{ $('Validate Data').first().json.subject }}",
+        "html": "={{ $('Validate Data').first().json.body }}",
         "emailFormat": "html",
         "options": {
           "appendAttribution": false
@@ -85,7 +98,7 @@ When the admin form is submitted, the app posts to `N8N_WEBHOOK_URL` with the fo
       "name": "Send Email",
       "type": "n8n-nodes-base.emailSend",
       "typeVersion": 2,
-      "position": [680, 300],
+      "position": [840, 300],
       "credentials": {
         "smtp": {
           "id": "YOUR_SMTP_CREDENTIAL_ID_HERE",
@@ -96,7 +109,7 @@ When the admin form is submitted, the app posts to `N8N_WEBHOOK_URL` with the fo
     {
       "parameters": {
         "respondWith": "json",
-        "responseBody": "={{JSON.stringify({ \"success\": true, \"recipientCount\": $('ADC Webhook').first().json.recipients.length })}}",
+        "responseBody": "={{JSON.stringify({ \"success\": true, \"recipientCount\": $('Validate Data').first().json.recipientCount })}}",
         "options": {}
       },
       "id": "adc-respond-to-webhook",
@@ -111,12 +124,23 @@ When the admin form is submitted, the app posts to `N8N_WEBHOOK_URL` with the fo
       "main": [
         [
           {
-            "node": "Expand Recipients",
+            "node": "Validate Data",
             "type": "main",
             "index": 0
           },
           {
             "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate Data": {
+      "main": [
+        [
+          {
+            "node": "Expand Recipients",
             "type": "main",
             "index": 0
           }
@@ -149,6 +173,37 @@ When the admin form is submitted, the app posts to `N8N_WEBHOOK_URL` with the fo
 - Path: `adc-email-sender` (n8n will generate the full URL for you)
 - Response Mode: `Using Respond to Webhook Node`
 
+### Validate Data (Code)
+
+- Mode: `Run Once for All Items`
+- Language: `JavaScript`
+- Code:
+
+```js
+const input = $('ADC Webhook').first().json.body || $('ADC Webhook').first().json;
+
+const subject = input.subject;
+const body = input.body;
+const recipients = input.recipients;
+
+if (!subject || !body || !Array.isArray(recipients) || recipients.length === 0) {
+  throw new Error('Missing required fields: subject, body, or recipients');
+}
+
+return [{
+  json: {
+    subject,
+    body,
+    recipients,
+    recipientCount: recipients.length,
+    timestamp: new Date().toISOString(),
+    source: input.source || 'adc-registration-app'
+  }
+}];
+```
+
+This validates that the webhook contains `subject`, `body`, and a non-empty `recipients` array. It also normalises the structure so downstream nodes can reference `Validate Data` instead of the webhook node directly.
+
 ### Expand Recipients (Code)
 
 - Mode: `Run Once for All Items`
@@ -166,9 +221,9 @@ This produces one item per recipient, so the Send Email node runs once for every
 
 - **From** — e.g. `info@aldeia-djembe-camp.com`
 - **To** — `={{ $json.email }}`
-- **Subject** — `={{ $('ADC Webhook').first().json.subject }}`
+- **Subject** — `={{ $('Validate Data').first().json.subject }}`
 - **Email Format** — `HTML`
-- **HTML** — `={{ $('ADC Webhook').first().json.body }}`
+- **HTML** — `={{ $('Validate Data').first().json.body }}`
 - **Options** — `Append n8n attribution` should be off so your emails stay clean.
 
 > Make sure the SMTP credential uses the correct sender address and your provider lets you send bulk/batch emails.
@@ -179,7 +234,7 @@ This produces one item per recipient, so the Send Email node runs once for every
 - **Response Body**:
 
 ```text
-={{JSON.stringify({ "success": true, "recipientCount": $('ADC Webhook').first().json.recipients.length })}}
+={{JSON.stringify({ "success": true, "recipientCount": $('Validate Data').first().json.recipientCount })}}
 ```
 
 ## Testing the webhook manually
@@ -198,6 +253,7 @@ curl -X POST https://your-n8n-instance/webhook/adc-email-sender \
 
 Then check **Executions** in n8n:
 
+- The **Validate Data** node should output one item with `subject`, `body`, and `recipients`.
 - The **Expand Recipients** node should output 1 item per recipient.
 - The **Send Email** node should show one green execution per item. If it is greyed out or empty, the node never received a valid recipient string.
 - If Send Email is green but no email arrives, the issue is the SMTP credentials or the recipient spam folder.
@@ -211,8 +267,8 @@ If you add an API key to the n8n Webhook node, set `N8N_WEBHOOK_API_KEY` in `.en
 | Symptom | Cause | Fix |
 |---|---|---|
 | App shows “Email service is not configured” | `N8N_WEBHOOK_URL` is missing | Add the n8n webhook URL to `.env` |
-| App shows “Failed to queue email via automation service” | n8n returned an error | Check n8n Executions for the failing node |
-| Send Email node has no output / does not run | Recipients were not expanded into items | Verify the Code node output and Send Email `To` expression |
+| App shows “Failed to queue email via automation service” | `Validate Data` threw a validation error | Confirm the app sends `subject`, `body`, and a non-empty `recipients` array |
+| Send Email node has no output / does not run | Recipients were not expanded into items | Verify the Expand Recipients node output and Send Email `To` expression |
 | Emails not delivered | SMTP credentials incorrect | Verify host/port/user/password in n8n |
 | Emails land in spam | SPF/DKIM not configured | Add the correct DNS records for your SMTP sender |
 | HTML formatting is ignored | Email Format is set to `Text` | Set Email Format to `HTML` in the Send Email node |
