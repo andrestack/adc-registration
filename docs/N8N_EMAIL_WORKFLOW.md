@@ -23,18 +23,22 @@ When the admin form is submitted, the app posts to `N8N_WEBHOOK_URL` with the fo
 
 ## Recommended n8n workflow
 
-1. **Webhook** node — receives the payload from the app.
-2. **Split In Batches** node — loops through the `recipients` array.
-3. **Email (SMTP)** node — sends one email per recipient.
+1. **Webhook** node — receives the payload.
+2. **Code** node — turns the `recipients` array into one n8n item per email address.
+3. **Email (SMTP)** node — sends one email for each item.
+4. **Respond to Webhook** node — replies to the app immediately so the UI shows success.
+
+> **Why a Code node?** n8n's "Split In Batches" splits **items**, not the values inside an item. Without the Code node, the Send Email node received the whole payload object (`$json`) as the recipient and produced no visible output.
 
 ## Import the workflow (ready-to-paste JSON)
 
 1. In n8n, open **Workflows**.
-2. Click **...** → **Import from JSON** (or create a new workflow and use **Import from File**).
+2. Click **...** → **Import from JSON**.
 3. Paste the JSON below.
-4. Update the **Email (SMTP)** credentials to match your SMTP provider.
-5. Copy the webhook URL n8n generates and set it in your `.env` as `N8N_WEBHOOK_URL`.
-6. Activate the workflow.
+4. Open the **Send Email** node and attach your SMTP credentials.
+5. Update the **From** address if needed.
+6. Copy the webhook URL n8n generates and set it in your `.env` as `N8N_WEBHOOK_URL`.
+7. Activate the workflow.
 
 ```json
 {
@@ -56,22 +60,26 @@ When the admin form is submitted, the app posts to `N8N_WEBHOOK_URL` with the fo
     },
     {
       "parameters": {
-        "batchSize": 1,
-        "options": {}
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "const recipients = $input.first().json.recipients || [];\nreturn recipients.map((email) => ({ json: { email } }));"
       },
-      "id": "adc-split-batches",
-      "name": "Split In Batches",
-      "type": "n8n-nodes-base.splitInBatches",
-      "typeVersion": 3,
+      "id": "adc-expand-recipients",
+      "name": "Expand Recipients",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
       "position": [460, 300]
     },
     {
       "parameters": {
-        "fromEmail": "=info@aldeia-djembe-camp.com",
-        "toEmail": "={{ $json }}",
-        "subject": "={{ $('ADC Webhook').first().json.body.subject }}",
-        "html": "={{ $('ADC Webhook').first().json.body.body }}",
-        "options": {}
+        "fromEmail": "=contact@aldeia-djembe-camp.com",
+        "toEmail": "{{ $('ADC Webhook').item.json.body.recipients[0] }}",
+        "subject": "={{ $('ADC Webhook').first().json.subject }}",
+        "html": "={{ $('ADC Webhook').first().json.body }}",
+        "emailFormat": "html",
+        "options": {
+          "appendAttribution": false
+        }
       },
       "id": "adc-smtp-email",
       "name": "Send Email",
@@ -88,7 +96,7 @@ When the admin form is submitted, the app posts to `N8N_WEBHOOK_URL` with the fo
     {
       "parameters": {
         "respondWith": "json",
-        "responseBody": "= {{JSON.stringify({ success: true, recipientCount: $('ADC Webhook').first().json.body.recipients.length })}}",
+        "responseBody": "={{JSON.stringify({ \"success\": true, \"recipientCount\": $('ADC Webhook').first().json.recipients.length })}}",
         "options": {}
       },
       "id": "adc-respond-to-webhook",
@@ -103,7 +111,7 @@ When the admin form is submitted, the app posts to `N8N_WEBHOOK_URL` with the fo
       "main": [
         [
           {
-            "node": "Split In Batches",
+            "node": "Expand Recipients",
             "type": "main",
             "index": 0
           },
@@ -115,22 +123,11 @@ When the admin form is submitted, the app posts to `N8N_WEBHOOK_URL` with the fo
         ]
       ]
     },
-    "Split In Batches": {
+    "Expand Recipients": {
       "main": [
         [
           {
             "node": "Send Email",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Send Email": {
-      "main": [
-        [
-          {
-            "node": "Split In Batches",
             "type": "main",
             "index": 0
           }
@@ -152,11 +149,29 @@ When the admin form is submitted, the app posts to `N8N_WEBHOOK_URL` with the fo
 - Path: `adc-email-sender` (n8n will generate the full URL for you)
 - Response Mode: `Using Respond to Webhook Node`
 
-### Split In Batches
+### Expand Recipients (Code)
 
-- Input: `["a@x.com", "b@x.com", ...]`
-- Batch size: `1`
-- Each loop outputs one email address.
+- Mode: `Run Once for All Items`
+- Language: `JavaScript`
+- Code:
+
+```js
+const recipients = $input.first().json.recipients || [];
+return recipients.map((email) => ({ json: { email } }));
+```
+
+This produces one item per recipient, so the Send Email node runs once for every email address.
+
+### Send Email (SMTP)
+
+- **From** — e.g. `info@aldeia-djembe-camp.com`
+- **To** — `={{ $json.email }}`
+- **Subject** — `={{ $('ADC Webhook').first().json.subject }}`
+- **Email Format** — `HTML`
+- **HTML** — `={{ $('ADC Webhook').first().json.body }}`
+- **Options** — `Append n8n attribution` should be off so your emails stay clean.
+
+> Make sure the SMTP credential uses the correct sender address and your provider lets you send bulk/batch emails.
 
 ### Respond to Webhook
 
@@ -164,19 +179,28 @@ When the admin form is submitted, the app posts to `N8N_WEBHOOK_URL` with the fo
 - **Response Body**:
 
 ```text
-={{JSON.stringify({ "success": true, "recipientCount": $('ADC Webhook').first().json.body.recipients.length })}}
+={{JSON.stringify({ "success": true, "recipientCount": $('ADC Webhook').first().json.recipients.length })}}
 ```
 
-> Use `.first()` because the Split In Batches loop outputs one item at a time, while the original webhook payload lives on the first item.
+## Testing the webhook manually
 
-### Send Email (SMTP)
+Replace the URL below with your n8n webhook URL and run it from your terminal:
 
-- **From** — set in the SMTP node (not sent by the app)
-- **To** — `={{ $json }}` (current email from Split In Batches)
-- **Subject** — `={{ $('ADC Webhook').first().json.body.subject }}`
-- **HTML** — `={{ $('ADC Webhook').first().json.body.body }}`
+```bash
+curl -X POST https://your-n8n-instance/webhook/adc-email-sender \
+  -H "Content-Type: application/json" \
+  -d '{
+    "subject": "Test from ADC app",
+    "body": "<p>This is a test email.</p>",
+    "recipients": ["your-email@example.com"]
+  }'
+```
 
-> Make sure the SMTP credential uses the correct sender address and your provider lets you send bulk/batch emails.
+Then check **Executions** in n8n:
+
+- The **Expand Recipients** node should output 1 item per recipient.
+- The **Send Email** node should show one green execution per item. If it is greyed out or empty, the node never received a valid recipient string.
+- If Send Email is green but no email arrives, the issue is the SMTP credentials or the recipient spam folder.
 
 ## Optional: protect the webhook
 
@@ -187,6 +211,8 @@ If you add an API key to the n8n Webhook node, set `N8N_WEBHOOK_API_KEY` in `.en
 | Symptom | Cause | Fix |
 |---|---|---|
 | App shows “Email service is not configured” | `N8N_WEBHOOK_URL` is missing | Add the n8n webhook URL to `.env` |
+| App shows “Failed to queue email via automation service” | n8n returned an error | Check n8n Executions for the failing node |
+| Send Email node has no output / does not run | Recipients were not expanded into items | Verify the Code node output and Send Email `To` expression |
 | Emails not delivered | SMTP credentials incorrect | Verify host/port/user/password in n8n |
-| n8n receives payload but sends nothing | `recipients` not wired to Split In Batches | Confirm node expressions match the JSON above |
 | Emails land in spam | SPF/DKIM not configured | Add the correct DNS records for your SMTP sender |
+| HTML formatting is ignored | Email Format is set to `Text` | Set Email Format to `HTML` in the Send Email node |

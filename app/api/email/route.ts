@@ -151,6 +151,8 @@ export async function POST(request: NextRequest) {
       body: JSON.stringify(n8nPayload),
     });
 
+    console.log("n8n webhook payload:", n8nPayload);
+
     if (!n8nResponse.ok) {
       const n8nText = await n8nResponse.text();
       console.error("n8n webhook error:", n8nResponse.status, n8nText);
