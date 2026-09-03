@@ -85,7 +85,7 @@ When the admin form is submitted, the app posts to `N8N_WEBHOOK_URL` with the fo
     },
     {
       "parameters": {
-        "fromEmail": "=info@aldeia-djembe-camp.com",
+        "fromEmail": "=Team ADC <contact@aldeia-djembe-camp.com>",
         "toEmail": "={{ $json.email }}",
         "subject": "={{ $('Validate Data').first().json.subject }}",
         "html": "={{ $('Validate Data').first().json.body }}",
@@ -219,7 +219,10 @@ This produces one item per recipient, so the Send Email node runs once for every
 
 ### Send Email (SMTP)
 
-- **From** — e.g. `info@aldeia-djembe-camp.com`
+- **From** — `Team ADC <contact@aldeia-djembe-camp.com>`
+
+  > Use the `Display Name <address@domain.com>` format so recipients see "Team ADC" instead of just the email address. If your SMTP provider rejects display names, keep only the address, then add `Reply-To: contact@aldeia-djembe-camp.com` in the options.
+
 - **To** — `={{ $json.email }}`
 - **Subject** — `={{ $('Validate Data').first().json.subject }}`
 - **Email Format** — `HTML`
@@ -270,5 +273,6 @@ If you add an API key to the n8n Webhook node, set `N8N_WEBHOOK_API_KEY` in `.en
 | App shows “Failed to queue email via automation service” | `Validate Data` threw a validation error | Confirm the app sends `subject`, `body`, and a non-empty `recipients` array |
 | Send Email node has no output / does not run | Recipients were not expanded into items | Verify the Expand Recipients node output and Send Email `To` expression |
 | Emails not delivered | SMTP credentials incorrect | Verify host/port/user/password in n8n |
-| Emails land in spam | SPF/DKIM not configured | Add the correct DNS records for your SMTP sender |
+| Emails land in spam | SPF/DKIM not configured or From domain differs from SMTP domain | Add DNS records for your SMTP sender; consider matching the From domain to your SMTP login |
+| Sender shows raw address instead of "Team ADC" | From field has no display name | Use `=Team ADC <contact@aldeia-djembe-camp.com>` |
 | HTML formatting is ignored | Email Format is set to `Text` | Set Email Format to `HTML` in the Send Email node |

@@ -20,6 +20,7 @@ import {
   UserCheck,
   Users,
   Search,
+  CheckCircle2,
 } from "lucide-react";
 
 type RecipientMode = "all" | "individual";
@@ -73,6 +74,7 @@ export default function EmailPage() {
   const [body, setBody] = useState("");
   const [selectedEmails, setSelectedEmails] = useState<Set<string>>(new Set());
   const [isSending, setIsSending] = useState(false);
+  const [sendSuccess, setSendSuccess] = useState(false);
 
   useEffect(() => {
     getParticipants(2026)
@@ -142,10 +144,13 @@ export default function EmailPage() {
     }
 
     setIsSending(true);
+    setSendSuccess(false);
     const { ok, json } = await sendEmail({ subject, body, recipientEmails });
     setIsSending(false);
 
     if (ok) {
+      setSendSuccess(true);
+      setTimeout(() => setSendSuccess(false), 4000);
       toast({
         title: "Enviado",
         description: `Email colocado na fila para ${json.recipientCount} destinatário(s).`,
@@ -368,15 +373,26 @@ export default function EmailPage() {
                 type="submit"
                 disabled={
                   isSending ||
+                  sendSuccess ||
                   !subject.trim() ||
                   !body.trim() ||
                   selectedCount === 0
+                }
+                className={
+                  sendSuccess
+                    ? "bg-green-600 text-white hover:bg-green-700"
+                    : ""
                 }
               >
                 {isSending ? (
                   <>
                     <Spinner className="mr-2 h-4 w-4" />
                     A enviar...
+                  </>
+                ) : sendSuccess ? (
+                  <>
+                    <CheckCircle2 className="mr-2 h-4 w-4" />
+                    Enviado
                   </>
                 ) : (
                   <>
