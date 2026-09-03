@@ -9,6 +9,7 @@ import {
   DollarSign,
   UtensilsCrossed,
   Archive,
+  Mail,
 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
@@ -154,6 +155,14 @@ export function AppSidebar() {
       </SidebarContent>
       <SidebarFooter>
         <SidebarMenu>
+          <SidebarMenuItem>
+            <SidebarMenuButton asChild>
+              <Link href="/admin/email">
+                <Mail />
+                <span>Email</span>
+              </Link>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
           <SidebarMenuItem>
             <SidebarMenuButton asChild>
               <Link href="/admin/settings">
